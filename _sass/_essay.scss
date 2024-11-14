@@ -2,16 +2,72 @@
 
 /* essay styles */
 
-.essay-title {
-    max-width: 950px;
-    margin-left: auto;
-    margin-right: auto;
-}
-.essay-content {
+.essay-content p{
     max-width: 650px;
-    margin-left: auto;
-    margin-right: auto; 
 }
 .next-button {
 
+}
+
+#next-section-button{
+    z-index: 10;
+}
+
+
+/* Scrolling essay option
+/* To make sure the first step starts visible */
+/* Initially, steps are invisible */
+.step {
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+#step0{
+    opacity: 1 !important;
+}
+
+.step.fade-in {
+    opacity: 1;
+    transition: opacity 0.75s ease-in;
+}
+
+.step.fade-out {
+    opacity: 0;
+    transition: opacity 0.75s ease-out;
+}
+/* To make sure the first step starts visible */
+#scrolly article .step:first-child {
+    opacity: 1;
+}
+
+.step{
+    margin-top:20px;
+}
+
+.essay-main {
+    max-width: 633px;
+    width: 60%;
+    margin: 0 12.5% 0;
+}
+
+/*Marginal Notes on Desktop*/
+aside, .aside {
+    display: inline;
+    float: right;
+    position: relative;
+    width: 20vw;
+    margin-right: -24vw;
+    font-size: 14px;
+    color:red;
+}
+
+/*Marginal Notes on mobile*/
+    @media (max-width: 768px) {
+    aside, .aside {
+    display: block;
+    float: none;
+    margin: 5% 10% 5% 10%;
+    width: 80%;
+    font-size: 15px;
+    color:red;
+    }
 }
