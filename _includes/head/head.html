@@ -25,6 +25,7 @@
 <link rel="stylesheet" href="{{ '/assets/lib/leaflet/MarkerCluster.Default.css' | relative_url }}">{% endif %}{%- endif -%}
 <link rel="stylesheet" href="{{ '/assets/css/cb.css' | relative_url }}" type="text/css">
 
+
 {% comment %} 
     Meta tags and analytics are added during production build ONLY 
 {%- endcomment -%}
@@ -34,3 +35,4 @@
 {%- endif -%}
 {% if site.noindex == true or page.noindex == true or layout.noindex == true %}<meta name="robots" content="noindex" />{% endif %}
 <!-- Last build date: {{ site.time | date: "%Y-%m-%d" }} -->
+{% if page.layout contains "scroll" %}<script src="/assets/lib/scrollama.js"></script>{% endif %}
