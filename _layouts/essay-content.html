@@ -1,0 +1,15 @@
+---
+layout: default
+---
+{% assign objectid = page.objectid %}{% assign background-color = page.background-color %}{% assign text-color = page.text-color %}{% assign text-size = page.text-size %}{% assign content-width = page.content-width %}{% assign content-indent = page.additional-content-styles %}{% assign additional-content-styles = page.content-width %}{% assign header = page.header %}{% assign section-content = content %}
+
+<div class="container my-5">
+        <h1 class="display-4">{% if page.section-title %}{{ page.section-title }}{% else %} ~ {% endif %}</h1>
+        {% if page.byline %}<p class="fs-5 ms-4">{{ page.byline }}</p>{% endif %}
+<div class="row">
+    {% include essay/section-layout.html %}
+</div>
+<div class="text-end" id="next-section-button">
+        {% if page.next %}<a class="display-6 btn btn-lg btn-outline-dark next-button" href="{{ page.next.url | relative_url }}">{% if page.next.section-title %}{{ page.next.section-title }} &raquo;{% else %}Next &raquo;{% endif %}</a>{% endif %}
+    </div>
+</div>
