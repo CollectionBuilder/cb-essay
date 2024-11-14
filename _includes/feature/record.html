@@ -1,0 +1,15 @@
+{% comment %}
+
+    Adds a basic citation box for a record item with reference link to the item page.
+
+{%- endcomment -%}
+{%- assign item = site.data[site.metadata] | where: "objectid", include.objectid | first -%}
+<div class="card">
+    <div class="card-body ms-3">
+        <p>
+            {% if item.creator%}{{item.creator}}.{% endif %} <span class="fst-italic">{{item.title}}</span>. {% if item.source%}{{item.source}}{% if item.date%}, {% endif %}{% endif %}{% if item.date%}{{item.date}}{% endif %}
+        </p>
+        <a href="{{ item.objectid | prepend: '/items/' | append: '.html ' | relative_url}}" class="stretched-link small">Click to view</a>
+    </div>
+
+</div>

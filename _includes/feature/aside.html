@@ -1,0 +1,13 @@
+{% comment %}
+
+    Side Note / Aside / Margin Note
+
+    E.G. --> {% include feature/alert.html text="example text" color="warning" align="center" %}
+
+    Options:
+    - "text" = text for alert, can use Markdown.
+    - "color" = a Bootstrap color (primary, secondary, success, danger, warning, info, light, dark)
+    - "align" = text alignment (center, right, left)
+
+{%- endcomment -%}
+<span class="aside pb-5">{% if include.objectid %}{% assign item = site.data[site.metadata] | where: 'objectid', include.objectid | first %}{% if item.display_template == "video" %}{% include feature/video.html objectid=include.objectid %}<br>{% else %}[![{{item.description | default: item.title }}]({{item.image_thumb}}){:.img-fluid text-center style='max-width:20vw'}]({{ item.objectid | prepend: '/items/' | append: '.html ' | relative_url}})<br>{% endif %}{% endif %}{{ include.text }}</span>
