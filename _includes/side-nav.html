@@ -1,6 +1,6 @@
 <nav class="navbar" >
     <div class="container-fluid">
-        <a class="navbar-brand text-dark {% if page.layout == 'home' %}text-white{% endif %}" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+        <a class="navbar-brand text-dark" href="{{ '/' | relative_url }}">{% include feature/icon.html icon="house" label="home icon linking back to home page" %}</a>
         <button class="navbar-toggler {% if page.layout == 'home' %}text-white{% else %}text-dark bg-light{% endif %}" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Open navigation">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi icon-sprite fs-1" viewBox="0 0 16 16">
                 <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
