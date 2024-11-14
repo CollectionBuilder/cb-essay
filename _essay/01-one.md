@@ -1,5 +1,11 @@
 ---
 title: Part One
+content-width:
+content-indent:
+background-color: blue
+text-color:
+text-size: 4
+additional-content-styles:
 ---
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
