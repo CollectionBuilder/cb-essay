@@ -8,8 +8,10 @@
 #
 # featured image is used in home page banner and in meta markup to represent the collection
 # use either an objectid (from an item in this collect), a relative location of an image in this repo, or a full url to an image elsewhere
-featured-image: demo_001
+featured-image: /assets/img/mukund-shyam-LYpGRuUH1lA-unsplash.jpg
 # optional: add extra padding around collection title for a larger image feature. 
+featured-image-credits: 'Photo by <a href="https://unsplash.com/@kindaamateur?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Mukund Shyam</a> on <a href="https://unsplash.com/photos/a-close-up-of-writing-on-a-piece-of-paper-LYpGRuUH1lA?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>'
+      
 home-title-y-padding: 12em # the margin from the top your title portion will appear.
 # optional: change position of background image, center, top, bottom
 home-banner-image-position: center # Default is top
