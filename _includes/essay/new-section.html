@@ -1,6 +1,3 @@
 </div></div>{% assign objectid = include.objectid %}{% assign background-color = include.background-color %}{% assign text-color = include.text-color %}{% assign text-size = include.text-size %}{% assign content-width = include.content-width %}{% assign content-indent = include.additional-content-styles %}{% assign additional-content-styles = include.content-width %}{% assign header = include.header %}
 <div class="row step" data-id="step" {% if background-color %}data-background-color="{{ background-color }}" {% endif %}style="{% if text-color %}color:{{ text-color }}{% endif %};" >
-<div class="{% if content-width %}col-md-{{content-width}} {% else %}essay-main {% endif %}{% if content-indent %}offset-md-{{content-indent}} {% endif %}{% if text-size %}fs-{{text-size}} {% endif %}{{additional-content-styles }}" markdown="1">
-{% if header %}<h2 class="my-3">{{ header }}</h2>{% endif %}
-{% if objectid %}{% assign item = site.data[site.metadata] | where: 'objectid', objectid | first %}{% capture displayfeature %}feature/{{item.display_template}}.html{% endcapture %}
-{% include {{displayfeature}} objectid=item.objectid %}{% endif %}
+{% include essay/section-layout.html %}
