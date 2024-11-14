@@ -1,0 +1,14 @@
+
+{% if page.essay-csv and page.essay-collection %}{% assign iterator = site.data[page.essay-csv] %}{% elsif page.essay-collection %}{% assign iterator = site[page.essay-collection] %}{% endif %}
+<div id="scrolly" class="container my-4">
+    <article>
+{% for s in iterator %}{% if page.essay-collection %}{% assign section-content = s.content | markdownify %}{% elsif page.essay-csv %}
+{% capture path %}_{{page.essay-csv}}/{{s.content}}.md{% endcapture %}{% assign section = site[page.essay-csv] | where_exp:"item", "item.path == path" %}{% assign section-content = section[0] | markdownify %}{% endif 
+%}{% assign objectid = s.objectid %}{% assign background-color = s.background-color %}
+{% assign text-color = s.text-color %}{% assign text-size = s.text-size %}{% assign content-width = s.content-width %}{% assign content-indent = s.content-indent %}{% assign additional-content-styles = s.additional-content-styles %}{% assign header = s.header %}
+<div class="row step my-5" id="step{{forloop.index0}}" >    
+{% include essay/section-layout.html %}
+</div>
+{% endfor %}
+</article>
+</div>

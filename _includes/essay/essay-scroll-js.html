@@ -1,0 +1,71 @@
+
+{% assign iterator = site[page.essay-collection] | default: site.data[page.essay-csv] %}
+<script>
+    var scrolly = document.querySelector("#scrolly");
+            var article = scrolly.querySelector("article");
+            var step = article.querySelectorAll(".step");
+    
+            // initialize the scrollama
+            var scroller = scrollama();
+    
+        // scrollama event handlers
+    // scrollama event handlers
+    function handleStepEnter(response) {
+        var stepIndex = response.index;
+    
+        // Add fade-in effect to the current step
+        response.element.classList.add("fade-in");
+    
+        // Check if the element has the data-background-color attribute
+        const bgColor = response.element.getAttribute("data-background-color");
+        if (bgColor) {
+            // If it exists, change the body background color
+            document.body.style.backgroundColor = bgColor;
+            console.log('colorchange');
+        } else {
+            document.body.style.backgroundColor = "white";
+        }
+
+        // Apply specific styles for even steps
+        if (stepIndex == 0) {} 
+        {% for s in iterator %} 
+        else if (stepIndex == {{forloop.index0}}) {
+        {% if s.background-color %}document.body.style.backgroundColor = "{{s.background-color}}";{% else %}
+         document.body.style.backgroundColor = "white";{% endif %} 
+        {% if s.text-color %}document.body.style.color = "{{s.text-color}}";{% else %}
+        document.body.style.color = "black";{% endif %} 
+        }{% endfor %}  
+    
+        // Remove fade-out class if it exists
+        response.element.classList.remove("fade-out");
+    }
+    
+    function handleStepExit(response) {
+        // Add fade-out effect to the previous step
+        response.element.classList.add("fade-out");
+        
+        // Remove fade-in class when the step is exited
+        response.element.classList.remove("fade-in");
+    }
+    
+    // Initialize scrollama and set up event listeners
+    function init() {
+        step.forEach(function(step) {
+            var v = 100 + Math.floor((Math.random() * window.innerHeight) / 4);
+            step.style.padding = v + "px 0px";
+        });
+    
+        scroller
+            .setup({
+                step: "#scrolly article .step",
+                debug: false,
+                offset: 0.24
+            })
+            .onStepEnter(handleStepEnter)
+            .onStepExit(handleStepExit);
+    }
+    
+    // Kick things off
+    init();
+    
+</script>

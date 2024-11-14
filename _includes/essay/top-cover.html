@@ -1,0 +1,36 @@
+<style>
+    #everything-at-top {
+        background-image: url('{{ page.featured-image | default: site.data.featured_item.src | relative_url }}');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    #home-banner {
+        height: 550px;
+        position: relative;
+
+    }
+    #title-box {
+        margin-top: 6em; 
+        margin-left: 1em;
+        margin-right: 1em;
+    }
+    #toc-box {
+        position: absolute;
+        right: 1em;
+        bottom: 1em;
+    }
+</style>
+<div id="everything-at-top" class="flex-grow-1">
+    {% include side-nav.html %}
+<div id="home-banner" class="container-fluid mt-3 mb-5">
+
+    <div id="title-box" class="col-md-5 py-3 px-5 text-white bg-dark bg-opacity-75 rounded">
+        <h1 class="display-2">{{ page.title | default: site.title }}</h1>
+        {% if site.tagline or page.author %}<p class="mb-0">{{ page.author | default: site.tagline }}</p>{% endif %}
+    </div>
+
+    <a id="toc-box" class="py-3 px-5 display-6 fs-2 text-white bg-dark bg-opacity-75 rounded text-center" href="#step0">Read the Essay <br>&#8595;</a>
+    
+</div>
+</div>

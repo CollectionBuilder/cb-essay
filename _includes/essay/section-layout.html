@@ -1,0 +1,5 @@
+<div class="{% if content-width %}col-md-{{content-width}} {% else %}essay-main {% endif %}{% if content-indent %}offset-md-{{content-indent}} {% endif %}{% if text-size %}fs-{{text-size}} {% endif %}{{additional-content-styles }}">
+{% if header %}<h2 class="my-3">{{ header }}</h2>{% endif %}
+{% if objectid %}{% assign item = site.data[site.metadata] | where: 'objectid', objectid | first %}{% capture displayfeature %}{% if item.display_template == "image" or item.display_template == "video" or item.display_template == "audio" or item.display_template == "pdf" or item.display_template == "panorama" %}feature/{{item.display_template}}.html{% elsif item.image_small %}feature/image.html{% else %}feature/record.html{% endif %}{% endcapture %}{% include {{displayfeature}} objectid=item.objectid %}{% endif %}{% if section-content %}{{ section-content }}
+</div>{% endif %}
+
