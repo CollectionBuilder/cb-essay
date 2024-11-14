@@ -1,6 +1,6 @@
 <style>
     #everything-at-top {
-        background-image: url('{{ page.featured-image | default: site.data.featured_item.src | relative_url }}');
+        background-image: url('{% if page.featured-image contains "/" %}{{ page.featured-image }}{% else %}{{ site.data.featured_item.src | relative_url }}{% endif %}');
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
