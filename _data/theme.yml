@@ -1,3 +1,33 @@
+
+
+##########
+## CB-Thread
+
+
+# Essay or Monograph
+# you can change the theme to match your content
+# basically this changes your nav and banner; 
+base-theme: monograph # essay or monograph
+
+# FONTS 
+## use the below options to adjust for font size, text color, link color and font-family. 
+base-font-size: 1.3em
+text-color: "#191919"
+link-color: "#0d6efd"
+base-font-family: Georgia # comment out for bootstrap defaults. e.g. Roboto
+font-cdn: # add font stylesheet, e.g. <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+
+
+##########
+# HOME PAGE
+#
+# the featured image is appears as either a full splash image, a half page image (great for book covers), or you can enter no-image in image style below for no image, just a title. 
+# use either an objectid (from an item in this collect), a relative location of an image in this repo, or a full url to an image elsewhere
+image-style: full-image # full-image, half-image, or no-image
+featured-image: /assets/img/writing-instruments.jpg
+featured-image-credit: "General Research Division, The New York Public Library. 'An illustration of writing brushes' The New York Public Library Digital Collections. 1908. [https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34](https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34)"
+featured-image-alt-text: "An illustration of writing brushes with Japanese labels" # add alt text if using url for featured-image (objectid will be automatic from metadata)
+
 ##########
 # CollectionBuilder Theme Customization
 # values set here help configure details of individual pages in the website
@@ -6,15 +36,12 @@
 ##########
 # HOME PAGE
 #
-# featured image is used in home page banner and in meta markup to represent the collection
-# use either an objectid (from an item in this collect), a relative location of an image in this repo, or a full url to an image elsewhere
-featured-image: /assets/img/writing-instruments.jpg
-featured-image-credit: "General Research Division, The New York Public Library. 'An illustration of writing brushes' The New York Public Library Digital Collections. 1908. [https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34](https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34)"
-featured-image-alt-text: "An illustration of writing brushes with Japanese labels" # add alt text if using url for featured-image (objectid will be automatic from metadata)
+# featured image is defined above
 # optional: add extra padding around collection title for a larger image feature. 
 home-title-y-padding: 10em # the margin from the top your title portion will appear.
 # optional: change position of background image, center, top, bottom
 home-banner-image-position: center # Default is top
+
 
 
 ##########
@@ -106,12 +133,6 @@ navbar-background: bg-dark
 # Choose from: cerulean; cosmo; cyborg; darkly; flatly; journal; litera; lumen; lux; materia; minty; pulse; sandstone; simplex; sketchy; slate; solar; spacelab; superhero; united; yeti 
 bootswatch: # leave blank or comment out for plain bootstrap
 
-# THEME FONTS [optional!]
-base-font-size: 1.3em
-text-color: "#191919"
-link-color: "#0d6efd"
-base-font-family: Georgia # comment out for bootstrap defaults. e.g. Roboto
-font-cdn: # add font stylesheet, e.g. <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 
 # THEME ICONS [optional!]
 # default icons can be overridden or new icons can be added using "icons" object

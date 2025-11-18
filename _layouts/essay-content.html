@@ -22,8 +22,13 @@ custom-foot: essay/js/spotlight-media-handler.html
         </article>
     </div>
 </div>
-<div class="text-end" id="next-section-button">
+<div class="row">
+    <div class="text-start col" id="prev-section-button">
+        {% if page.previous %}<a class="display-6 btn btn-lg btn-outline-dark next-button" href="{{ page.previous.url | relative_url }}">{% if page.previous.section-title %}{{ page.previous.section-title }} &laquo;{% else %}Prev &laquo;{% endif %}</a>{% endif %}
+    </div>
+    <div class="text-end col" id="next-section-button">
         {% if page.next %}<a class="display-6 btn btn-lg btn-outline-dark next-button" href="{{ page.next.url | relative_url }}">{% if page.next.section-title %}{{ page.next.section-title }} &raquo;{% else %}Next &raquo;{% endif %}</a>{% endif %}
+    </div>
     </div>
 </div>
 

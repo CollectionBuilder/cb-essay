@@ -1,6 +1,6 @@
 ---
-title: OF A MONSTROUS CHILD
-byline: MICHEL DE MONTAIGNE 
+title: Of a Monstrous Child
+byline: MicheL de Montaigne
 order: 5
 ---
 

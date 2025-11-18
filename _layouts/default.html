@@ -6,7 +6,7 @@
   <body class="d-flex flex-column h-100">
     <div id="skip-to-content"><a href="#maincontent">Skip to main content</a></div>
     <div id="everything" class="flex-grow-1">
-      {% unless page.featured-image %}{% include essay/side-nav.html %}{% endunless %}
+      {% unless page.featured-image or page.layout == 'home-essay' %}{% include essay/side-nav.html %}{% endunless %}
       <main id="maincontent" role="main" class="flex-shrink-0">
         {{ content }}
       </main>

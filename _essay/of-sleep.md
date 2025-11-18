@@ -1,6 +1,5 @@
 ---
 title: Of Sleep
-byline: MICHEL DE MONTAIGNE 
 order: 4
 ---
 
