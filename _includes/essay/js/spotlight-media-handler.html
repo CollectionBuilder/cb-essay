@@ -1,0 +1,382 @@
+<script>
+(function() {
+    'use strict';
+
+    // Cache for metadata
+    let metadataCache = null;
+    let metadataLoading = false;
+    let metadataCallbacks = [];
+
+    // Load metadata JSON
+    function loadMetadata(callback) {
+        if (metadataCache) {
+            callback(metadataCache);
+            return;
+        }
+
+        metadataCallbacks.push(callback);
+
+        if (metadataLoading) return;
+        metadataLoading = true;
+
+        const metadataUrl = '{{ "/assets/data/metadata.json" | relative_url }}';
+        console.log('Loading metadata from:', metadataUrl);
+
+        fetch(metadataUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Metadata loaded:', data);
+                metadataCache = data.objects;
+                metadataLoading = false;
+                metadataCallbacks.forEach(cb => cb(metadataCache));
+                metadataCallbacks = [];
+            })
+            .catch(error => {
+                console.error('Error loading metadata:', error);
+                metadataLoading = false;
+            });
+    }
+
+    // Get item by objectid
+    function getItemByObjectId(objectid) {
+        if (!metadataCache) return null;
+        return metadataCache.find(item => item.objectid === objectid);
+    }
+
+    // Extract YouTube video ID
+    function getYouTubeId(url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    // Extract Vimeo video ID
+    function getVimeoId(url) {
+        const regExp = /vimeo.*\/(\d+)/i;
+        const match = url.match(regExp);
+        return match ? match[1] : null;
+    }
+
+    // Create YouTube iframe
+    function createYouTubeEmbed(videoId) {
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        iframe.width = '100%';
+        iframe.height = '100%';
+        iframe.style.position = 'absolute';
+        iframe.style.top = '0';
+        iframe.style.left = '0';
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.frameBorder = '0';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+
+        const container = document.createElement('div');
+        container.style.position = 'relative';
+        container.style.width = '80vw';
+        container.style.maxWidth = '1200px';
+        container.style.height = '80vh';
+        container.style.maxHeight = '675px';
+        container.appendChild(iframe);
+
+        return container;
+    }
+
+    // Create Vimeo iframe
+    function createVimeoEmbed(videoId) {
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://player.vimeo.com/video/${videoId}?autoplay=1`;
+        iframe.width = '100%';
+        iframe.height = '100%';
+        iframe.style.position = 'absolute';
+        iframe.style.top = '0';
+        iframe.style.left = '0';
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.frameBorder = '0';
+        iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+        iframe.allowFullscreen = true;
+
+        const container = document.createElement('div');
+        container.style.position = 'relative';
+        container.style.width = '80vw';
+        container.style.maxWidth = '1200px';
+        container.style.height = '80vh';
+        container.style.maxHeight = '675px';
+        container.appendChild(iframe);
+
+        return container;
+    }
+
+    // Create MP4 video player
+    function createVideoPlayer(src, poster) {
+        const video = document.createElement('video');
+        video.src = src;
+        video.controls = true;
+        video.autoplay = true;
+        video.style.maxWidth = '100%';
+        video.style.maxHeight = '80vh';
+        if (poster) video.poster = poster;
+
+        return video;
+    }
+
+    // Create MP3 audio player
+    function createAudioPlayer(src, title) {
+        const container = document.createElement('div');
+        container.style.width = '80vw';
+        container.style.maxWidth = '800px';
+        container.style.padding = '40px';
+        container.style.textAlign = 'center';
+
+        const audio = document.createElement('audio');
+        audio.src = src;
+        audio.controls = true;
+        audio.autoplay = false;
+        audio.style.width = '100%';
+        audio.style.marginTop = '20px';
+
+        if (title) {
+            const titleEl = document.createElement('h2');
+            titleEl.textContent = title;
+            titleEl.style.color = '#fff';
+            titleEl.style.marginBottom = '20px';
+            container.appendChild(titleEl);
+        }
+
+        container.appendChild(audio);
+
+        return container;
+    }
+
+    // Create PDF viewer
+    function createPDFViewer(src, title) {
+        const iframe = document.createElement('iframe');
+        iframe.src = src;
+        iframe.style.width = '90vw';
+        iframe.style.maxWidth = '1200px';
+        iframe.style.height = '90vh';
+        iframe.style.border = 'none';
+        iframe.style.backgroundColor = '#fff';
+
+        return iframe;
+    }
+
+    // Determine media type and create appropriate viewer
+    function createMediaViewer(item) {
+        const location = item.object_location || '';
+        const format = (item.format || '').toLowerCase();
+        const displayTemplate = (item.display_template || '').toLowerCase();
+
+        // Check for YouTube
+        if (location.includes('youtube.com') || location.includes('youtu.be')) {
+            const videoId = getYouTubeId(location);
+            if (videoId) {
+                return {
+                    media: 'node',
+                    src: createYouTubeEmbed(videoId),
+                    title: item.title
+                };
+            }
+        }
+
+        // Check for Vimeo
+        if (location.includes('vimeo.com')) {
+            const videoId = getVimeoId(location);
+            if (videoId) {
+                return {
+                    media: 'node',
+                    src: createVimeoEmbed(videoId),
+                    title: item.title
+                };
+            }
+        }
+
+        // Check for MP4 video
+        if (format.includes('video') || location.match(/\.(mp4|webm|ogg)$/i)) {
+            return {
+                media: 'node',
+                src: createVideoPlayer(location, item.image_thumb),
+                title: item.title
+            };
+        }
+
+        // Check for MP3 audio
+        if (format.includes('audio') || location.match(/\.(mp3|wav|ogg)$/i)) {
+            return {
+                media: 'node',
+                src: createAudioPlayer(location, item.title),
+                title: item.title
+            };
+        }
+
+        // Check for PDF
+        if (format.includes('pdf') || displayTemplate === 'pdf' || location.match(/\.pdf$/i)) {
+            return {
+                media: 'node',
+                src: createPDFViewer(location, item.title),
+                title: item.title
+            };
+        }
+
+        // Default to image
+        return {
+            src: location,
+            title: item.title
+        };
+    }
+
+    // Custom item page link button
+    let itemPageButton = null;
+    let currentItemUrl = null;
+
+    function itemPageHandler() {
+        if (currentItemUrl) {
+            window.location.href = currentItemUrl;
+        }
+    }
+
+    // Build gallery array from all spotlight items on page
+    let galleryItems = [];
+    let galleryItemsMap = {};
+
+    function buildGallery() {
+        // Find all spotlight gallery items with objectid
+        const spotlightElements = document.querySelectorAll('.spotlight[data-objectid]');
+        const objectids = [];
+
+        spotlightElements.forEach(el => {
+            const objectid = el.getAttribute('data-objectid');
+            if (objectid && !objectids.includes(objectid)) {
+                objectids.push(objectid);
+                galleryItemsMap[objectid] = objectids.length - 1;
+            }
+        });
+
+        // Build gallery configurations for all items
+        galleryItems = objectids.map(objectid => {
+            const item = getItemByObjectId(objectid);
+            if (!item) return null;
+
+            const mediaConfig = createMediaViewer(item);
+            return Object.assign({}, mediaConfig, {
+                download: true,
+                button: 'View Item Page',
+                buttonHref: item.reference_url,
+                objectid: objectid,
+                reference_url: item.reference_url
+            });
+        }).filter(item => item !== null);
+
+        console.log('Built gallery with', galleryItems.length, 'items');
+    }
+
+    // Enhanced click handler for spotlight gallery items
+    function handleSpotlightClick(event) {
+        // Use capture phase to intercept before Spotlight
+        const target = event.target.closest('.spotlight');
+        if (!target) return;
+
+        // Check if this is a gallery item with objectid
+        const objectid = target.getAttribute('data-objectid');
+        if (!objectid) {
+            // No objectid - let spotlight handle it normally
+            console.log('No objectid, using default spotlight behavior');
+            return;
+        }
+
+        console.log('Intercepting click for objectid:', objectid);
+
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        loadMetadata(function(metadata) {
+            // Build gallery if not already built
+            if (galleryItems.length === 0) {
+                buildGallery();
+            }
+
+            // Find the index of the clicked item
+            const startIndex = galleryItemsMap[objectid] || 0;
+            console.log('Opening gallery at index:', startIndex + 1);
+
+            // Set initial current URL
+            currentItemUrl = galleryItems[startIndex].reference_url;
+
+            // Show in Spotlight with full gallery
+            Spotlight.show(galleryItems, {
+                index: startIndex + 1, // Spotlight uses 1-based indexing
+                onshow: function(index) {
+                    console.log('Spotlight opened at index:', index);
+                    // Update current URL based on index
+                    currentItemUrl = galleryItems[index - 1].reference_url;
+
+                    // Add custom "View Item Page" icon button in header
+                    itemPageButton = Spotlight.addControl('item-page', itemPageHandler);
+                    itemPageButton.className += ' spl-item-page';
+                    itemPageButton.title = 'View Item Page';
+                },
+                onchange: function(index) {
+                    console.log('Changed to index:', index);
+                    // Update current URL when user navigates
+                    currentItemUrl = galleryItems[index - 1].reference_url;
+
+                    // Update the button href
+                    const footerButton = document.querySelector('.spl-button');
+                    if (footerButton && footerButton.firstElementChild) {
+                        footerButton.firstElementChild.href = currentItemUrl;
+                    }
+                },
+                onclose: function() {
+                    currentItemUrl = null;
+                    if (itemPageButton) {
+                        try {
+                            Spotlight.removeControl('item-page');
+                        } catch(e) {
+                            console.error('Error removing control:', e);
+                        }
+                        itemPageButton = null;
+                    }
+                }
+            });
+        });
+    }
+
+    // Initialize on DOM ready
+    function init() {
+        // Check if Spotlight is available
+        if (typeof Spotlight === 'undefined') {
+            console.error('Spotlight library not loaded!');
+            return;
+        }
+
+        console.log('Spotlight media handler initialized');
+
+        // Preload metadata
+        loadMetadata(function() {
+            console.log('CollectionBuilder metadata loaded for Spotlight');
+        });
+
+        // Add click listener to document for delegated event handling
+        // Use capture phase (true) to intercept before Spotlight's event handlers
+        document.addEventListener('click', handleSpotlightClick, true);
+    }
+
+    // Wait for page load and Spotlight to be available
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Give spotlight.bundle.js time to load (it's deferred)
+            setTimeout(init, 100);
+        });
+    } else {
+        setTimeout(init, 100);
+    }
+})();
+</script>

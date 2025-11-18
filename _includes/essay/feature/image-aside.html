@@ -11,10 +11,22 @@
     - "item" = collection item object with objectid (required, set by parent)
     - "caption" = custom caption to override item title (optional)
     - "height" = maximum height for the image, default "205px" (optional)
+    - "gallery" = set to false to link directly to item page instead of opening in spotlight viewer (optional, default true)
 
 {%- endcomment -%}
 {%- capture item_link -%}{{ '/items/' | relative_url }}{% if item.parentid %}{{ item.parentid }}.html#{{ item.objectid }}{% else %}{{ item.objectid }}.html{% endif %}{%- endcapture -%}
-<span class="aside">{% if item.display_template == "image" %}<a class="spotlight gallery-img https://github.com/dcnb/cb-thread" data-download="true" title="{{ item.title | escape }}" href="{{ item.object_location }}">
-    <span><span class="visually-hidden">Click image for full screen</span><small class=" text-secondary float-start" >{% include feature/icon.html icon="arrows-fullscreen" label="link to page" class="ms-1 mini mb-1"%}</small></span><br>
-    <img src="{{ item.image_small | relative_url }}" alt="{{ item.image_alt_text | default: item.description | default: item.title | escape }}" class="img-fluid" style='max-height: {{ include.height | default: '205px' }}'>
-</a>{% else %}<img src="{{ item.image_small | relative_url }}" alt="{{ item.image_alt_text | default: item.description | default: item.title | escape }}" class="img-fluid mb-3" style='max-height: {{ include.height | default: '205px' }}'>{% endif %}<br><a class="text-center fs-6 text-dark" href="{{ item_link }}" title="link to item page" style='max-width:20vw'>{% if include.caption %}{{include.caption}}{% else %}{{ item.title }}{% endif %} {% include feature/icon.html icon="box-arrow-up-right" label="link to page" class="ms-1 mini mb-1"%}</a></span>
+{%- assign use_gallery = true -%}
+{%- if include.gallery == false -%}{%- assign use_gallery = false -%}{%- endif -%}
+<span class="aside">{% if item.image_small or item.image_thumb %}{% if use_gallery %}<a class="spotlight gallery-img" data-objectid="{{ item.objectid }}" data-download="true" title="{{ item.title | escape }}" href="{{ item.object_location }}">
+    <span><span class="visually-hidden">Click to view</span><small class="text-secondary float-start">{% include feature/icon.html icon="arrows-fullscreen" label="view fullscreen" class="ms-1 mini mb-1"%}</small></span><br>
+    <img src="{{ item.image_small | default: item.image_thumb | relative_url }}" alt="{{ item.image_alt_text | default: item.description | default: item.title | escape }}" class="img-fluid" style='max-height: {{ include.height | default: '205px' }}'>
+</a>{% else %}<a href="{{ item_link }}" title="link to item page">
+    <span><span class="visually-hidden">View item page</span><small class="text-secondary float-start">{% include feature/icon.html icon="box-arrow-up-right" label="link to page" class="ms-1 mini mb-1"%}</small></span><br>
+    <img src="{{ item.image_small | default: item.image_thumb | relative_url }}" alt="{{ item.image_alt_text | default: item.description | default: item.title | escape }}" class="img-fluid" style='max-height: {{ include.height | default: '205px' }}'>
+</a>{% endif %}{% else %}{% if use_gallery %}<a class="spotlight gallery-img d-inline-flex align-items-center border rounded p-2 bg-light" data-objectid="{{ item.objectid }}" style="max-width:20vw; text-decoration: none; cursor: pointer;" title="{{ item.title | escape }}">
+    <span class="flex-shrink-0 text-center me-2" style="width:20%">{% include helpers/get-icon-svg.html template=item.display_template type="thumb" style="width: 3em !important;height: 3em !important;" %}</span>
+    <span class="flex-grow-1 text-dark"><span class="visually-hidden">Click to view</span><small>{% include feature/icon.html icon="arrows-fullscreen" label="view fullscreen" class="ms-1 mini mb-1"%}</small></span>
+</a>{% else %}<a class="d-inline-flex align-items-center border rounded p-2 bg-light" href="{{ item_link }}" style="max-width:20vw; text-decoration: none;" title="link to item page">
+    <span class="flex-shrink-0 text-center me-2" style="width:20%">{% include helpers/get-icon-svg.html template=item.display_template type="thumb" style="width: 3em !important;height: 3em !important;" %}</span>
+    <span class="flex-grow-1 text-dark"><span class="visually-hidden">View item page</span><small>{% include feature/icon.html icon="box-arrow-up-right" label="link to page" class="ms-1 mini mb-1"%}</small></span>
+</a>{% endif %}{% endif %}<br><a class="text-center fs-6 text-dark" href="{{ item_link }}" title="link to item page" style='max-width:20vw'>{% if include.caption %}{{include.caption}}{% else %}{{ item.title }}{% endif %} {% include feature/icon.html icon="box-arrow-up-right" label="link to page" class="ms-1 mini mb-1"%}</a></span>

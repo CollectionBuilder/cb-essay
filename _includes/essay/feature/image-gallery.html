@@ -41,10 +41,26 @@
 {% endif %}
 <div class="col-md {% if figcount == 1 %}text-center{% elsif forloop.first %}text-md-end{% elsif forloop.last %}text-md-start{% else %}text-center{% endif %}">
 <figure class="figure mx-3{% if include.width %} feature-w-{{ include.width }}{% endif %}">
-<a class="spotlight gallery-img" data-download="true" title="{{ figure.title | escape }}" href="{{ figure.object_location }}">
-    <div><div class="visually-hidden">Click image for full screen</div><small class="mini text-secondary float-end">{% include feature/icon.html icon="arrows-fullscreen" label="link to page" class="ms-1 mini mb-1"%}</small></div>
-    <img src="{{ figure.image_small | relative_url }}" alt="{{ figure.image_alt_text | default: figure.description | default: figure.title | escape }}" class="img-fluid">
+{% if i contains "/" %}
+<a class="spotlight gallery-img" data-download="true" title="{{ image_caption | escape }}" href="{{ image_src }}">
+    <div><div class="visually-hidden">Click for full screen</div><small class="mini text-secondary float-end">{% include feature/icon.html icon="arrows-fullscreen" label="fullscreen" class="ms-1 mini mb-1"%}</small></div>
+    <img src="{{ image_src }}" alt="{{ image_alt | escape }}" class="img-fluid">
 </a>
+{% else %}
+<a class="spotlight gallery-img" data-objectid="{{ figure.objectid }}" data-download="true" title="{{ figure.title | escape }}" href="{{ figure.object_location }}">
+    <div><div class="visually-hidden">Click to view</div><small class="mini text-secondary float-end">{% include feature/icon.html icon="arrows-fullscreen" label="fullscreen" class="ms-1 mini mb-1"%}</small></div>
+    {% if figure.image_small or figure.image_thumb %}
+    <img src="{{ figure.image_small | default: figure.image_thumb | relative_url }}" alt="{{ figure.image_alt_text | default: figure.description | default: figure.title | escape }}" class="img-fluid">
+    {% else %}
+    <div class="d-flex align-items-center justify-content-center border rounded p-4 bg-light" style="min-height: 200px;">
+        <div class="text-center">
+            {% include helpers/get-icon-svg.html template=figure.display_template type="thumb" style="width: 4em !important;height: 4em !important;" %}
+            <div class="mt-2 text-muted">{{ figure.display_template | capitalize }}</div>
+        </div>
+    </div>
+    {% endif %}
+</a>
+{% endif %}
 
 {% unless include.caption == false %}<figcaption class="figure-caption text-center mt-2">{% if i contains "/" %}{{ image_caption }}{% else %}<a class="text-info" href="{{ image_link }}" title="link to item page">{{ image_caption }} {% include feature/icon.html icon="box-arrow-up-right" label="link to page" class="ms-1 mini mb-1"%}</a>{% endif %}</figcaption>{% endunless %}
 </figure>

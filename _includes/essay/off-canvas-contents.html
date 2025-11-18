@@ -1,0 +1,41 @@
+<div class="offcanvas offcanvas-top {% if site.data.theme.navbar-background == 'bg-light' %}bg-light{% else %}bg-dark{% endif %}" tabindex="-1" id="offcanvasContents" aria-labelledby="offcanvasContentsLabel" style="width: 400px; height: calc(100vh - 56px); left: 0; right: auto; top: 56px;">
+    
+    <div class="offcanvas-body px-0 {% if site.data.theme.navbar-background == 'bg-light' %}text-dark{% else %}text-white{% endif %}">
+        <ul class="navbar-nav">
+            {% for e in site.essay %}
+            <li class="nav-item ps-3">
+                <a class="nav-link {% if site.data.theme.navbar-background == 'bg-light' %}text-dark{% else %}text-light{% endif %} {% if page.url == e.url %}text-decoration-underline text-uppercase{% endif %}" href="{{ e.url | relative_url }}">
+                    {% if e.chapter %}{{ e.chapter }}. {% endif %}{{ e.title }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contentsOffcanvas = document.getElementById('offcanvasContents');
+    const navbar = document.querySelector('nav.sticky-top');
+    const contentsButton = document.querySelector('[data-bs-target="#offcanvasContents"]');
+
+    if (contentsOffcanvas && navbar && contentsButton) {
+        contentsOffcanvas.addEventListener('show.bs.offcanvas', function () {
+            navbar.style.zIndex = '1050';
+            contentsButton.style.transition = 'font-size 0.3s ease';
+            contentsButton.style.fontSize = '1em';
+        });
+        contentsOffcanvas.addEventListener('shown.bs.offcanvas', function () {
+            this.style.zIndex = '1060';
+        });
+        contentsOffcanvas.addEventListener('hide.bs.offcanvas', function () {
+            this.style.zIndex = '1000';
+        });
+        contentsOffcanvas.addEventListener('hidden.bs.offcanvas', function () {
+            navbar.style.zIndex = '';
+            contentsButton.style.transition = 'font-size 0.3s ease';
+            contentsButton.style.fontSize = '';
+        });
+    }
+});
+</script>

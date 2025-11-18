@@ -5,9 +5,12 @@
 {%- assign fields = site.data.theme.metadata-export-fields | split: "," -%}
 { "objects": [
     {%- for item in items -%}
-    { 
+    {
+        "objectid": {{ item.objectid | jsonify }},
         {% for f in fields %}{% if item[f] %}{{ f | jsonify }}: {{ item[f] | jsonify }},{% endif %}
-        {% endfor %}{% if item.image_thumb %}"object_thumb": "{{ item.image_thumb | absolute_url }}",{% endif %}
+        {% endfor %}"display_template": {{ item.display_template | jsonify }},
+        {% if item.image_thumb %}"image_thumb": "{{ item.image_thumb | absolute_url }}",{% endif %}
+        {% if item.image_small %}"image_small": "{{ item.image_small | absolute_url }}",{% endif %}
         "object_location": "{{ item.object_location | absolute_url }}",
         "reference_url": "{{ '/items/' | relative_url }}{% if item.parentid %}{{ item.parentid }}.html#{{ item.objectid }}{% else %}{{ item.objectid }}.html{% endif %}"
     }{% unless forloop.last %},{% endunless %}
