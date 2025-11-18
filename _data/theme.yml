@@ -7,7 +7,7 @@
 # Essay or Monograph
 # you can change the theme to match your content
 # basically this changes your nav and banner; 
-base-theme: monograph # essay or monograph
+base-theme: essay # essay or monograph
 
 # FONTS 
 ## use the below options to adjust for font size, text color, link color and font-family. 
