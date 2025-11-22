@@ -215,6 +215,104 @@ def is_chapter_heading(text: str) -> Tuple[bool, str]:
     return False, ''
 
 
+def extract_toc_anchors(html_text: str) -> List[str]:
+    """Extract anchor IDs from table of contents links.
+
+    This is the most reliable way to find chapter boundaries per the extraction guide.
+    TOC links like <a href="#chapter-1"> tell us exactly where sections are.
+    """
+    anchors = []
+
+    # Find TOC section (typically marked by "contents" class/id or heading)
+    # Look for anchor hrefs that start with #
+    # Pattern: href="#something" within what looks like a TOC
+
+    # First, try to find TOC region by looking for "contents" markers
+    toc_patterns = [
+        r'<(?:div|nav|section)[^>]*(?:class|id)=["\'][^"\']*(?:toc|contents)[^"\']*["\'][^>]*>.*?</(?:div|nav|section)>',
+        r'<h[1-4][^>]*>.*?(?:contents|table of contents).*?</h[1-4]>.*?(?=<h[1-4])',
+    ]
+
+    toc_html = None
+    for pattern in toc_patterns:
+        match = re.search(pattern, html_text, re.IGNORECASE | re.DOTALL)
+        if match:
+            toc_html = match.group(0)
+            break
+
+    # If no TOC section found, scan the whole document for likely TOC links
+    if not toc_html:
+        toc_html = html_text
+
+    # Extract all internal anchors (href="#...")
+    anchor_pattern = r'<a[^>]+href=["\']#([^"\']+)["\'][^>]*>'
+    matches = re.findall(anchor_pattern, toc_html, re.IGNORECASE)
+
+    for anchor in matches:
+        anchor_lower = anchor.lower()
+        # Skip non-chapter anchors
+        if any(skip in anchor_lower for skip in ['note', 'footnote', 'pg-', 'gutenberg']):
+            continue
+        if anchor not in anchors:
+            anchors.append(anchor)
+
+    return anchors
+
+
+def is_section_id(element_id: str, toc_anchors: List[str] = None) -> Tuple[bool, str]:
+    """Check if an element ID marks a section boundary.
+
+    Args:
+        element_id: The ID attribute of an element
+        toc_anchors: List of anchor IDs from the TOC (if available)
+
+    Returns (is_section, section_type) tuple.
+    """
+    id_lower = element_id.lower()
+
+    # Skip Gutenberg boilerplate IDs
+    if any(skip in id_lower for skip in ['gutenberg', 'license', 'pg-', 'boilerplate']):
+        return False, ''
+
+    # If this ID is in the TOC anchors, it's definitely a section
+    if toc_anchors and element_id in toc_anchors:
+        # Determine type from ID
+        if any(kw in id_lower for kw in ['preface', 'introduction', 'foreword', 'prologue', 'dedication']):
+            return True, 'front_matter'
+        if any(kw in id_lower for kw in ['epilogue', 'afterword', 'appendix', 'notes', 'index', 'glossary']):
+            return True, 'back_matter'
+        if 'content' in id_lower or 'toc' in id_lower:
+            return True, 'toc'
+        return True, 'chapter'
+
+    # Check ID patterns that indicate chapters
+    chapter_id_patterns = [
+        r'^chapter[-_]?[ivxlcdm\d]+',
+        r'^chap[-_]?[ivxlcdm\d]+',
+        r'^ch[-_]?[ivxlcdm\d]+',
+        r'^letter[-_]?[ivxlcdm\d]+',
+        r'^book[-_]?[ivxlcdm\d]+',
+        r'^part[-_]?[ivxlcdm\d]+',
+        r'^volume[-_]?[ivxlcdm\d]+',
+        r'^[ivxlcdm]+$',  # Pure roman numerals
+        r'^\d+$',  # Pure numbers
+    ]
+
+    for pattern in chapter_id_patterns:
+        if re.match(pattern, id_lower):
+            return True, 'chapter'
+
+    # Check for front/back matter IDs
+    if any(kw in id_lower for kw in ['preface', 'introduction', 'foreword', 'prologue', 'dedication']):
+        return True, 'front_matter'
+    if any(kw in id_lower for kw in ['epilogue', 'afterword', 'appendix', 'index', 'glossary', 'bibliography']):
+        return True, 'back_matter'
+    if 'content' in id_lower or 'toc' in id_lower:
+        return True, 'toc'
+
+    return False, ''
+
+
 # =============================================================================
 # Utility Functions
 # =============================================================================
@@ -621,20 +719,17 @@ class ImageExtractor:
 # =============================================================================
 
 class GutenbergHTMLParser(HTMLParser):
-    """Parse Project Gutenberg HTML to extract chapters and content."""
+    """Parse Project Gutenberg HTML to extract chapters and content.
 
-    # Known section types
-    FRONT_MATTER_IDS = {
-        'dedication', 'preface', 'introduction', 'prologue', 'foreword',
-        'contents', 'acknowledgments', 'acknowledgements', 'note', 'notes'
-    }
-    BACK_MATTER_IDS = {
-        'epilogue', 'afterword', 'appendix', 'footnotes', 'endnotes',
-        'bibliography', 'glossary', 'index'
-    }
+    Uses multiple strategies for chapter detection:
+    1. TOC anchor links (most reliable)
+    2. Element IDs matching chapter patterns
+    3. Heading text matching chapter patterns
+    """
 
-    def __init__(self):
+    def __init__(self, toc_anchors: List[str] = None):
         super().__init__()
+        self.toc_anchors = toc_anchors or []
         self.sections = []
         self.current_section = None
         self.current_content = []
@@ -645,60 +740,15 @@ class GutenbergHTMLParser(HTMLParser):
         self.in_pagenum = False
         self.skip_content = False
         self.images_found = []
-        self.pending_heading_text = []  # Track heading text for chapter detection
-        self.in_heading = False  # Are we inside a heading tag?
-        self.current_heading_tag = None  # Which heading tag?
+        self.pending_heading_text = []
+        self.in_heading = False
+        self.current_heading_tag = None
+        self.pending_section_id = None  # ID to use when heading text is captured
+        self.pending_section_type = None
 
-    def _detect_section_type(self, section_id: str) -> str:
-        """Determine section type from ID."""
-        section_id_lower = section_id.lower()
-
-        if section_id_lower in self.FRONT_MATTER_IDS or section_id_lower.startswith('front'):
-            return 'front_matter'
-        if section_id_lower in self.BACK_MATTER_IDS or section_id_lower.startswith('back'):
-            return 'back_matter'
-        if section_id_lower.startswith('part'):
-            return 'part'
-        if section_id_lower in ('contents', 'toc', 'table-of-contents'):
-            return 'toc'
-        return 'chapter'
-
-    def _is_chapter_start(self, tag: str, attrs: Dict) -> Tuple[bool, Optional[str], Optional[str]]:
-        """Check if this tag marks the start of a chapter/section."""
-        # Strategy 1: div/section with meaningful id
-        if tag in ('div', 'section') and 'id' in attrs:
-            div_id = attrs['id']
-            div_id_lower = div_id.lower()
-
-            # Skip Gutenberg-specific sections
-            if 'gutenberg' in div_id_lower or 'license' in div_id_lower or 'boilerplate' in div_id_lower:
-                return False, None, None
-
-            # Check for chapter patterns
-            if (div_id_lower.startswith('chapter') or
-                div_id_lower.startswith('chap') or
-                re.match(r'^ch[_-]?\d+', div_id_lower) or
-                re.match(r'^[ivxlc]+$', div_id_lower) or
-                re.match(r'^\d+$', div_id)):
-                return True, div_id, 'chapter'
-
-            section_type = self._detect_section_type(div_id)
-            if section_type != 'chapter':
-                return True, div_id, section_type
-
-        # Strategy 2: h2/h3 with id (common chapter headers)
-        if tag in ('h2', 'h3') and 'id' in attrs:
-            heading_id = attrs['id']
-            heading_id_lower = heading_id.lower()
-
-            # Skip boilerplate
-            if 'gutenberg' in heading_id_lower or 'license' in heading_id_lower:
-                return False, None, None
-
-            section_type = self._detect_section_type(heading_id)
-            return True, heading_id, section_type
-
-        return False, None, None
+    def _check_element_id(self, element_id: str) -> Tuple[bool, str]:
+        """Check if element ID indicates a section boundary."""
+        return is_section_id(element_id, self.toc_anchors)
 
     def handle_starttag(self, tag, attrs):
         attrs_dict = dict(attrs)
@@ -724,30 +774,45 @@ class GutenbergHTMLParser(HTMLParser):
         if self.skip_content or self.in_boilerplate:
             return
 
-        # Check for chapter/section start
-        is_chapter, section_id, section_type = self._is_chapter_start(tag, attrs_dict)
+        # For heading tags: ALWAYS set up heading tracking first
+        # Note: We process headings even in TOC mode to detect when TOC ends
+        # This ensures we capture heading text for title and chapter detection
+        if tag in ('h1', 'h2', 'h3', 'h4'):
+            self.in_heading = True
+            self.current_heading_tag = tag
+            self.pending_heading_text = []
+            self.current_content = []
 
-        if is_chapter and section_id:
-            # Save previous section
-            if self.current_section:
-                self._save_section()
+            # Check if heading has an ID that indicates a section
+            if 'id' in attrs_dict:
+                is_section, section_type = self._check_element_id(attrs_dict['id'])
+                if is_section:
+                    # Store pending section info - will be created in handle_endtag
+                    self.pending_section_id = attrs_dict['id']
+                    self.pending_section_type = section_type
+            return  # Don't process further - wait for heading text and endtag
 
-            if section_type == 'toc':
-                self.in_toc = True
-                self.current_section = None
+        # For div/section with IDs: check if it's a section boundary
+        if tag in ('div', 'section') and 'id' in attrs_dict:
+            is_section, section_type = self._check_element_id(attrs_dict['id'])
+            if is_section:
+                # Save previous section
+                if self.current_section:
+                    self._save_section()
+
+                if section_type == 'toc':
+                    self.in_toc = True
+                    self.current_section = None
+                    return
+
+                self.in_toc = False
+                self.current_section = {
+                    'id': attrs_dict['id'],
+                    'type': section_type,
+                    'title': None,
+                    'content': []
+                }
                 return
-
-            self.in_toc = False
-            self.current_section = {
-                'id': section_id,
-                'type': section_type,
-                'title': None,
-                'content': []
-            }
-            return
-
-        if self.in_toc:
-            return
 
         # Track images
         if tag == 'img' and 'src' in attrs_dict:
@@ -756,17 +821,9 @@ class GutenbergHTMLParser(HTMLParser):
                 alt = attrs_dict.get('alt', '')
                 self.current_content.append(f'\n![{alt}]({attrs_dict["src"]})\n')
 
-        # Track when entering heading tags (for text-based chapter detection)
-        if tag in ('h1', 'h2', 'h3', 'h4'):
-            self.in_heading = True
-            self.current_heading_tag = tag
-            self.pending_heading_text = []
-
-        # Format tags
+        # Format tags (only when we have a current section)
         if self.current_section and not self.in_boilerplate:
             if tag == 'p':
-                self.current_content = []
-            elif tag in ('h1', 'h2', 'h3', 'h4'):
                 self.current_content = []
             elif tag == 'hr':
                 self.current_section['content'].append('\n---\n')
@@ -797,17 +854,39 @@ class GutenbergHTMLParser(HTMLParser):
             self.in_pagenum = False
             return
 
-        # Text-based chapter detection: when a heading closes, check if it's a chapter
+        # Heading tag closing: determine if this starts a new section
         if tag in ('h1', 'h2', 'h3', 'h4') and self.in_heading:
             heading_text = ''.join(self.pending_heading_text).strip()
             self.in_heading = False
+            heading_tag = self.current_heading_tag
             self.current_heading_tag = None
 
-            # Check if this heading marks a chapter/section (by TEXT content)
-            is_chapter, section_type = is_chapter_heading(heading_text)
+            # Determine if this heading marks a section boundary
+            # Priority: 1) Pending ID from starttag, 2) Text-based detection
+            should_create_section = False
+            section_id = None
+            section_type = None
 
-            if is_chapter and not self.in_boilerplate and not self.skip_content:
-                # Save any previous section
+            # Check pending section from ID detection in starttag
+            if self.pending_section_id:
+                should_create_section = True
+                section_id = self.pending_section_id
+                section_type = self.pending_section_type
+                self.pending_section_id = None
+                self.pending_section_type = None
+
+            # Also check text-based chapter detection
+            if not should_create_section and not self.in_boilerplate and not self.skip_content:
+                text_is_chapter, text_section_type = is_chapter_heading(heading_text)
+                if text_is_chapter:
+                    should_create_section = True
+                    section_type = text_section_type
+                    # Create safe ID from heading text
+                    section_id = re.sub(r'[^a-z0-9]+', '-', heading_text.lower()).strip('-')[:50]
+                    section_id = section_id or f'section-{len(self.sections)+1}'
+
+            if should_create_section:
+                # Save any previous section first
                 if self.current_section:
                     self._save_section()
 
@@ -816,21 +895,31 @@ class GutenbergHTMLParser(HTMLParser):
                     self.current_section = None
                 else:
                     self.in_toc = False
-                    # Create a safe ID from heading text
-                    safe_id = re.sub(r'[^a-z0-9]+', '-', heading_text.lower()).strip('-')[:50]
                     self.current_section = {
-                        'id': safe_id or f'section-{len(self.sections)+1}',
+                        'id': section_id,
                         'type': section_type,
                         'title': heading_text,
                         'content': []
                     }
-                    # Add the heading to content
+                    # Add heading to content with proper markdown level
                     level = {'h1': '#', 'h2': '##', 'h3': '###', 'h4': '###'}[tag]
                     self.current_section['content'].append(f'{level} {heading_text}\n\n')
 
                 self.pending_heading_text = []
                 self.current_content = []
                 return
+
+            # If heading didn't start a new section but we have a current section,
+            # add the heading to the current section's content
+            if self.current_section and heading_text:
+                level = {'h1': '#', 'h2': '##', 'h3': '###', 'h4': '###'}[tag]
+                self.current_section['content'].append(f'{level} {heading_text}\n\n')
+                if not self.current_section['title']:
+                    self.current_section['title'] = heading_text
+
+            self.pending_heading_text = []
+            self.current_content = []
+            return
 
         if self.skip_content or self.in_boilerplate or self.in_toc or self.in_pagenum:
             return
@@ -842,24 +931,7 @@ class GutenbergHTMLParser(HTMLParser):
                 if content:
                     self.current_section['content'].append(content + '\n\n')
                 self.current_content = []
-            elif tag == 'h1':
-                if content:
-                    if not self.current_section['title']:
-                        self.current_section['title'] = content
-                    self.current_section['content'].append(f'# {content}\n\n')
-                self.current_content = []
-            elif tag == 'h2':
-                if content:
-                    if not self.current_section['title']:
-                        self.current_section['title'] = content
-                    self.current_section['content'].append(f'## {content}\n\n')
-                self.current_content = []
-            elif tag in ('h3', 'h4'):
-                if content:
-                    if not self.current_section['title']:
-                        self.current_section['title'] = content
-                    self.current_section['content'].append(f'### {content}\n\n')
-                self.current_content = []
+            # Note: h1-h4 are handled in the heading block above
             elif tag == 'blockquote':
                 if content:
                     # Add blockquote markers to each line
@@ -1245,7 +1317,12 @@ def extract_book(book_id: str, output_base: str = './books', slug: str = None,
     clean_html = remove_gutenberg_boilerplate(html_content)
     print(f"  Removed boilerplate: {len(html_content)} -> {len(clean_html)} chars")
 
-    parser = GutenbergHTMLParser()
+    # Extract TOC anchors to help identify section boundaries
+    toc_anchors = extract_toc_anchors(html_content)
+    if toc_anchors:
+        print(f"  Found {len(toc_anchors)} TOC anchor links")
+
+    parser = GutenbergHTMLParser(toc_anchors=toc_anchors)
     parser.feed(clean_html)
     front_matter, chapters, _ = parser.get_results()
 
