@@ -48,9 +48,6 @@ jobs:
           echo ""
           echo "=== _data/book.yml ==="
           cat _data/book.yml 2>/dev/null || echo "No book.yml found"
-          echo ""
-          echo "=== objects/ images ==="
-          ls -la objects/*.jpg objects/*.png 2>/dev/null || echo "No images found"
 
       - name: Commit and push changes
         run: |
@@ -58,7 +55,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # Add all extracted files
-          git add _essay/ _data/book.yml objects/ 2>/dev/null || true
+          git add _essay/ _data/book.yml 2>/dev/null || true
 
           # Check if there are changes to commit
           if git diff --staged --quiet; then
