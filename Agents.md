@@ -1,7 +1,7 @@
-# CollectionBuilder Customization Guidelines
+# CB-Essay Development Guidelines for AI Agents
 
 ## Overview
-This document outlines best practices for customizing CollectionBuilder-CSV repositories, particularly those enhanced with Oral History as Data (OHD) features. These guidelines help maintain compatibility with the existing infrastructure while enabling powerful customizations.
+CB-Essay extends CollectionBuilder-CSV with essay/monograph authoring capabilities. This document outlines best practices for customizing CB-Essay repositories, helping you work WITH the framework's dual collection system (essays + digital objects) while maintaining compatibility with CollectionBuilder's infrastructure.
 
 ## Essential Commands
 
@@ -15,23 +15,32 @@ This document outlines best practices for customizing CollectionBuilder-CSV repo
 
 ## Quick Reference for AI Agents
 
-### Most Common Tasks:
-- **Navigation change**: Update `_data/config-nav.csv:1`
-- **Browse customization**: Modify `_data/config-browse.csv:1`
-- **Styling**: Use Bootstrap classes →  `_sass/_custom.scss:1` → `_data/config-theme-colors.csv:1` for bootstrap color changes
+### CB-Essay Specific Tasks:
+- **Add essay content**: Create markdown in `_essay/` with front matter (`title`, `order`, `byline`)
+- **Essay features**: Use `_includes/essay/feature/` includes (blockquote, map, item spotlight)
+- **Theme mode**: Change `base-theme` in `_data/theme.yml` (essay or monograph)
+- **Homepage**: Customize `_layouts/home-essay.html` or `_data/theme.yml` (featured-image, image-style)
+- **Essay navigation**: Sequential prev/next via `order` field in front matter
+
+### Most Common CollectionBuilder Tasks:
+- **Navigation change**: Update `_data/config-nav.csv`
+- **Browse customization**: Modify `_data/config-browse.csv`
+- **Styling**: Use Bootstrap classes → `_sass/_custom.scss` → `_data/config-theme-colors.csv` for bootstrap color changes
 - **New component**: Create in `_includes/` → Use `_includes/feature/` components first
-- **New item type**: Add `display_template` to CSV → Create layout in `_layouts/item/` → Extend `_layouts/item/item-page-base.html:1`
+- **New item type**: Add `display_template` to CSV → Create layout in `_layouts/item/` → Extend `_layouts/item/item-page-base.html`
 
 ### File Priority Order:
-1. CSV config files (`_data/*.csv`)
-2. Existing feature includes (`_includes/feature/*.html`)
-3. `_data/theme.yml:1` settings
-4. Custom includes (`_includes/`)
-5. Custom CSS (`_sass/_custom.scss:1`)
+1. Essay markdown files (`_essay/*.md`)
+2. CSV config files (`_data/*.csv`)
+3. Existing feature includes (`_includes/feature/*.html` and `_includes/essay/feature/*.html`)
+4. `_data/theme.yml` settings
+5. Custom includes (`_includes/`)
+6. Custom CSS (`_sass/_custom.scss`)
 
 ### ⚠️ Critical Don'ts:
 - **DON'T** create monolithic layouts - extend existing base layouts
 - **DON'T** rebuild Bootstrap components or media embed components - use options in `_includes/feature/`
+- **DON'T** modify `_layouts/essay-content.html` without understanding scrollama integration
 
 ## 🚨 Emergency Troubleshooting
 
@@ -75,8 +84,50 @@ This document outlines best practices for customizing CollectionBuilder-CSV repo
 - Use `_includes` for reusable components
 - Build on existing base layouts
 
+## CB-Essay Architecture
+
+### Dual Collection System
+CB-Essay manages two types of collections simultaneously:
+
+**1. Essay Collection** (`_essay/` directory)
+- Long-form narrative content with sequential ordering
+- Front matter fields: `title`, `order`, `byline`, optional `featured-image`
+- Uses `essay-content` layout by default
+- Sequential navigation (prev/next) based on `order` field
+- URL pattern: `/essay/:slug`
+
+**2. Object Collection** (CSV-based)
+- Digital collection items from metadata CSV in `_data/`
+- Specified via `metadata` field in `_config.yml`
+- Generated as `/items/{objectid}.html` pages
+- Can be embedded in essays using `{% include feature/... %}` includes
+
+### Essay-Specific Features
+
+**Theme Modes** (`_data/theme.yml`)
+- `base-theme: essay` - Traditional essay with linear reading flow
+- `base-theme: monograph` - Book format with table of contents on homepage
+
+**Essay Includes** (`_includes/essay/feature/`)
+- `blockquote.html` - Styled quotations with optional speaker attribution
+- `mini-map.html` - Embedded maps with custom coordinates
+- Section breaks and scrollama transitions
+- All standard CollectionBuilder `feature/` includes work in essays
+
+**Homepage Layouts**
+- `home-essay.html` - Custom homepage with featured image and essay entry point
+- Image styles: `full-image`, `half-image`, `no-image`
+- Table of contents for monograph mode
 
 ### Decision Trees:
+
+#### When User Asks About Essays:
+1. **New essay chapter?** → Create `.md` in `_essay/` with front matter
+2. **Essay feature (quote, map, etc.)?** → Use `_includes/essay/feature/` includes
+3. **Embed collection item?** → Use `{% include feature/image.html objectid="..." %}` or similar
+4. **Essay styling?** → Adjust `base-font-size`, `text-color`, `font-family` in `theme.yml`
+5. **Change essay/monograph mode?** → Update `base-theme` in `theme.yml`
+6. **Homepage customization?** → Modify `featured-image`, `image-style` in `theme.yml`
 
 #### When User Asks About Styling:
 1. **Is it a color change?** → `config-theme-colors.csv`
@@ -92,22 +143,24 @@ This document outlines best practices for customizing CollectionBuilder-CSV repo
 5. **Map pop up?** → `config-map.csv`
 
 #### When User Asks About Adding Content:
-1. **Need an image/video/audio?** → `feature/image.html`, `feature/video.html`, `feature/audio.html`
-2. **Need a card/modal/alert?** → `feature/card.html`, `feature/modal.html`, `feature/alert.html`
-3. **Need interactive elements?** → `feature/accordion.html`, `feature/button.html`
-4. **Truly custom component?** → Create in `_includes/` (last resort)
+1. **In an essay?** → Use essay-specific includes in `_includes/essay/feature/`
+2. **Need an image/video/audio?** → `feature/image.html`, `feature/video.html`, `feature/audio.html`
+3. **Need a card/modal/alert?** → `feature/card.html`, `feature/modal.html`, `feature/alert.html`
+4. **Need interactive elements?** → `feature/accordion.html`, `feature/button.html`
+5. **Truly custom component?** → Create in `_includes/` (last resort)
 
 #### When User Asks About New Item Types:
 1. **Similar to existing type?** → Copy and modify existing `_layouts/item/` file
-2. **Needs audio/video?** → Extend from `transcript.html` or `audio.html`
+2. **Needs audio/video?** → Extend from existing audio/video layouts
 3. **Basic display?** → Extend from `item.html`
 4. **Complex features?** → Extend from `item-page-base.html`
 
 #### When User Asks About Site Structure:
-1. **New page needed?** → Create in `pages/` with existing layout
-2. **Homepage changes?** → Modify homepage layout or use `feature/` includes
-3. **Collection organization?** → Update metadata CSV `display_template` field
-4. **Site-wide settings?** → `theme.yml` configuration
+1. **New essay chapter?** → Add markdown to `_essay/` directory
+2. **New standard page?** → Create in `pages/` with existing layout
+3. **Homepage changes?** → Modify `_layouts/home-essay.html` or `theme.yml` settings
+4. **Collection organization?** → Update metadata CSV `display_template` field
+5. **Site-wide settings?** → `theme.yml` configuration
 
 
 ## Key Configuration Files in `_data/`
@@ -208,16 +261,33 @@ base-font-size: 1.2em                  # custom font sizing
 
 ## Layout Architecture
 
-### Layout Hierarchy
+### CB-Essay Layout Hierarchy
 ```
 default.html (base HTML structure)
 ├── page.html (standard page wrapper)
+├── home-essay.html (CB-Essay custom homepage)
+├── essay-content.html (essay chapter layout with scrollama)
 ├── item/item-page-base.html (item page foundation)
-│   ├── item/transcript.html (OHD transcript layout)
-│   ├── item/episode.html (custom podcast layout)
+│   ├── item/image.html (image layout)
 │   ├── item/audio.html (audio file layout)
-│   └── item/image.html (image layout)
-└── home-podcast.html (custom homepage)
+│   └── item/video.html (video layout)
+└── browse.html, map.html, timeline.html, etc. (CollectionBuilder pages)
+```
+
+### Essay Front Matter Example
+```yaml
+---
+title: Of a Monstrous Child
+byline: Michel de Montaigne
+order: 5
+featured-image: /assets/img/custom-image.jpg  # optional
+---
+
+Essay content here with embedded collection items...
+
+{% include essay/feature/blockquote.html quote="..." speaker="..." %}
+{% include feature/image.html objectid="demo_001" width="75" %}
+{% include feature/mini-map.html latitude="43.899" longitude="4.690" %}
 ```
 
 ### Best Practices for Layouts
@@ -320,14 +390,22 @@ CollectionBuilder automatically routes items based on `display_template` (via `_
 
 ## Include Directory Organization
 
-### Standard CollectionBuilder Includes
+### CB-Essay Include Organization
 ```
 _includes/
+├── essay/             # CB-ESSAY SPECIFIC INCLUDES
+│   ├── feature/       # Essay-specific feature components
+│   │   └── blockquote.html  # Styled quotations
+│   ├── js/            # Essay JavaScript (scrollama, etc.)
+│   ├── side-nav.html  # Essay navigation
+│   ├── top-cover.html # Essay cover images
+│   └── off-canvas-*.html    # Essay menus
 ├── feature/           # Bootstrap-based reusable components (USE THESE FIRST!)
-│   ├── image.html     # Responsive image display
+│   ├── image.html     # Responsive image display (works in essays!)
 │   ├── card.html      # Bootstrap card component
 │   ├── audio.html     # Audio player embed
 │   ├── video.html     # Video player embed
+│   ├── mini-map.html  # Embedded maps (great for essays!)
 │   ├── gallery.html   # Image gallery
 │   ├── accordion.html # Bootstrap accordion
 │   ├── modal.html     # Bootstrap modal
@@ -389,36 +467,36 @@ _includes/
 {% include feature/button.html text="Click Me" link="/page.html" color="primary" %}
 ```
 
-### OHD-Specific Includes
+### Essay-Specific Include Usage
+
+**Blockquote Feature** (`essay/feature/blockquote.html`):
+```liquid
+{% include essay/feature/blockquote.html
+   quote="Your quote text here"
+   speaker="Attribution - optional" %}
 ```
-_includes/transcript/
-├── item/              # Transcript item components
-│   ├── av.html        # Audio/video player wrapper
-│   ├── bio-modal.html # Guest biography modal
-│   ├── metadata.html  # Transcript metadata display
-│   └── transcript.html # Transcript text processing
-├── player/            # Media player components
-│   ├── mp3.html
-│   ├── youtube.html
-│   └── vimeo.html
-├── style/             # Styling components
-└── js/                # JavaScript functionality
+
+**Embedding Collection Items in Essays**:
+```liquid
+{% include feature/image.html objectid="demo_001" width="50" caption="Item from collection" %}
+{% include feature/mini-map.html latitude="43.899" longitude="4.690" basemap="Stadia_StamenToner" %}
+{% include feature/card.html text="Custom text" objectid="demo_002" %}
 ```
 
 ### Creating Custom Includes
 
 #### Component Naming Convention
-- Use descriptive, hyphenated names: `episode-card.html`
-- Group by functionality: `transcript/item/episode-metadata.html`
+- Use descriptive, hyphenated names: `essay-highlight.html`
+- Group by functionality: `essay/feature/timeline.html`
 - Include header comments for documentation:
 
 ```html
-<!-- cb: _includes/episode-card.html -->
-<!-- Episode card component for homepage and browse pages -->
-<div class="episode-card">
+<!-- cb: _includes/essay/feature/essay-highlight.html -->
+<!-- Essay highlight component for emphasizing key passages -->
+<div class="essay-highlight">
   <!-- Component content -->
 </div>
-<!-- /cb: _includes/episode-card.html -->
+<!-- /cb: _includes/essay/feature/essay-highlight.html -->
 ```
 
 ## Styling Approach
@@ -766,30 +844,47 @@ metadata-facets-fields: "subject,creator,format"
 
 ## Data Access Patterns
 
-### Accessing Collection Data
+### Accessing Essay Collection
 ```liquid
-{%- assign episodes = site.data[site.metadata] | where: "display_template", "episode" -%}
-{%- assign featured_count = site.data.theme.featured-episodes | default: 6 -%}
+{%- assign essays = site.essay | sort: 'order' -%}
+{%- assign essay_count = site.essay.size -%}
+
+{% for essay in essays %}
+  <h2>{{ essay.title }}</h2>
+  <p>{{ essay.byline }}</p>
+{% endfor %}
+```
+
+### Accessing Collection Data (Items)
+```liquid
+{%- assign items = site.data[site.metadata] | where_exp: 'item','item.objectid' -%}
+{%- assign featured_count = site.data.theme.featured-items | default: 6 -%}
 ```
 
 ### Configuration Access
 ```liquid
-{%- assign fields = site.data.theme.episode-fields | split: ',' -%}
-{% if site.data.theme.episode-fields contains 'interviewer' %}
-  <!-- Display interviewer -->
+{%- assign base_theme = site.data.theme.base-theme -%}
+{% if site.data.theme.base-theme == 'monograph' %}
+  <!-- Display table of contents -->
 {% endif %}
 ```
 
 ### Filtering and Sorting
 ```liquid
-{% assign recent_episodes = site.data[site.metadata]
-   | where: "display_template", "episode"
+{% assign recent_items = site.data[site.metadata]
+   | where_exp: 'item','item.objectid'
    | sort: "date"
    | reverse
    | limit: 6 %}
 ```
 
 ## Common Customization Patterns
+
+### Adding New Essays
+1. Create markdown file in `_essay/` directory
+2. Add front matter with `title`, `order`, and optional `byline`
+3. Write content using markdown and CollectionBuilder includes
+4. Essays automatically appear in sequential navigation
 
 ### Adding New Item Types
 1. Add new `display_template` value to metadata CSV
@@ -807,31 +902,54 @@ metadata-facets-fields: "subject,creator,format"
 2. Create corresponding page in `pages/`
 3. Use appropriate existing layout
 
-## Integration with OHD Features
+## Working with Essays and Collections Together
 
-### Audio/Video Players
-Use existing player system:
-```html
-{% if page.object_location contains 'mp3' %}
-  {% assign av = "mp3" %}
-{% endif %}
-{% if av %}
-  {% include transcript/item/av.html %}
-{% endif %}
+### Embedding Collection Items in Essays
+CB-Essay's power comes from seamlessly integrating collection items into narrative essays:
+
+```liquid
+<!-- In an essay markdown file (_essay/chapter-01.md) -->
+
+Michel de Montaigne wrote about strange phenomena in his essay collection.
+
+{% include feature/image.html objectid="demo_012" width="75" caption="Historical illustration" %}
+
+The concept of the "monstrous" in Renaissance thought reflects...
+
+{% include essay/feature/blockquote.html
+   quote="What we call monsters are not so to God..."
+   speaker="Montaigne" %}
+
+{% include feature/mini-map.html latitude="43.899" longitude="4.690" basemap="Stadia_StamenToner" map-zoom="9" %}
 ```
 
-### Search and Filtering
-Leverage built-in search:
-- Configure in `config-search.csv`
-- Use existing search layout
-- Add custom styling as needed
+### Essay Configuration in theme.yml
+
+**Essay-specific settings** (in addition to standard CollectionBuilder config):
+```yaml
+## CB-Essay specific
+base-theme: essay  # or monograph for book-style TOC
+base-font-size: 1.3em
+text-color: "#191919"
+link-color: "#0d6efd"
+base-font-family: Georgia
+image-style: full-image  # full-image, half-image, or no-image
+featured-image: /assets/img/writing-instruments.jpg
+home-title-y-padding: 10em
+```
+
+### Search and Browse
+- **Essays are separate** from collection search/browse (essays are not indexed in site search)
+- Collection items: Configure search in `config-search.csv`
+- Essays: Navigate via sequential prev/next buttons or homepage TOC (if monograph mode)
+- Collection browse/search pages show items only, not essay content
 
 ### Visualizations
-OHD provides powerful visualization features:
-- Timeline views
-- Subject clouds
-- Location maps
-- Transcript analysis
+CollectionBuilder visualization features work with collection items:
+- Timeline views (items only, not essay chapters)
+- Subject clouds (from collection metadata)
+- Location maps (from collection geographic data)
+- **Essays can embed** collection visualizations (maps, images, galleries) inline using includes
 
 Enable through `theme.yml` configuration rather than rebuilding.
 
@@ -986,4 +1104,13 @@ bundle exec jekyll serve
 
 ## Summary
 
-This approach maintains flexibility while leveraging CollectionBuilder's robust infrastructure for search, browse, data management, responsive design, and automated content processing.
+CB-Essay extends CollectionBuilder-CSV to support essay and monograph authoring alongside digital collections. This approach maintains flexibility while leveraging:
+
+- **Essay System**: Sequential narrative chapters in `_essay/` with customizable themes
+- **CollectionBuilder Infrastructure**: Robust search, browse, data management for collection items
+- **Seamless Integration**: Embed collection items directly into essays using includes
+- **Dual Navigation**: Essay prev/next buttons + standard collection browse/search
+- **Responsive Design**: Bootstrap-based styling works across essays and collection pages
+- **Configuration-Driven**: Customize via `theme.yml` and CSV config files without code changes
+
+Work WITH the framework by extending layouts, using existing includes, and following CollectionBuilder patterns.
