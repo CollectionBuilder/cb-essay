@@ -1,0 +1,72 @@
+name: Extract Gutenberg Book
+
+on:
+  workflow_dispatch:
+    inputs:
+      book_id:
+        description: 'Project Gutenberg Book ID (e.g., 84 for Frankenstein, 64317 for Great Gatsby)'
+        required: true
+        type: string
+      clear_existing:
+        description: 'Clear existing _essay content before extraction'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Clear existing essay content (if requested)
+        if: ${{ inputs.clear_existing }}
+        run: |
+          echo "Clearing existing _essay content..."
+          rm -rf _essay/*.md 2>/dev/null || true
+          echo "Done."
+
+      - name: Extract book from Project Gutenberg
+        run: |
+          echo "Extracting book #${{ inputs.book_id }} from Project Gutenberg..."
+          python gutenberg-extraction.py ${{ inputs.book_id }} --cb-essay --project-root .
+          echo "Extraction complete!"
+
+      - name: List extracted files
+        run: |
+          echo "=== _essay/ files ==="
+          ls -la _essay/ 2>/dev/null || echo "No _essay directory"
+          echo ""
+          echo "=== _data/book.yml ==="
+          cat _data/book.yml 2>/dev/null || echo "No book.yml found"
+          echo ""
+          echo "=== objects/ images ==="
+          ls -la objects/*.jpg objects/*.png 2>/dev/null || echo "No images found"
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Add all extracted files
+          git add _essay/ _data/book.yml objects/ 2>/dev/null || true
+
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Extract Gutenberg book #${{ inputs.book_id }}" \
+              -m "Extracted using gutenberg-extraction.py --cb-essay" \
+              -m "Source: https://www.gutenberg.org/ebooks/${{ inputs.book_id }}"
+            git push
+            echo "Changes committed and pushed!"
+          fi
