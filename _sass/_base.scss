@@ -94,7 +94,29 @@ a {
     bottom: 20px; 
     right: 20px; 
     z-index: 99;
-    font-size: 40px; 
+    font-size: 30px;
+}
+
+#scroll-to-top a {
+    display: block;
+    font-size: 30px;
+}
+
+/* essay navigation arrows - horizontal layout like keyboard arrows */
+.scroll-nav-arrows {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    margin-top: 0px;
+}
+
+.scroll-nav-arrows a {
+    display: inline-block;
+}
+
+.scroll-nav-spacer {
+    width: 20px;
+    display: inline-block;
 }
 
 /* feature include tweaks */

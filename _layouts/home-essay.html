@@ -3,42 +3,285 @@ layout: default
 ---
 
 <style>
-    #everything {
-        background-image: url('{{ site.data.featured_item.src | relative_url }}');
+    /* Full image banner styles */
+    #home-banner {
+        background-image: url('{{ site.data.theme.featured-image | relative_url }}');
         background-size: cover;
         background-repeat: no-repeat;
-        background-position: center;
-    }
-    #home-banner {
-        height: 500px;
+        background-position: {{ site.data.theme.home-banner-image-position | default: "center" }};
+        min-height: 100vh;
+        width: 100%;
         position: relative;
-
     }
     #title-box {
-        margin-top: 6em; 
-        margin-left: 1em;
-        margin-right: 1em;
-    }
-    #toc-box {
         position: absolute;
-        right: 1em;
-        bottom: 1em;
+        top: 20%;
+        left: 5%;
+        max-width: 80%;
     }
-    #credits-box {
+    #action-box {
         position: absolute;
-        right: 1em;
-        bottom: 1em;
-        cursor: pointer;
+        right: 5%;
+        bottom: 10%;
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 1rem;
+    }
+
+    /* Half-width image styles */
+    .home-header-half {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-bottom: 1px solid rgba(17, 17, 17, 0.1);
+    }
+    .min-vh-50 {
+        min-height: 50vh;
+        max-height: 100vh;
+    }
+    .home-header-image {
+        position: relative;
+        max-height: 100vh;
+    }
+    .home-header-image img {
+        transition: transform 0.3s ease;
+        max-height: 100vh;
+        object-fit: contain;
+    }
+    .home-header-image:hover img {
+        transform: scale(1.02);
+    }
+    /* Overlay title and buttons for mobile */
+    .home-header-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        z-index: 2;
+        width: 90%;
+    }
+    .home-header-overlay::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        left: -20px;
+        right: -20px;
+        bottom: -20px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 8px;
+        z-index: -1;
+    }
+    .home-header-overlay h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        margin: 0;
+        line-height: 1.2;
+    }
+    .home-header-overlay .tagline {
+        font-size: 1rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    /* No-image styles */
+    .home-header-no-image {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-bottom: 1px solid rgba(17, 17, 17, 0.1);
+        min-height: 50vh;
+    }
+    .home-header-no-image h1 {
+        font-family: 'Georgia', serif;
+        font-size: 3.5rem;
+        font-weight: normal;
+    }
+    .home-header-no-image .tagline {
+        font-size: 1.25rem;
+        color: #6c757d;
+    }
+
+    /* Monograph TOC Styles */
+    .monograph-toc {
+        font-family: "Georgia", "Times New Roman", serif;
+        background-color: #fff;
+        position: relative;
+        z-index: 10;
+    }
+    .monograph-toc .chapter-num {
+        font-family: var(--bs-body-font-family);
+        font-size: 0.85rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #6c757d;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+    .monograph-toc .chapter-title {
+        font-size: 1.75rem;
+        font-weight: normal;
+        color: #212529;
+    }
+    .monograph-toc .chapter-byline {
+        font-style: italic;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+    .monograph-toc .list-group-item {
+        background: transparent;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        transition: background-color 0.3s ease;
+    }
+    .monograph-toc .list-group-item:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+    .monograph-toc a {
+        text-decoration: none;
     }
 </style>
-  
-<div id="home-banner" class="container-fluid mt-3 mb-5">
+
+{% if site.data.theme.image-style == 'half-image' %}
+{%- comment -%} Half-width image header {%- endcomment -%}
+<div class="home-header-half position-relative">
+    <div class="container-fluid">
+        <div class="row align-items-center min-vh-50 g-0">
+            <!-- Text column - shows on desktop, hidden on mobile -->
+            <div class="col-md-6 order-md-1 d-none d-md-block">
+                <div class="px-5 py-5">
+                    <h1 class="display-2 mb-3">{{ site.title }}</h1>
+                    {% if site.tagline %}
+                        <p class="tagline mb-4">{{ site.tagline }}</p>
+                    {% endif %}
+                    <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
+                   {% if site.data.theme.base-theme == 'monograph' %}<br>
+                        <a class="btn btn-outline-dark mt-3 text-decoration-none ms-3" href="#table-of-contents">Contents &darr;</a>
+                        {% endif %}
+                </div>
+            </div>
+
+            <!-- Image column -->
+            <div class="col-md-6 order-md-2">
+                {% if site.data.theme.featured-image %}
+                <div class="home-header-image position-relative">
+                    <img  src="{{ site.data.theme.featured-image | relative_url }}"
+                         alt="{{ site.data.theme.featured-image-alt-text | default: site.title }}"
+                         class="img-fluid w-100 py-5">
+
+                    <!-- Overlay title for mobile -->
+                    <div class="home-header-overlay d-md-none text-white">
+                        <h1>{{ site.title }}</h1>
+                        {% if site.tagline %}
+                            <p class="tagline mb-3">{{ site.tagline }}</p>
+                        {% endif %}
+                        <a class="btn btn-light btn-lg text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
+                        {% if site.data.theme.base-theme == 'monograph' %}
+                        <br>
+                        <a class="btn btn-outline-light mt-2 text-decoration-none w-25" href="#table-of-contents">Contents &darr;</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if site.data.theme.featured-image-credit %}
+<div class="container py-3">
+    <div class="row">
+        <div class="col-md-6 order-md-1">
+            <!-- Empty space for desktop alignment -->
+        </div>
+        <div class="col-md-6 order-md-2 text-muted text-end mb-0 small" style="font-size:12px;">
+            {{ site.data.theme.featured-image-credit | markdownify }}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% elsif site.data.theme.image-style == 'no-image' %}
+{%- comment -%} No-image header {%- endcomment -%}
+<div class="home-header-no-image container-fluid">
+    <div class="row justify-content-center align-items-center min-vh-50">
+        <div class="col-lg-8 col-md-10 text-center py-5">
+            <h1 class="display-2 mb-4">{{ site.title }}</h1>
+            {% if site.tagline %}
+                <p class="tagline mb-4">{{ site.tagline }}</p>
+            {% endif %}
+            <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
+                <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
+               
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+{%- comment -%} Full-width image banner (default) {%- endcomment -%}
+<div id="home-banner" class="container-fluid p-0">
 
     <div id="title-box" class="col-md-5 py-3 px-5 text-white bg-dark bg-opacity-75 rounded">
         <h1 class="display-2">{{ site.title }}</h1>
         {% if site.tagline %}<p class="mb-0">{{ site.tagline }}</p>{% endif %}
     </div>
 
-    <a id="toc-box" class="py-3 px-5 display-6 fs-2 text-white bg-dark bg-opacity-75 rounded" href="{{ site.essay[0].url | relative_url }}" >Read the Essay &raquo;</a>
-    
+    <div id="action-box">
+        <a class="btn btn-lg py-3 px-5 display-6 fs-2 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
+
+        {% if site.data.theme.base-theme == 'monograph' %}
+        <a class="btn btn-sm py-2 px-4 fs-5 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="#table-of-contents">Table of Contents &darr;</a>
+        {% endif %}
+    </div>
+
+    {% if site.data.theme.featured-image-credit %}
+    <!-- Image Credits Button -->
+    <button type="button" class="text-white position-absolute bottom-0 start-0 px-2 py-1 mb-3 ms-3 bg-dark bg-opacity-75 small border-0 rounded" data-bs-toggle="modal" data-bs-target="#imageCreditsModal">
+        Image Credits
+    </button>
+    {% endif %}
+
 </div>
+
+{% if site.data.theme.featured-image-credit %}
+<!-- Image Credits Modal -->
+<div class="modal fade" id="imageCreditsModal" tabindex="-1" aria-labelledby="imageCreditsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageCreditsModalLabel">Image Credits</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ site.data.theme.featured-image-credit | markdownify }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+
+{% if site.data.theme.base-theme == 'monograph' %}
+<div id="table-of-contents" class="container-fluid py-5 monograph-toc">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="text-left mb-5">
+                <h2 class="display-4 mb-3" style="font-family: 'Georgia', serif; font-style: italic;">Contents</h2>
+                <div style="width: 50px; height: 2px; background-color: #333; margin: 0 auto;"></div>
+            </div>
+            
+            <div class="list-group list-group-flush">
+                {% assign essays = site.essay | sort: 'order' %}
+                {% for item in essays %}
+                <a href="{{ item.url | relative_url }}" class="list-group-item list-group-item-action py-4 px-4">
+                    <div class="d-flex flex-column align-items-left text-left">
+                        <h3 class="chapter-title mb-0">{{ item.title }}</h3>
+                        {% unless item.byline == site.data.theme.essay[0].author %}{% if item.byline %}
+                        <div class="chapter-byline">{{ item.byline }}</div>
+                        {% endif %}{% endunless %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,143 @@
+{%- comment -%}
+Half-width image header for essays
+Creates a two-column layout with image on right, text on left
+{%- endcomment -%}
+
+<style>
+  /* Half-width header styles */
+.essay-header-half {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid rgba(17, 17, 17, 0.1);
+}
+
+.essay-header-half .essay-publication-label {
+  color: #111111;
+}
+
+.essay-header-half .essay-divider-line {
+  background-color: #111111;
+}
+
+.min-vh-50 {
+  min-height: 50vh;
+}
+
+.essay-header-image {
+  position: relative;
+}
+
+.essay-header-image img {
+  transition: transform 0.3s ease;
+}
+
+.essay-header-image:hover img {
+  transform: scale(1.02);
+}
+
+/* Overlay title for mobile */
+.essay-header-overlay-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 2;
+  width: 90%;
+}
+
+.essay-header-overlay-title::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  z-index: -1;
+}
+
+.essay-header-overlay-title h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  margin: 0;
+  line-height: 1.2;
+}
+</style>
+
+
+{% assign header_title = page.header-title | default: page.title %}
+{% assign header_subtitle = page.header-subtitle %}
+{% assign header_image = page.header-image %}
+{% assign header_caption = page.header-image-caption %}
+{% assign header_alt = page.header-image-alt | default: header_title %}
+
+{% if header_image %}
+  {% if header_image contains '/' %}
+    {% assign header_src = header_image | relative_url %}
+  {% else %}
+    {% assign header_item = site.data[site.metadata] | where: "objectid", header_image | first %}
+    {% assign header_src = header_item.object_location | default: header_item.image_small | relative_url %}
+  {% endif %}
+{% endif %}
+
+<div class="essay-header-half position-relative">
+  <!-- Crop marks for design aesthetic -->
+  <div class="essay-crop-marks">
+    <div class="crop-mark crop-top-left-h"></div>
+    <div class="crop-mark crop-top-left-v"></div>
+    <div class="crop-mark crop-top-right-h"></div>
+    <div class="crop-mark crop-top-right-v"></div>
+  </div>
+  
+  <div class="container">
+    <div class="row align-items-center min-vh-50">
+      <!-- Text column - shows on desktop, hidden on mobile -->
+      <div class="col-md-6 order-md-1 d-none d-md-block">
+        <div class="essay-header-text pe-md-4">
+          <div class="essay-publication-label mb-3">DIGITAL DRAMATURGY</div>
+          {% if header_title %}
+            <h1 class="essay-header-title display-4 mb-3">{{ header_title }}</h1>
+            <div class="essay-divider-line"></div>
+          {% endif %}
+          {% if header_subtitle %}
+            <h2 class="essay-header-subtitle h5 text-muted mb-0">{{ header_subtitle }}</h2>
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Image column -->
+      <div class="col-md-6 order-md-2">
+        {% if header_src %}
+          <div class="essay-header-image position-relative">
+            <img src="{{ header_src }}" alt="{{ header_alt }}" class="img-fluid rounded shadow">
+            <!-- Overlay title for mobile -->
+            {% if header_title %}
+              <div class="essay-header-overlay-title d-md-none">
+                <h1 class="text-white">{{ header_title }}</h1>
+              </div>
+            {% endif %}
+          </div>
+          <!-- Mobile subtitle - appears below image -->
+          {% if header_subtitle %}
+            <h2 class="essay-header-subtitle-mobile d-md-none h5 text-muted mt-3 mb-0">{{ header_subtitle }}</h2>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if header_caption %}
+<div class="container py-3">
+  <div class="row">
+    <div class="col-md-6 order-md-1">
+      <!-- Empty space for desktop alignment -->
+    </div>
+    <div class="col-md-6 order-md-2">
+      <p class="essay-header-caption text-muted text-start mb-0 small">{{ header_caption }}</p>
+    </div>
+  </div>
+</div>
+{% endif %}

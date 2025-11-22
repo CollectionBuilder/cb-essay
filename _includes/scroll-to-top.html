@@ -8,9 +8,35 @@
         }
     }
 </script>
-<a href="#maincontent" id="scroll-to-top" class="btn btn-link" title="Back to Top">
-    <span class="visually-hidden">Back to top</span>
-    <svg class="bi icon-sprite" role="img" aria-label="Up Arrow">
-        <use xlink:href="{{ '/assets/lib/cb-icons.svg' | relative_url }}#icon-back-to-top"/>
-    </svg>
-</a>
+<div id="scroll-to-top" class="p-0">
+    <a href="#maincontent" class="btn btn-link p-0 p-md-1" title="Back to Top">
+        <span class="visually-hidden">Back to top</span>
+        <svg class="bi icon-sprite" role="img" aria-label="Up Arrow">
+            <use xlink:href="{{ '/assets/lib/cb-icons.svg' | relative_url }}#icon-back-to-top"/>
+        </svg>
+    </a>
+    {% if layout == "essay-content" or page.layout == "essay-content" %}
+    <div class="scroll-nav-arrows p-0">
+        {% if page.previous %}
+        <a href="{{ page.previous.url | relative_url }}" class="btn btn-link p-0 px-md-1" title="Previous: {{ page.previous.title }}">
+            <span class="visually-hidden">Previous: {{ page.previous.title }}</span>
+            <svg class="bi icon-sprite" role="img" aria-label="Left Arrow">
+                <use xlink:href="{{ '/assets/lib/cb-icons.svg' | relative_url }}#arrow-left-square"/>
+            </svg>
+        </a>
+        {% else %}
+        <span class="scroll-nav-spacer"></span>
+        {% endif %}
+        {% if page.next %}
+        <a href="{{ page.next.url | relative_url }}" class="btn btn-link p-0 px-md-1" title="Next: {{ page.next.title }}">
+            <span class="visually-hidden">Next: {{ page.next.title }}</span>
+            <svg class="bi icon-sprite" role="img" aria-label="Right Arrow">
+                <use xlink:href="{{ '/assets/lib/cb-icons.svg' | relative_url }}#arrow-right-square"/>
+            </svg>
+        </a>
+        {% else %}
+        <span class="scroll-nav-spacer"></span>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
