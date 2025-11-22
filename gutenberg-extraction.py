@@ -60,6 +60,160 @@ HEADERS = {
 MAX_RETRIES = 3
 RETRY_DELAY = 2  # seconds
 
+# Text-based boilerplate markers (per extraction guide)
+START_MARKERS = [
+    "*** START OF THIS PROJECT GUTENBERG EBOOK",
+    "*** START OF THE PROJECT GUTENBERG EBOOK",
+    "*** START OF THE PROJECT GUTENBERG ETEXT",
+    "*END*THE SMALL PRINT",  # older books
+    "***START OF THE PROJECT GUTENBERG",
+]
+
+END_MARKERS = [
+    "End of the Project Gutenberg EBook",
+    "End of Project Gutenberg's",
+    "*** END OF THIS PROJECT GUTENBERG EBOOK",
+    "*** END OF THE PROJECT GUTENBERG EBOOK",
+    "End of this Project Gutenberg",
+    "*** END OF THE PROJECT GUTENBERG",
+]
+
+# Chapter heading patterns
+CHAPTER_PATTERNS = [
+    r'^chapter\s+[ivxlcdm\d]+',  # Chapter I, Chapter 1, etc.
+    r'^chap\.\s*[ivxlcdm\d]+',   # Chap. I, Chap. 1
+    r'^[ivxlcdm]+\.$',           # I., II., III. (roman numerals with period)
+    r'^\d+\.$',                   # 1., 2., 3.
+    r'^letter\s+[ivxlcdm\d]+',   # Letter I, Letter 1 (for epistolary novels)
+    r'^volume\s+[ivxlcdm\d]+',   # Volume I
+    r'^book\s+[ivxlcdm\d]+',     # Book I
+    r'^part\s+[ivxlcdm\d]+',     # Part I
+]
+
+# Front/back matter keywords
+FRONT_MATTER_KEYWORDS = [
+    'preface', 'introduction', 'foreword', 'prologue', 'dedication',
+    'acknowledgment', 'acknowledgement', 'note to the reader', 'author\'s note',
+    'contents', 'table of contents',
+]
+
+BACK_MATTER_KEYWORDS = [
+    'epilogue', 'afterword', 'appendix', 'notes', 'endnotes', 'footnotes',
+    'glossary', 'index', 'bibliography', 'about the author',
+]
+
+
+# =============================================================================
+# Boilerplate Removal (Text-based, per extraction guide)
+# =============================================================================
+
+def remove_gutenberg_boilerplate(html_text: str) -> str:
+    """Remove Project Gutenberg header and footer boilerplate using text markers.
+
+    This is the most reliable method per the extraction guide - text markers
+    are consistent across all eras of digitization.
+    """
+    lines = html_text.split('\n')
+
+    start_line = 0
+    end_line = len(lines)
+
+    # Find content start (after header) - case insensitive
+    for i, line in enumerate(lines):
+        line_upper = line.upper()
+        if any(marker.upper() in line_upper for marker in START_MARKERS):
+            start_line = i + 1
+            break
+
+    # Find content end (before footer) - only check after line 100 to avoid false positives
+    for i in range(max(100, start_line), len(lines)):
+        line_upper = lines[i].upper()
+        if any(marker.upper() in line_upper for marker in END_MARKERS):
+            end_line = i
+            break
+
+    return '\n'.join(lines[start_line:end_line])
+
+
+def extract_metadata_from_body_text(html_text: str) -> Dict[str, Any]:
+    """Extract metadata from plain text header in Project Gutenberg books.
+
+    This is more reliable than Dublin Core meta tags because it appears
+    in virtually every book.
+    """
+    metadata = {}
+
+    # Only look in the first ~150 lines for header metadata
+    header_text = '\n'.join(html_text.split('\n')[:150])
+
+    # Title pattern
+    title_match = re.search(r'Title:\s*(.+?)(?:\n|Author:|Release)', header_text, re.IGNORECASE)
+    if title_match:
+        metadata['title'] = title_match.group(1).strip()
+
+    # Author pattern
+    author_match = re.search(r'Author:\s*(.+?)(?:\n|\r|Release|Illustrator|Editor|Translator)', header_text, re.IGNORECASE)
+    if author_match:
+        author = author_match.group(1).strip()
+        # Clean up author name
+        author = re.sub(r'\s*\([^)]+\)\s*$', '', author)  # Remove dates in parens
+        metadata['author'] = author
+
+    # Language pattern
+    lang_match = re.search(r'Language:\s*(\w+)', header_text, re.IGNORECASE)
+    if lang_match:
+        lang = lang_match.group(1).strip().lower()
+        # Convert full names to ISO codes
+        lang_map = {'english': 'en', 'french': 'fr', 'german': 'de', 'spanish': 'es', 'italian': 'it'}
+        metadata['language'] = lang_map.get(lang, lang)
+
+    # Book ID
+    ebook_match = re.search(r'\[(?:EBook|E-?text)\s*#?(\d+)\]', header_text, re.IGNORECASE)
+    if ebook_match:
+        metadata['ebook_id'] = ebook_match.group(1)
+
+    # Release date
+    date_match = re.search(r'Release Date:\s*(.+?)(?:\s*\[|\n|\r)', header_text, re.IGNORECASE)
+    if date_match:
+        metadata['release_date'] = date_match.group(1).strip()
+
+    # Posting date (older format)
+    if 'release_date' not in metadata:
+        posting_match = re.search(r'Posting Date:\s*(.+?)(?:\s*\[|\n|\r)', header_text, re.IGNORECASE)
+        if posting_match:
+            metadata['release_date'] = posting_match.group(1).strip()
+
+    return metadata
+
+
+def is_chapter_heading(text: str) -> Tuple[bool, str]:
+    """Check if text is a chapter heading and return the type.
+
+    Returns (is_chapter, section_type) tuple.
+    """
+    text_clean = text.strip().lower()
+    text_clean = re.sub(r'<[^>]+>', '', text_clean)  # Remove any HTML tags
+    text_clean = re.sub(r'\s+', ' ', text_clean).strip()
+
+    # Check for chapter patterns
+    for pattern in CHAPTER_PATTERNS:
+        if re.match(pattern, text_clean, re.IGNORECASE):
+            return True, 'chapter'
+
+    # Check for front matter
+    for keyword in FRONT_MATTER_KEYWORDS:
+        if text_clean == keyword or text_clean.startswith(keyword + ' ') or text_clean.endswith(' ' + keyword):
+            if 'contents' in keyword or 'table' in keyword:
+                return True, 'toc'
+            return True, 'front_matter'
+
+    # Check for back matter
+    for keyword in BACK_MATTER_KEYWORDS:
+        if text_clean == keyword or text_clean.startswith(keyword + ' '):
+            return True, 'back_matter'
+
+    return False, ''
+
 
 # =============================================================================
 # Utility Functions
@@ -491,6 +645,9 @@ class GutenbergHTMLParser(HTMLParser):
         self.in_pagenum = False
         self.skip_content = False
         self.images_found = []
+        self.pending_heading_text = []  # Track heading text for chapter detection
+        self.in_heading = False  # Are we inside a heading tag?
+        self.current_heading_tag = None  # Which heading tag?
 
     def _detect_section_type(self, section_id: str) -> str:
         """Determine section type from ID."""
@@ -599,6 +756,12 @@ class GutenbergHTMLParser(HTMLParser):
                 alt = attrs_dict.get('alt', '')
                 self.current_content.append(f'\n![{alt}]({attrs_dict["src"]})\n')
 
+        # Track when entering heading tags (for text-based chapter detection)
+        if tag in ('h1', 'h2', 'h3', 'h4'):
+            self.in_heading = True
+            self.current_heading_tag = tag
+            self.pending_heading_text = []
+
         # Format tags
         if self.current_section and not self.in_boilerplate:
             if tag == 'p':
@@ -633,6 +796,41 @@ class GutenbergHTMLParser(HTMLParser):
         if tag == 'span' and self.in_pagenum:
             self.in_pagenum = False
             return
+
+        # Text-based chapter detection: when a heading closes, check if it's a chapter
+        if tag in ('h1', 'h2', 'h3', 'h4') and self.in_heading:
+            heading_text = ''.join(self.pending_heading_text).strip()
+            self.in_heading = False
+            self.current_heading_tag = None
+
+            # Check if this heading marks a chapter/section (by TEXT content)
+            is_chapter, section_type = is_chapter_heading(heading_text)
+
+            if is_chapter and not self.in_boilerplate and not self.skip_content:
+                # Save any previous section
+                if self.current_section:
+                    self._save_section()
+
+                if section_type == 'toc':
+                    self.in_toc = True
+                    self.current_section = None
+                else:
+                    self.in_toc = False
+                    # Create a safe ID from heading text
+                    safe_id = re.sub(r'[^a-z0-9]+', '-', heading_text.lower()).strip('-')[:50]
+                    self.current_section = {
+                        'id': safe_id or f'section-{len(self.sections)+1}',
+                        'type': section_type,
+                        'title': heading_text,
+                        'content': []
+                    }
+                    # Add the heading to content
+                    level = {'h1': '#', 'h2': '##', 'h3': '###', 'h4': '###'}[tag]
+                    self.current_section['content'].append(f'{level} {heading_text}\n\n')
+
+                self.pending_heading_text = []
+                self.current_content = []
+                return
 
         if self.skip_content or self.in_boilerplate or self.in_toc or self.in_pagenum:
             return
@@ -681,6 +879,10 @@ class GutenbergHTMLParser(HTMLParser):
                 self.current_content.append('**')
 
     def handle_data(self, data):
+        # Always collect heading text for chapter detection (even before we have a section)
+        if self.in_heading and data:
+            self.pending_heading_text.append(data)
+
         if self.skip_content or self.in_boilerplate or self.in_toc or self.in_pagenum:
             return
 
@@ -1003,6 +1205,14 @@ def extract_book(book_id: str, output_base: str = './books', slug: str = None,
         # Extract metadata from HTML as additional source
         meta_extractor.extract_from_html(html_content)
 
+    # Also extract metadata from body text (most reliable per extraction guide)
+    body_metadata = extract_metadata_from_body_text(html_content)
+    # Merge body text metadata (use as fallback for missing fields)
+    current_metadata = meta_extractor.get_metadata()
+    for key, value in body_metadata.items():
+        if key not in current_metadata or not current_metadata[key]:
+            meta_extractor.metadata[key] = value
+
     metadata = meta_extractor.get_metadata()
 
     print(f"  Title: {metadata.get('title', 'Unknown')}")
@@ -1030,8 +1240,13 @@ def extract_book(book_id: str, output_base: str = './books', slug: str = None,
 
     # Step 4: Parse HTML and convert to markdown
     print("\n[4/5] Parsing content and converting to Markdown...")
+
+    # Remove boilerplate using text markers (most reliable per extraction guide)
+    clean_html = remove_gutenberg_boilerplate(html_content)
+    print(f"  Removed boilerplate: {len(html_content)} -> {len(clean_html)} chars")
+
     parser = GutenbergHTMLParser()
-    parser.feed(html_content)
+    parser.feed(clean_html)
     front_matter, chapters, _ = parser.get_results()
 
     print(f"  Found {len(front_matter)} front matter sections")
