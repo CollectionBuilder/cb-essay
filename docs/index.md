@@ -1,3 +1,16 @@
+# CB-Essay Documentation
+
+## CB-Essay Features
+
+**New to CB-Essay?** Start here to learn about essay writing and features:
+
+- [Essay Writing Guide](cb-essay/essay-writing.md) - Create and organize your essays
+- [Essay Features Reference](cb-essay/essay-features.md) - Blockquotes, asides, galleries, and more
+- [Theme Options](cb-essay/theme-options.md) - Essay vs. monograph themes
+- [Gutenberg Extraction](cb-essay/gutenberg-extraction.md) - Import public domain books
+
+---
+
 # CollectionBuilder-CSV Docs
 
 ## Set Up 
