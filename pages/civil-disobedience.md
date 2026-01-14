@@ -1,5 +1,6 @@
 ---
 layout: essay-content
+standalone: 
 title: On the Duty of Civil Disobedience
 author: Henry David Thoreau
 date: 1949

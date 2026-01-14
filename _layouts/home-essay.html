@@ -148,8 +148,9 @@ layout: default
             <div class="col-md-6 order-md-1 d-none d-md-block">
                 <div class="px-5 py-5">
                     <h1 class="display-2 mb-3">{{ site.title }}</h1>
-                    {% if site.tagline %}
-                        <p class="tagline mb-4">{{ site.tagline }}</p>
+                    {% if page.author or site.author %}
+                    <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>  {% elsif site.tagline %}
+                    <p class="tagline mb-4">{{ site.tagline }}</p>
                     {% endif %}
                     <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
                    {% if site.data.theme.base-theme == 'monograph' %}<br>
@@ -169,9 +170,10 @@ layout: default
                     <!-- Overlay title for mobile -->
                     <div class="home-header-overlay d-md-none text-white">
                         <h1>{{ site.title }}</h1>
-                        {% if site.tagline %}
-                            <p class="tagline mb-3">{{ site.tagline }}</p>
-                        {% endif %}
+                        {% if page.author or site.author %}
+                    <p class="tagline mb-3">by {{ page.author | default: site.author }}</p>  {% elsif site.tagline %}
+                    <p class="tagline mb-3">{{ site.tagline }}</p>
+                    {% endif %}
                         <a class="btn btn-light btn-lg text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
                         {% if site.data.theme.base-theme == 'monograph' %}
                         <br>
@@ -204,9 +206,10 @@ layout: default
     <div class="row justify-content-center align-items-center min-vh-50">
         <div class="col-lg-8 col-md-10 text-center py-5">
             <h1 class="display-2 mb-4">{{ site.title }}</h1>
-            {% if site.tagline %}
-                <p class="tagline mb-4">{{ site.tagline }}</p>
-            {% endif %}
+            {% if page.author or site.author %}
+                    <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>  {% elsif site.tagline %}
+                    <p class="tagline mb-4">{{ site.tagline }}</p>
+                    {% endif %}
             <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
                 <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
                
@@ -221,7 +224,10 @@ layout: default
 
     <div id="title-box" class="col-md-5 py-3 px-5 text-white bg-dark bg-opacity-75 rounded">
         <h1 class="display-2">{{ site.title }}</h1>
-        {% if site.tagline %}<p class="mb-0">{{ site.tagline }}</p>{% endif %}
+        {% if page.author or site.author %}
+                    <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>  {% elsif site.tagline %}
+                    <p class="tagline mb-4">{{ site.tagline }}</p>
+                    {% endif %}
     </div>
 
     <div id="action-box">

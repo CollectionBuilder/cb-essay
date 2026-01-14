@@ -33,7 +33,7 @@
 
     <div id="title-box" class="col-md-5 py-3 px-5 text-white bg-dark bg-opacity-75 rounded">
         <h1 class="display-2">{{ page.title | default: site.title }}</h1>
-        {% if page.author %}<p class="mb-0">{{ page.author | default: site.tagline }}</p>{% endif %}
+        <p class="mb-0">{% if page.author %} by {{ page.author | default: site.author }}</p>{% endif %}
     </div>
 
     <a id="toc-box" class="py-3 px-5 display-6 fs-2 text-white bg-dark bg-opacity-75 rounded text-center" href="#step0">Read the Essay &#8595;</a>

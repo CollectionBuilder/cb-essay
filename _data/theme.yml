@@ -1,13 +1,12 @@
 
 
 ##########
-## CB-Thread
-
+## CB-Essay
 
 # Essay or Monograph
 # you can change the theme to match your content
 # basically this changes your nav and banner; 
-base-theme: monograph # essay or monograph
+base-theme: essay # essay or monograph
 
 # FONTS 
 ## use the below options to adjust for font size, text color, link color and font-family. 
@@ -17,46 +16,15 @@ link-color: "#0d6efd"
 base-font-family: Georgia # comment out for bootstrap defaults. e.g. Roboto
 font-cdn: # add font stylesheet, e.g. <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 
-##########
-# ESSAY BOOKS METADATA
-# Define the structure of books/essays in this framework
-# This metadata is used to generate tables of contents and navigation
-#
-# Format:
-# essay-books:
-#   - slug: unique-identifier-for-book
-#     title: "Full Title of the Book"
-#     author: "Author Name"
-#     contents:
-#       - title: "Chapter 1 Title"
-#         order: 1
-#       - title: "Chapter 2 Title"
-#         order: 2
-#
-# Example:
-essay:
-  - slug: montaigne-essays
-    title: "Selected Essays"
-    author: Mary Wollstonecraft (Godwin) Shelley
-    contents:
-      - title: "Of Thumbs"
-        order: 1
-      - title: "Of Smells"
-        order: 2
-      - title: "Of Sleep"
-        order: 3
-      - title: "Of a Monstrous Child"
-        order: 4
-
 
 ##########
 # HOME PAGE
 #
 # the featured image is appears as either a full splash image, a half page image (great for book covers), or you can enter no-image in image style below for no image, just a title. 
 # use either an objectid (from an item in this collect), a relative location of an image in this repo, or a full url to an image elsewhere
-image-style: half-image # full-image, half-image, or no-image
-featured-image: /assets/img/Frontispiece_to_Frankenstein_1831.jpg
-featured-image-credit: "Illustration by Theodor von Holst from the frontispiece of the 1831 edition"
+image-style: full-image # full-image, half-image, or no-image
+featured-image: /assets/img/writing-instruments.jpg
+featured-image-credit: "General Research Division, The New York Public Library. 'An illustration of writing brushes' The New York Public Library Digital Collections. 1908. [https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34](https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34)"
 featured-image-alt-text: "An illustration of writing brushes with Japanese labels" # add alt text if using url for featured-image (objectid will be automatic from metadata)
 
 ##########
@@ -69,7 +37,7 @@ featured-image-alt-text: "An illustration of writing brushes with Japanese label
 #
 # featured image is defined above
 # optional: add extra padding around collection title for a larger image feature. 
-home-title-y-padding: 10em # the margin from the top your title portion will appear.
+home-title-y-padding: 20em # the margin from the top your title portion will appear.
 # optional: change position of background image, center, top, bottom
 home-banner-image-position: center # Default is top
 

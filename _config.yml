@@ -1,12 +1,12 @@
 ##########
-# cb-thread
+# cb-essay
 
+# CB-ESSAY works by building out a collection of chapters/sections that are deposited in a collection folder. The default folder is _essay, but you may change the other 
 
 collections:
   essay:
     sort_by: order
     output: true
-
 
 defaults:
   - 
@@ -38,6 +38,7 @@ source-code: https://github.com/CollectionBuilder/collectionbuilder-csv
 #
 # title of site appears in banner
 title: CB-Essay
+author: 
 # tagline, a short phrase that will appear throughout the site in the top banner
 tagline: Essay in the front, CollectionBuilder in the back
 # description appears in meta tags and other locations
@@ -46,7 +47,7 @@ description: "CB-Essay combines CollectionBuilder-CSV with essay and exhibit cap
 # keywords, a short list of subjects describing the collection, separated by semicolon, to appear in rich markup
 keywords: digital humanities; multimodal essays; lib-static
 # creator of the digital collection, to appear in meta tags; we typically use our GitHub usernames but feel free to just use your name
-author: dcnb
+exhibit-creator: dcnb
 
 ##########
 # COLLECTION SETTINGS
