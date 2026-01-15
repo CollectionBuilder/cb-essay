@@ -31,23 +31,6 @@ The magic happens when you combine them using specialized includes.
 
 ## See Examples
 
-
-### Frankenstein; Or, The Modern Prometheus
-
-{% include feature/image.html objectid="assets/img/FrankensteinDraft.jpg" alt="Frankenstein edition preview" link="https://dcnb.github.io/frankenstein/"%}
-
-A digital edition of Mary Shelley's classic novel demonstrating the **monograph theme**. Features chapter-by-chapter navigation, integrated scholarly apparatus, and historical context from Project Gutenberg.
-
-**View:** [dcnb.github.io/frankenstein](https://dcnb.github.io/frankenstein) *(coming soon)*
-
-### The Wreck of the Deutschland
-
-{% include feature/image.html objectid="/assets/img/deutschland.jpg" alt="Wreck of the Deutschland poem edition preview" link="https://dcnb.github.io/wreck-of-the-deutschland"%}
-
-Gerard Manley Hopkins's poem presented in the **essay theme** with scrolling transitions and visual breaks. Shows how CB-Essay handles poetry and single-page essays with dramatic effect.
-
-**View:** [dcnb.github.io/wreck-of-the-deutschland](https://dcnb.github.io/wreck-of-the-deutschland) 
-
 CB-Essay powers a variety of digital humanities projects:
 
 ### Tender Spaces: Intimacy in Queer Idaho
@@ -58,6 +41,24 @@ CB-Essay powers a variety of digital humanities projects:
 An extensively customized multimodal essay exploring queer intimacy in Idaho through personal narratives and archival materials. This project demonstrates CB-Essay's flexibility for highly designed, custom presentations.
 
 **View:** [cdil.lib.uidaho.edu/tender-spaces](https://cdil.lib.uidaho.edu/tender-spaces/)
+
+
+### Frankenstein; Or, The Modern Prometheus
+
+{% include feature/image.html objectid="Frankenstein1910.jpg" alt="A still from the film Frankenstein (1910), showing Charles Stanton Ogle as the monster." link="https://dcnb.github.io/frankenstein/"%}
+
+A digital edition of Mary Shelley's classic novel demonstrating the **monograph theme**. Features chapter-by-chapter navigation, integrated scholarly apparatus, and historical context from Project Gutenberg.
+
+**View:** [dcnb.github.io/frankenstein](https://dcnb.github.io/frankenstein) 
+
+### The Wreck of the Deutschland
+
+{% include feature/image.html objectid="/assets/img/deutschland.jpg" alt="Wreck of the Deutschland poem edition preview" link="https://dcnb.github.io/wreck-of-the-deutschland"%}
+
+Gerard Manley Hopkins's poem presented in the **essay theme** with scrolling transitions and visual breaks. Shows how CB-Essay handles poetry and single-page essays with dramatic effect.
+
+**View:** [dcnb.github.io/wreck-of-the-deutschland](https://dcnb.github.io/wreck-of-the-deutschland) 
+
 
 ## Key Features at a Glance
 
