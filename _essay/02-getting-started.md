@@ -183,29 +183,43 @@ Essays will appear in navigation based on their `order` value, **not** the filen
 
 ## Step 6: Deploy to GitHub Pages
 
-When you're ready to publish:
+When you're ready to publish your site:
 
-### Enable GitHub Pages
+### Set Up GitHub Pages with Jekyll Action
 
-1. Go to your repository on GitHub
-2. Click **Settings** → **Pages**
-3. Under **Source**, select **main** branch
-4. Click **Save**
+CB-Essay requires a GitHub Action to build properly. Follow the complete setup guide:
+
+**[GitHub Pages Deployment Guide](https://collectionbuilder.github.io/cb-docs/docs/deploy/actions/)**
+
+**Quick summary:**
+1. Go to your repository **Settings** → **Pages**
+2. Under **Source**, select **GitHub Actions**
+3. GitHub will suggest the Jekyll workflow - click **Configure**
+4. **Important:** Check the Ruby version in the workflow file
+   - Look for `ruby-version:` (usually around line 35)
+   - Change from `3.1` to `3.4` if needed
+   - CB-Essay requires Ruby 3.4 or higher
+5. Commit the workflow file (saves as `.github/workflows/jekyll.yml`)
+
+That's it! Every time you commit changes, GitHub Actions will automatically build and deploy your site.
 
 ### Commit Your Changes
 
-If you edited on GitHub.com, your changes are already committed! Otherwise:
-
+- **GitHub.com:** Changes are already committed when you click "Commit changes"
 - **GitHub.dev / Codespaces:** Use the Source Control panel to commit and sync
 - **Local development:** Run `git add .`, `git commit -m "Add essay"`, `git push`
 
-GitHub Pages will build your site automatically. After a few minutes, visit:
+### View Your Live Site
+
+After the GitHub Action completes (usually 2-3 minutes), visit:
 
 ```
 https://YOUR-USERNAME.github.io/YOUR-REPO-NAME/
 ```
 
 **Your essay is live!** 🎉
+
+{% include essay/feature/aside.html text="**Tip:** Watch the Actions tab to see the build progress. A green checkmark means your site deployed successfully!" %}
 
 ## Common First Steps
 
