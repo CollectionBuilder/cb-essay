@@ -29,21 +29,12 @@ CB-Essay operates on a **dual-collection model**:
 
 The magic happens when you combine them using specialized includes.
 
-## Real-World Examples
+## See Examples
 
-CB-Essay powers a variety of digital humanities projects:
-
-### Tender Spaces: Intimacy in Queer Idaho
-
-[![Tender Spaces screenshot](/assets/img/tender_spaces.png)](https://cdil.lib.uidaho.edu/tender-spaces/)
-
-An extensively customized multimodal essay exploring queer intimacy in Idaho through personal narratives and archival materials. This project demonstrates CB-Essay's flexibility for highly designed, custom presentations.
-
-**View:** [cdil.lib.uidaho.edu/tender-spaces](https://cdil.lib.uidaho.edu/tender-spaces/)
 
 ### Frankenstein; Or, The Modern Prometheus
 
-![Frankenstein edition preview](/assets/img/FrankensteinDraft.jpg)
+{% include feature/image.html objectid="assets/img/FrankensteinDraft.jpg" alt="Frankenstein edition preview" link="https://dcnb.github.io/frankenstein/"%}
 
 A digital edition of Mary Shelley's classic novel demonstrating the **monograph theme**. Features chapter-by-chapter navigation, integrated scholarly apparatus, and historical context from Project Gutenberg.
 
@@ -51,11 +42,22 @@ A digital edition of Mary Shelley's classic novel demonstrating the **monograph 
 
 ### The Wreck of the Deutschland
 
-![The Wreck illustration](/assets/img/deutschland.jpg)
+{% include feature/image.html objectid="/assets/img/deutschland.jpg" alt="Wreck of the Deutschland poem edition preview" link="https://dcnb.github.io/wreck-of-the-deutschland"%}
 
 Gerard Manley Hopkins's poem presented in the **essay theme** with scrolling transitions and visual breaks. Shows how CB-Essay handles poetry and single-page essays with dramatic effect.
 
-**View:** [dcnb.github.io/wreck-of-the-deutschland](https://dcnb.github.io/wreck-of-the-deutschland) *(coming soon)*
+**View:** [dcnb.github.io/wreck-of-the-deutschland](https://dcnb.github.io/wreck-of-the-deutschland) 
+
+CB-Essay powers a variety of digital humanities projects:
+
+### Tender Spaces: Intimacy in Queer Idaho
+
+{% include feature/image.html objectid="/assets/img/tender_spaces.png" alt="Tender Spaces screenshot" link="https://cdil.lib.uidaho.edu/tender-spaces/"%}
+
+
+An extensively customized multimodal essay exploring queer intimacy in Idaho through personal narratives and archival materials. This project demonstrates CB-Essay's flexibility for highly designed, custom presentations.
+
+**View:** [cdil.lib.uidaho.edu/tender-spaces](https://cdil.lib.uidaho.edu/tender-spaces/)
 
 ## Key Features at a Glance
 
