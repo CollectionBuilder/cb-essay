@@ -1,14 +1,37 @@
 {% if site.data.theme.base-theme == "monograph"%}
 <nav class="sticky-top shadow navbar navbar-expand-lg {{ site.data.theme.navbar-color | default: 'navbar-dark' }} {{ site.data.theme.navbar-background | default: 'bg-dark' }}">
   <div class="container">
-    <div class="d-flex align-items-center w-100 position-relative">
+    <!-- Mobile layout: Stack title above buttons -->
+    <div class="d-lg-none w-100">
+      <!-- Title row -->
+      <div class="text-center py-2">
+        <h1 class="mb-0">
+          <a class="navbar-brand fs-4" href="{{ '/' | relative_url }}">
+            {{ site.title }}
+          </a>
+        </h1>
+      </div>
+      <!-- Buttons row -->
+      <div class="d-flex justify-content-between align-items-center pb-2">
+        <button class="btn btn-link {% if site.data.theme.navbar-color == 'navbar-light' %}text-dark{% else %}text-white{% endif %} text-decoration-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasContents" aria-controls="offcanvasContents" aria-label="Open contents">
+          CONTENTS
+        </button>
+        <button class="btn btn-link {% if site.data.theme.navbar-color == 'navbar-light' %}text-dark{% else %}text-white{% endif %}" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Open navigation">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16" style="width:1.75em;height: 1.75em;">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+          </svg>
+        </button>
+      </div>
+    </div>
 
-      <!-- Left: Contents off-canvas button -->
+    <!-- Desktop layout: Original side-by-side -->
+    <div class="d-none d-lg-flex align-items-center w-100 position-relative">
+      <!-- Left: Contents button -->
       <button class="btn btn-link {% if site.data.theme.navbar-color == 'navbar-light' %}text-dark{% else %}text-white{% endif %} text-decoration-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasContents" aria-controls="offcanvasContents" aria-label="Open contents">
         CONTENTS
       </button>
 
-      <!-- Center: Site title (absolutely positioned for true centering) -->
+      <!-- Center: Site title -->
       <div class="position-absolute top-50 start-50 translate-middle text-center essay-navbar-title">
         <h1 class="mb-0">
           <a class="navbar-brand fs-4" href="{{ '/' | relative_url }}">
@@ -17,25 +40,24 @@
         </h1>
       </div>
 
-      <!-- Right: Menu off-canvas button -->
+      <!-- Right: Menu button -->
       <div class="ms-auto">
         <button class="btn btn-link {% if site.data.theme.navbar-color == 'navbar-light' %}text-dark{% else %}text-white{% endif %}" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Open navigation">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi icon-sprite fs-1" viewBox="0 0 16 16" style="width:.75em;height: .75em;">
-            <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16" style="width:1.75em;height: 1.75em;">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
           </svg>
         </button>
       </div>
-
     </div>
   </div>
 </nav>
 
-<!-- Off-canvas panels (hidden by default) -->
+<!-- Off-canvas panels -->
 {% include essay/off-canvas-contents.html %}
 {% include essay/off-canvas-menu.html %}
 
 {% else %}
-<!-- Non-monograph theme: keep original off-canvas behavior -->
+<!-- Non-monograph theme -->
 <nav class="navbar">
     <div class="container-fluid">
         <h1><a class="navbar-brand text-dark fs-3" href="{{ '/' | relative_url }}">{% include feature/icon.html icon="house" label="home icon linking back to home page" %} {{site.title}}</a></h1>
