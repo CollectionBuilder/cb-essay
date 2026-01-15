@@ -1,6 +1,20 @@
 ---
 layout: default
+gallery: true
 ---
+
+{%- comment -%}
+Check if there's only one actual essay (excluding README)
+Essays have both title and order in front matter
+{%- endcomment -%}
+{%- assign actual_essays = site.essay | where_exp: "item", "item.title and item.order" -%}
+{%- assign essay_count = actual_essays.size -%}
+
+{%- if essay_count == 1 -%}
+  {%- comment -%} Single essay mode - include scrollama script and off-canvas menu {%- endcomment -%}
+  <script src="{{ '/assets/lib/scrollama.js' | relative_url }}"></script>
+  {% include essay/off-canvas-menu.html %}
+{%- endif -%}
 
 <style>
     /* Full image banner styles */
@@ -137,8 +151,19 @@ layout: default
     .monograph-toc a {
         text-decoration: none;
     }
+    
+    {%- if essay_count == 1 -%}
+    /* Single essay mode styles */
+    #single-essay-content {
+        margin-top: 2rem;
+    }
+    {%- endif -%}
 </style>
 
+{%- comment -%} 
+Render homepage header based on image style
+Same logic as before for full-image, half-image, or no-image
+{%- endcomment -%}
 {% if site.data.theme.image-style == 'half-image' %}
 {%- comment -%} Half-width image header {%- endcomment -%}
 <div class="home-header-half position-relative">
@@ -149,13 +174,21 @@ layout: default
                 <div class="px-5 py-5">
                     <h1 class="display-2 mb-3">{{ site.title }}</h1>
                     {% if page.author or site.author %}
-                    <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>  {% elsif site.tagline %}
+                    <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>
+                    {% elsif site.tagline %}
                     <p class="tagline mb-4">{{ site.tagline }}</p>
                     {% endif %}
-                    <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
-                   {% if site.data.theme.base-theme == 'monograph' %}<br>
-                        <a class="btn btn-outline-dark mt-3 text-decoration-none ms-3" href="#table-of-contents">Contents &darr;</a>
-                        {% endif %}
+                    
+                    {%- if essay_count > 1 -%}
+                    <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read &raquo;</a>
+                    {% if site.data.theme.base-theme == 'monograph' %}<br>
+                    <a class="btn btn-outline-dark mt-3 text-decoration-none ms-3" href="#table-of-contents">Contents &darr;</a>
+                    {% endif %}
+                    {%- else -%}
+                    {%- comment -%} Single essay - scroll to content {%- endcomment -%}
+                    <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="#single-essay-content">Read &raquo;</a>
+                    <button class="btn btn-sm py-2 px-4 btn-outline-dark mt-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">Menu</button>
+                    {%- endif -%}
                 </div>
             </div>
 
@@ -163,7 +196,7 @@ layout: default
             <div class="col-md-6 order-md-2">
                 {% if site.data.theme.featured-image %}
                 <div class="home-header-image position-relative">
-                    <img  src="{{ site.data.theme.featured-image | relative_url }}"
+                    <img src="{{ site.data.theme.featured-image | relative_url }}"
                          alt="{{ site.data.theme.featured-image-alt-text | default: site.title }}"
                          class="img-fluid w-100 py-5">
 
@@ -171,14 +204,20 @@ layout: default
                     <div class="home-header-overlay d-md-none text-white">
                         <h1>{{ site.title }}</h1>
                         {% if page.author or site.author %}
-                    <p class="tagline mb-3">by {{ page.author | default: site.author }}</p>  {% elsif site.tagline %}
-                    <p class="tagline mb-3">{{ site.tagline }}</p>
-                    {% endif %}
+                        <p class="tagline mb-3">by {{ page.author | default: site.author }}</p>
+                        {% elsif site.tagline %}
+                        <p class="tagline mb-3">{{ site.tagline }}</p>
+                        {% endif %}
+                        
+                        {%- if essay_count > 1 -%}
                         <a class="btn btn-light btn-lg text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
-                        {% if site.data.theme.base-theme == 'monograph' %}
-                        <br>
+                        {% if site.data.theme.base-theme == 'monograph' %}<br>
                         <a class="btn btn-outline-light mt-2 text-decoration-none w-25" href="#table-of-contents">Contents &darr;</a>
                         {% endif %}
+                        {%- else -%}
+                        <a class="btn btn-light btn-lg text-decoration-none" href="#single-essay-content">Read &raquo;</a><br>
+                        <button class="btn btn-sm btn-outline-light mt-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">Menu</button>
+                        {%- endif -%}
                     </div>
                 </div>
                 {% endif %}
@@ -207,12 +246,18 @@ layout: default
         <div class="col-lg-8 col-md-10 text-center py-5">
             <h1 class="display-2 mb-4">{{ site.title }}</h1>
             {% if page.author or site.author %}
-                    <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>  {% elsif site.tagline %}
-                    <p class="tagline mb-4">{{ site.tagline }}</p>
-                    {% endif %}
+            <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>
+            {% elsif site.tagline %}
+            <p class="tagline mb-4">{{ site.tagline }}</p>
+            {% endif %}
+            
             <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
-                <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
-               
+                {%- if essay_count > 1 -%}
+                <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read &raquo;</a>
+                {%- else -%}
+                <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="#single-essay-content">Read &raquo;</a>
+                <button class="btn btn-sm py-2 px-4 btn-outline-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">Menu</button>
+                {%- endif -%}
             </div>
         </div>
     </div>
@@ -225,17 +270,23 @@ layout: default
     <div id="title-box" class="col-md-5 py-3 px-5 text-white bg-dark bg-opacity-75 rounded">
         <h1 class="display-2">{{ site.title }}</h1>
         {% if page.author or site.author %}
-                    <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>  {% elsif site.tagline %}
-                    <p class="tagline mb-4">{{ site.tagline }}</p>
-                    {% endif %}
+        <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>
+        {% elsif site.tagline %}
+        <p class="tagline mb-4">{{ site.tagline }}</p>
+        {% endif %}
     </div>
 
     <div id="action-box">
+        {%- if essay_count > 1 -%}
         <a class="btn btn-lg py-3 px-5 display-6 fs-2 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read &raquo;</a>
 
         {% if site.data.theme.base-theme == 'monograph' %}
         <a class="btn btn-sm py-2 px-4 fs-5 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="#table-of-contents">Table of Contents &darr;</a>
         {% endif %}
+        {%- else -%}
+        <a class="btn btn-lg py-3 px-5 display-6 fs-2 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="#single-essay-content">Read &raquo;</a>
+        <button class="btn btn-sm py-2 px-4 fs-5 text-white bg-dark bg-opacity-75 rounded" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">Menu</button>
+        {%- endif -%}
     </div>
 
     {% if site.data.theme.featured-image-credit %}
@@ -265,7 +316,44 @@ layout: default
 {% endif %}
 {% endif %}
 
-{% if site.data.theme.base-theme == 'monograph' %}
+{%- comment -%}
+SINGLE ESSAY CONTENT
+If only one essay exists, render it inline with essay-content structure
+{%- endcomment -%}
+{%- if essay_count == 1 -%}
+{%- assign single_essay = actual_essays[0] -%}
+
+<div id="single-essay-content" class="container my-5">
+    <div class="row">
+        <div id="scrolly" class="container my-4">
+            <article id="step0">
+                <h1 class="display-4 essay-main" id="page-title">{{ single_essay.title }}</h1>
+
+                <div class="row my-4 step visible-step">
+                    <div class="essay-main">
+                        {{ single_essay.content }}
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+
+{%- comment -%} Include essay scrollama JavaScript if not disabled {%- endcomment -%}
+{%- unless single_essay.scrollama == false -%}
+{% include essay/js/essay-scroll-js.html %}
+{%- endunless -%}
+
+{%- comment -%} Include custom footer scripts from essay-content layout {%- endcomment -%}
+{% include essay/js/spotlight-media-handler.html %}
+
+{%- endif -%}
+
+{%- comment -%}
+MONOGRAPH TABLE OF CONTENTS
+Only show if multiple essays exist
+{%- endcomment -%}
+{%- if site.data.theme.base-theme == 'monograph' and essay_count > 1 -%}
 <div id="table-of-contents" class="container-fluid py-5 monograph-toc">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
@@ -290,4 +378,4 @@ layout: default
         </div>
     </div>
 </div>
-{% endif %}
+{%- endif -%}
