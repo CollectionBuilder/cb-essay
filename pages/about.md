@@ -2,38 +2,96 @@
 title: About
 layout: about
 permalink: /about.html
-# include CollectionBuilder info at bottom
 credits: true
-# featured-image value can be one objectid for a photo object in this collection, a relative path to an image in this project, or a full url to any image. If left blank, no featured image will appear at top of About page.
-about-featured-image: demo_031
-# set background-position for featured image, "center", "top", "bottom"
-position: bottom
-# major heading to display over featured image
-heading: About the Collection
-# paragraph text below heading in featured image
-sub-heading: 
-# additional padding added to the feature to increase size. Give value in em or px, e.g. "5em".
-padding: 6em
-# Edit the markdown on in this file to describe your collection
-# Look in _includes/feature for options to easily add features to the page
+# Edit the markdown in this file to describe your project
 ---
 
-## About CollectionBuilder CSV
+## About CB-Essay
 
-This demo collection features items from the University of Idaho Library's [Digital Collections](https://www.lib.uidaho.edu/digital/), and is build using [CollectionBuilder-CSV](https://github.com/CollectionBuilder/collectionbuilder-csv).
+**CB-Essay** combines long-form essay writing with digital collection features, enabling you to create multimodal scholarly narratives that seamlessly integrate primary sources, archival materials, and multimedia items directly into your writing.
 
-CollectionBuilder-CSV is a "Stand Alone" template for creating digital collection and exhibit websites using Jekyll, given:
+Built on [CollectionBuilder](https://collectionbuilder.github.io/), CB-Essay extends the CollectionBuilder-CSV framework to support essay and monograph publishing alongside traditional digital collection capabilities.
 
-- a CSV of collection metadata
-- a folder of images, PDFs, audio, or video files
+### What Makes CB-Essay Different?
 
-Driven by your collection metadata, the template generates engaging visualizations to browse and explore your objects.
-The resulting static site can be hosted on any basic web server.
+Traditional digital publishing tools treat essays and collections as separate entities. CB-Essay unifies them, allowing you to:
 
-[CollectionBuilder](https://github.com/CollectionBuilder/) is an set of open source tools for creating digital collection and exhibit websites that are driven by metadata and powered by modern static web technology.
-See [CB Docs](https://collectionbuilder.github.io/cb-docs/) for detailed information.
+- Write in **simple Markdown** with specialized features for scholarly work
+- **Reference collection items** using simple includes
+- Create **asides and margin notes** that link to primary sources
+- Build **interactive timelines, maps, and visualizations** from your metadata
+- Publish beautiful, accessible sites with **zero JavaScript complexity**
 
-{% include feature/image.html objectid="demo_001" width="75" %} 
+### Perfect For
 
-<!-- IMPORTANT!!! DELETE this comment and the include below when you are finished editing this page for your collection. The include below introduces about page features. They will show up on your collection's about page until you delete it.  -->
-{% include cb/about_the_about.md %} 
+- **Digital humanities projects** and digital editions
+- **Annotated texts** with primary source integration
+- **Scholarly essays** that incorporate archival materials
+- **Multimodal monographs** combining narrative and collection items
+- **Publishing public domain texts** with scholarly apparatus
+
+### Key Features
+
+**Essay Writing:**
+- Sequential essay navigation with prev/next buttons
+- Flexible themes: traditional essay or book-style monograph
+- Support for long-form scholarship with chapter-like organization
+
+**CollectionBuilder Integration:**
+- All standard CB-CSV features: Browse, Map, Timeline, Subjects, Data downloads
+- Seamless integration of collection items within essays
+- Dual-collection workflow: essays + metadata-driven object pages
+
+**Essay-Specific Includes:**
+- **Blockquotes** - Styled quotations with attribution
+- **Asides** - Margin notes with optional collection items
+- **Image galleries** - Inline image displays
+- **Maps** - Embedded mini-maps with custom coordinates
+- **Section transitions** - Scrollama-powered visual breaks
+
+**Bonus Feature: Project Gutenberg Extractor**
+
+Extract **60,000+ public domain books** from Project Gutenberg as ready-to-publish essays using our GitHub Action workflow. The script automatically downloads, cleans, and formats books into chapter files - perfect for creating annotated editions or scholarly apparatus.
+
+### Learn By Example
+
+This demo site is self-documenting. Each essay teaches you how to use CB-Essay while demonstrating the features:
+
+1. **Welcome to CB-Essay** - Overview and introduction
+2. **Getting Started** - Your first essay walkthrough
+3. **Essay Features** - All includes with copy-paste examples
+4. **Collection Integration** - Blending essays with collection items
+
+**Copy and replace:** Every feature you see can be copied directly into your own essays. Just replace the demo content with yours.
+
+### Example Projects
+
+- **[Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/)** - Heavily customized multimodal essay exploring queer intimacy in Idaho
+- **Frankenstein** *(coming soon)* - Demonstrates monograph theme with chapter navigation
+- **Wreck of the Deutschland** *(coming soon)* - Essay theme featuring poetry with visual transitions
+
+### Get Started
+
+Ready to create your essay?
+
+1. [Use this template](https://github.com/CollectionBuilder/cb-essay/generate)
+2. Check out the [Getting Started Guide](/essay/02-getting-started.html)
+3. Explore the [documentation](https://github.com/CollectionBuilder/cb-essay/tree/main/docs/cb-essay)
+
+Questions? See our [documentation](/docs/cb-essay/) or [open an issue](https://github.com/CollectionBuilder/cb-essay/issues).
+
+---
+
+### Credits & License
+
+**CB-Essay** is developed by the [Center for Digital Inquiry and Learning (CDIL)](https://cdil.lib.uidaho.edu/) at the University of Idaho Library.
+
+Built on [CollectionBuilder-CSV](https://github.com/CollectionBuilder/collectionbuilder-csv).
+
+- **Code:** MIT License
+- **Documentation:** CC-BY
+- Demo content includes items from CDIL collections and essays in the public domain
+
+### CollectionBuilder
+
+[CollectionBuilder](https://collectionbuilder.github.io/) is an open source framework for creating digital collection and exhibit websites that are driven by metadata and powered by modern static web technology. Learn more at [collectionbuilder.github.io](https://collectionbuilder.github.io/).

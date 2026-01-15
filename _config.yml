@@ -1,21 +1,30 @@
 ##########
-# cb-essay
-
-# CB-ESSAY works by building out a collection of chapters/sections that are deposited in a collection folder. The default folder is _essay, but you may change the other 
+# CB-ESSAY COLLECTION
+#
+# CB-Essay extends CollectionBuilder to support essay/monograph publishing alongside digital collections.
+# Essays are Markdown files in the _essay/ folder with front matter controlling their display order.
+#
+# How it works:
+# 1. Create .md files in _essay/ with front matter (title, order, optional byline)
+# 2. Essays appear in sequential order based on the "order" field
+# 3. Automatic prev/next navigation between essays
+# 4. Choose essay or monograph theme in _data/theme.yml
+#
+# Learn more: docs/cb-essay/essay-writing.md
 
 collections:
   essay:
-    sort_by: order
-    output: true
+    sort_by: order  # Essays display in order based on "order" field in front matter
+    output: true    # Generate individual HTML pages for each essay
 
 defaults:
-  - 
-    scope: 
-      path: "" 
-      type: "essay"
+  -
+    scope:
+      path: ""              # Apply to all files in _essay/
+      type: "essay"         # Jekyll collection type
     values:
-      layout: "essay-content"
-      permalink: /essay/:slug:output_ext
+      layout: "essay-content"                 # Layout template for essay pages
+      permalink: /essay/:slug:output_ext      # URL pattern: /essay/filename.html
 
 ##########
 # collectionbuilder-csv
