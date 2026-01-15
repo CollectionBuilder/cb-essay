@@ -19,10 +19,12 @@
                     <li class="nav-item">
                         <a class="nav-link text-light{% if page.url == site.essay[0].url %} active{% endif %}" href="{{ site.essay[0].url | relative_url }}">Read</a>
                     </li>
-                    {% unless site.data.theme.base-theme == "monograph" %}
+                    {%- assign actual_essays = site.essay | where_exp: "item", "item.title and item.order" -%}
+                    {%- assign essay_count = actual_essays.size -%}
+                    {% unless site.data.theme.base-theme == "monograph" or essay_count == 1 %}
                     <li class="nav-item dropdown">  
                         {%- assign essayStubs = site.essay | map: 'url' -%}
-                        <a class="nav-link text-light dropdown-toggle{% if essayStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Content</a>
+                        <a class="nav-link text-light dropdown-toggle{% if essayStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Contents</a>
                         <div class="dropdown-menu dropdown-menu-dark">
                             {% for e in site.essay %}
                             <a class="dropdown-item {% if page.url == e.url %}active{% endif %}" href="{{ e.url | relative_url }}">{% if e.chapter %}{{ e.chapter }}. {% endif %}{{ e.title }}</a>
