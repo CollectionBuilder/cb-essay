@@ -1,16 +1,16 @@
 name: Extract Gutenberg Book
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: 
     inputs:
       book_id:
         description: 'Project Gutenberg Book ID (e.g., 84 for Frankenstein, 64317 for Great Gatsby)'
         required: true
         type: string
       clear_existing:
-        description: 'Clear existing _essay content before extraction'
+        description:  'Clear existing _essay content before extraction'
         required: false
-        default: false
+        default:  false
         type: boolean
 
 jobs:
@@ -18,15 +18,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pages: write
+      actions: write
 
-    steps:
+    steps: 
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version:  '3.11'
 
       - name: Clear existing essay content (if requested)
         if: ${{ inputs.clear_existing }}
@@ -38,7 +40,7 @@ jobs:
       - name: Extract book from Project Gutenberg
         run: |
           echo "Extracting book #${{ inputs.book_id }} from Project Gutenberg..."
-          python gutenberg-extraction.py ${{ inputs.book_id }} --cb-essay --project-root .
+          python gutenberg-extraction.py ${{ inputs.book_id }} --cb-essay --project-root . 
           echo "Extraction complete!"
 
       - name: List extracted files
@@ -49,21 +51,161 @@ jobs:
           echo "=== _data/book.yml ==="
           cat _data/book.yml 2>/dev/null || echo "No book.yml found"
 
-      - name: Commit and push changes
+      - name: Process cover image and update theme.yml
         run: |
+          echo "Processing cover image from book.yml..."
+          
+          pip install PyYAML
+          
+          cat << 'EOF' > process_cover.py
+          import yaml
+          
+          book_id = "${{ inputs.book_id }}"
+          gutenberg_url = f"https://www.gutenberg.org/ebooks/{book_id}"
+          
+          with open('_data/book.yml', 'r') as f:
+              book_data = yaml.safe_load(f)
+          
+          title = book_data.get('title', 'Unknown Title')
+          author = book_data.get('author', 'Unknown Author')
+          cover_urls = book_data.get('cover_urls', [])
+          
+          if not cover_urls:
+              print("No cover images found in book.yml")
+              exit(0)
+          
+          selected_cover = None
+          for priority in ['large', 'medium', 'small']:
+              for url in cover_urls:
+                  if priority in url.lower():
+                      selected_cover = url
+                      break
+              if selected_cover: 
+                  break
+          
+          if not selected_cover and cover_urls:
+              selected_cover = cover_urls[0]
+          
+          if selected_cover: 
+              print(f"Found cover image: {selected_cover}")
+              
+              theme_file = '_data/theme.yml'
+              try:
+                  with open(theme_file, 'r') as f:
+                      theme_data = yaml.safe_load(f) or {}
+              except FileNotFoundError:
+                  theme_data = {}
+              
+              theme_data['featured-image'] = selected_cover
+              theme_data['featured-image-credit'] = f'This is a cover of the {title} by {author} as extracted from Project Gutenberg; it can be found here: {gutenberg_url}'
+              theme_data['featured-image-alt-text'] = f'Cover image of {title}'
+              
+              with open(theme_file, 'w') as f:
+                  yaml.dump(theme_data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+              
+              print(f"Updated {theme_file} with cover image metadata")
+          else:
+              print("No suitable cover image found")
+          EOF
+          
+          python process_cover.py
+
+      - name: Update _config.yml with book metadata
+        run: |
+          echo "Updating _config.yml with book metadata..."
+          
+          cat << 'EOF' > update_config.py
+          import yaml
+          
+          with open('_data/book.yml', 'r') as f:
+              book_data = yaml.safe_load(f)
+          
+          title = book_data.get('title', 'Unknown Title')
+          author = book_data.get('author', 'Unknown Author')
+          
+          with open('_config.yml', 'r') as f:
+              config = yaml.safe_load(f)
+          
+          config['title'] = title
+          config['author'] = author
+          config['description'] = f"A digital edition of {title} by {author}, extracted from Project Gutenberg"
+          
+          with open('_config.yml', 'w') as f:
+              yaml.dump(config, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+          
+          print(f"Updated _config.yml:")
+          print(f"  title: {title}")
+          print(f"  author: {author}")
+          print(f"  description: {config['description']}")
+          EOF
+          
+          python update_config.py
+
+      - name: Commit and push changes
+        run:  |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Add all extracted files
-          git add _essay/ _data/book.yml 2>/dev/null || true
+          git add _essay/ _data/ _config.yml 2>/dev/null || true
 
-          # Check if there are changes to commit
           if git diff --staged --quiet; then
             echo "No changes to commit"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            git commit -m "Extract Gutenberg book #${{ inputs.book_id }}" \
+            git commit -m "Extract Gutenberg book #${{ inputs.book_id }} and update site config" \
               -m "Extracted using gutenberg-extraction.py --cb-essay" \
+              -m "Updated _config.yml with book title and author" \
+              -m "Updated _data/theme.yml with cover image (if available)" \
               -m "Source: https://www.gutenberg.org/ebooks/${{ inputs.book_id }}"
             git push
             echo "Changes committed and pushed!"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
+        id: commit
+
+  deploy-pages:
+    needs: extract
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency: 
+      group: "pages"
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name:  Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Pull latest changes
+        run: git pull origin ${{ github.ref_name }}
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with: 
+          ruby-version: '3.4'
+          bundler-cache: true
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v4
+
+      - name: Build with Jekyll
+        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+        env:
+          JEKYLL_ENV: production
+
+      - name: Upload artifact
+        uses:  actions/upload-pages-artifact@v3
+        with:
+          path: "_site/"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
