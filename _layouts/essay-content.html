@@ -12,7 +12,17 @@ custom-foot: essay/js/spotlight-media-handler.html
 <div class="row">
     <div id="scrolly" class="container my-4">
         <article id="step0">
+            {%- assign content_start = content | strip | slice: 0, 200 -%}
+            {%- assign has_title_header = false -%}
+            {%- if content_start contains page.title -%}
+                {%- if content_start contains '<h1' or content_start contains '<h2' -%}
+                    {%- assign has_title_header = true -%}
+                {%- endif -%}
+            {%- endif -%}
+            
+            {% unless has_title_header %}
             <h1 class="display-4 essay-main" id="page-title">{{ page.title }}</h1>
+            {% endunless %}
 
             <div class="row my-4 step visible-step">
                 <div class="{% if content-width %}col-md-{{content-width}} {% else %}essay-main {% endif %}{% if content-indent %}offset-md-{{content-indent}} {% endif %}{% if font-size %}fs-{{font-size}} {% endif %}{{additional-content-styles }}">

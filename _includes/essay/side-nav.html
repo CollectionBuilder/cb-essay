@@ -1,12 +1,12 @@
 {% if site.data.theme.base-theme == "monograph"%}
-<nav class="sticky-top shadow navbar navbar-expand-lg {{ site.data.theme.navbar-color | default: 'navbar-dark' }} {{ site.data.theme.navbar-background | default: 'bg-dark' }}">
+<nav class="shadow navbar navbar-expand-lg {{ site.data.theme.navbar-color | default: 'navbar-dark' }} {{ site.data.theme.navbar-background | default: 'bg-dark' }}">
   <div class="container">
     <!-- Mobile layout: Stack title above buttons -->
     <div class="d-lg-none w-100">
       <!-- Title row -->
-      <div class="text-center py-2">
+      <div class="text-center py-2 px-2">
         <h1 class="mb-0">
-          <a class="navbar-brand fs-4" href="{{ '/' | relative_url }}">
+          <a class="navbar-brand fs-4 text-break" style="white-space: normal; word-wrap: break-word;" href="{{ '/' | relative_url }}">
             {{ site.title }}
           </a>
         </h1>
@@ -60,9 +60,24 @@
 <!-- Non-monograph theme -->
 <nav class="navbar">
     <div class="container-fluid">
-        <h1><a class="navbar-brand text-dark fs-3" href="{{ '/' | relative_url }}">{% include feature/icon.html icon="house" label="home icon linking back to home page" %} {{site.title}}</a></h1>
+        <!-- Mobile layout -->
+        <div class="d-flex align-items-center justify-content-between w-100">
+            <!-- Title takes up ~80% on mobile, wraps, smaller font -->
+            <h1 class="mb-0 flex-grow-1" style="max-width: 80%;">
+                <a class="navbar-brand text-dark d-block text-break" 
+                   style="white-space: normal; word-wrap: break-word; font-size: clamp(1.25rem, 4vw, 2rem); line-height: 1.2;" 
+                   href="{{ '/' | relative_url }}">
+                    {{site.title}}
+                </a>
+            </h1>
+            
+            <!-- Menu button on the right -->
+            <div class="ms-2">
+                        {% include essay/off-canvas-menu.html %}
+
+            </div>
+        </div>
         
-        {% include essay/off-canvas-menu.html %}
     </div>
 </nav>
 {% endif %}

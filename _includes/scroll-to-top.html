@@ -1,13 +1,22 @@
 <script>
     // When the user scrolls down from the top of the document, show the button
+    // Hide when within 500px of the bottom
     window.onscroll = function () {
-        if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
-            document.getElementById("scroll-to-top").style.display = "block";
+        var scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+        var scrollHeight = document.documentElement.scrollHeight;
+        var clientHeight = document.documentElement.clientHeight;
+        var distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+        
+        var scrollToTop = document.getElementById("scroll-to-top");
+        
+        if (scrollTop > 500 && distanceFromBottom > 500) {
+            scrollToTop.style.display = "block";
         } else {
-            document.getElementById("scroll-to-top").style.display = "none";
+            scrollToTop.style.display = "none";
         }
     }
 </script>
+
 <div id="scroll-to-top" class="p-0">
     <a href="#maincontent" class="btn btn-link p-0 p-md-1" title="Back to Top">
         <span class="visually-hidden">Back to top</span>
@@ -16,7 +25,7 @@
         </svg>
     </a>
     {% if layout == "essay-content" or page.layout == "essay-content" %}
-    <div class="scroll-nav-arrows p-0">
+    <div class="scroll-nav-arrows p-0 d-none d-lg-flex">
         {% if page.previous %}
         <a href="{{ page.previous.url | relative_url }}" class="btn btn-link p-0 px-md-1" title="Previous: {{ page.previous.title }}">
             <span class="visually-hidden">Previous: {{ page.previous.title }}</span>
