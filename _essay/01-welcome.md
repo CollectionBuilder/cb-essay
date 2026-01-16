@@ -3,7 +3,15 @@ title: Welcome to CB-Essay
 order: 1
 ---
 
-CB-Essay is a Jekyll-based framework that combines **long-form essay writing** with **digital collection features**. Built on CollectionBuilder, it enables you to create multimodal scholarly narratives that integrate primary sources, archival materials, and multimedia items directly into your writing.
+**Let's all stop writing digital scholarship pieces in Microsoft Word.** And let's start encouraging students writing for digital projects to do the same. 
+
+So many times, during the 15 years I've been doing this, I've given up at the end of a project and allowed this to happen, capitulating to the dominant, bloated, ugly and overwrought writing technology of the time in order to *make it easy* for faculty or students who are ostensibly producing writing for projects that are meant for the web and meant to improve the digital literacy of those completing them. 
+
+I think it's time we stopped doing that, and in order to make that easier, we are introducing here a tool that we hope helps us digital humanists truly ***write with, on, and for*** the web. 
+
+## What Is It?
+
+CB-Essay is a Jekyll-based framework that combines **long-form essay writing** with **digital collection features**. Built on CollectionBuilder, it enables you to create multimodal scholarly narratives, written in Markdown, that integrate primary sources, archival materials, and multimedia items directly into your texts.
 
 ## What Makes CB-Essay Different?
 
@@ -11,16 +19,12 @@ Traditional digital publishing tools treat essays and collections as separate en
 
 - Write in **simple Markdown** with specialized features for scholarly work
 - **Reference collection items** using simple includes
-- Create **asides and margin notes** that link to primary sources
-- Fashion the readers' experience through **scroll-based interactions and custom typography/fonts**
+- Create **asides and margin notes** that link to primary sources {% include /essay/feature/aside.html text="Like this!" %}
 - Build **interactive visualizations** from your metadata
 - **Publish your work for free** on GitHub 
+- Fashion the readers' experience through **scroll-based interactions and custom typography/fonts** {% include /essay/feature/aside.html text="Keep scrolling to see the next section magically appear!" %}"
 
-
-{% include essay/feature/blockquote.html
-   quote="CB-Essay bridges the gap between narrative scholarship and archival presentation, enabling truly multimodal digital humanities work."
-   size="lg"
-   align="center" %}
+{% include essay/new-section.html %}
 
 ## How It Works
 
@@ -29,7 +33,7 @@ CB-Essay operates on a **dual-collection model**:
 1. **Essay Collection** - Your narrative content lives in `_essay/` as Markdown files
 2. **Object Collection** - Primary sources and items defined in a CSV metadata file
 
-CB-Essay allows you to write ***with*** your collection of sources, allowing you to integrate your references, images, documents, recordings, and videos seamlessly into your writing. 
+CB-Essay allows you to write ***with*** this collection of sources, allowing you to integrate your references, images, documents, recordings, and videos seamlessly into your writing and into the web. 
 
 ## Key Features at a Glance
 
@@ -49,9 +53,11 @@ CB-Essay allows you to write ***with*** your collection of sources, allowing you
 - **Search and filtering**
 
 
+
+
 ## Who Should Use CB-Essay?
 
-CB-Essay is ideal for:
+CB-Essay is ideal for anyone who wants to write ***write with, on, and for*** the web, including:
 
 - **Digital humanists** creating annotated editions or critical apparatus
 - **Historians** presenting narrative alongside primary sources
@@ -59,11 +65,8 @@ CB-Essay is ideal for:
 - **Archivists** creating context around collections
 - **Writers** publishing long-form digital scholarship
 
-## Philosophy: Copy and Replace
 
-This demo site is designed to teach through demonstration. Every feature you see can be **copied directly into your own essays**. See a blockquote you like? Copy the code, replace the content with yours. Find a useful margin note? Same approach.
 
-**You don't need to understand the technical details** - just copy what works and replace the content.
 
 ## See Examples
 

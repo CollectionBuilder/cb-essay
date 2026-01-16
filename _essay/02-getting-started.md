@@ -5,16 +5,19 @@ order: 2
 
 This guide walks you through creating your first CB-Essay project from scratch. You'll have a working essay site in about 10 minutes.
 
+## Philosophy: Copy and Replace
+
+This entire demo site is designed to teach through demonstration. Every feature you see can be **copied directly into your own essays**. See a blockquote you like? Copy the code, replace the content with yours. Find a useful margin note? Same approach.
+
+**You don't need to understand the technical details** - just copy what works and replace the content.
+
 ## Prerequisites
 
 You'll need:
 
-- A **GitHub account** (free)
-- Basic **Markdown** knowledge (learn as you go)
-- **Git** installed (for local development)
-- **Ruby and Jekyll** (for local preview - optional but recommended)
+- A **GitHub account** (free) -- [Sign up now!](https://www.github.com/)
+- A willingness to learn
 
-Don't worry if this seems technical - we'll walk through each step.
 
 ## Step 1: Use This Template
 
@@ -22,14 +25,12 @@ CB-Essay is a GitHub template repository. This means you can create your own cop
 
 1. Navigate to [github.com/CollectionBuilder/cb-essay](https://github.com/CollectionBuilder/cb-essay)
 2. Click the green **"Use this template"** button
-3. Name your repository (e.g., `my-essay-project`)
-4. Choose **Public** or **Private**
+3. Name your repository (e.g., `my-essay-project`){% include essay/feature/aside.html
+   text="**Tip:** Use a descriptive repository name. It will become part of your site's URL: `username.github.io/repository-name`" %}
+4. Choose **Public** or **Private** (If you'd like to publish the site on GitHub's free GitHub Pages web hosting, it will need to be Public)
 5. Click **"Create repository"**
 
 **That's it!** You now have your own CB-Essay repository.
-
-{% include essay/feature/aside.html
-   text="**Tip:** Use a descriptive repository name. It will become part of your site's URL: `username.github.io/repository-name`" %}
 
 ## Step 2: Choose Your Editing Workflow
 
@@ -41,24 +42,27 @@ Work entirely in your browser - **no local installation needed**:
 
 1. Navigate to your repository on GitHub
 2. Click into the `_essay/` folder
-3. Click **"Add file"** → **"Create new file"**
-4. Name it `my-first-essay.md`
-5. Add your content (see Step 3 below)
+3. Open `01-welcome.md`  and replace it's content with your own!
+4. Do the same with the other `.md` files in the folder, renaming the filenames and replacing the "frontmatter" {% include /essay/feature/aside.html text="**Frontmatter** is the information at the top of each `.md` file that includes information like `title` and `order`; it's separated by `---` lines at the top and bottom." %} with your own info.  
+   - See Step 3 below for more information on how to edit these files.
+5. Edit the `_config.yml` file and the `_data/theme.yml` file to change the site's title, theme, featured image, and typography
 6. Click **"Commit changes"**
 
-**That's it!** GitHub Pages will automatically rebuild your site.
+**That's it!** 
 
 {% include essay/feature/aside.html
    text="**Bonus:** Use the **Project Gutenberg extractor** (Actions tab) to populate your `_essay/` folder with a complete book automatically!" %}
 
 ### Option B: GitHub.dev (VS Code in Browser)
 
-Get a full VS Code editor without leaving your browser:
+Get [a full VS Code editor](https://docs.github.com/en/codespaces/the-githubdev-web-based-editor) without leaving your browser:
 
 1. Go to your repository on GitHub
 2. Press the `.` (period) key **OR** change the URL from `github.com` to `github.dev`
 3. Edit files in a full-featured code editor
-4. Use Source Control panel to commit changes
+   - Replace the content in the `_essay` folder with your own
+   - Edit the `_config.yml` file and the `_data/theme.yml` file to change the site's title, theme, featured image, and typography
+4. Use [Source Control panel](https://docs.github.com/en/codespaces/the-githubdev-web-based-editor#commit-your-changes) (third option from the top on the far right) to stage and commit changes
 
 **Perfect for:** Multiple file edits, search/replace, file management
 
@@ -80,9 +84,6 @@ For local development with Git and Jekyll installed on your computer, follow the
 
 **Perfect for:** Offline work, full control, fastest preview cycle
 
-{% include essay/feature/blockquote.html
-   quote="Most CB-Essay users never install anything locally. The GitHub web interface and Gutenberg extractor provide everything needed to publish essays."
-   align="center" %}
 
 ## Step 3: Add Content (Two Options)
 
@@ -96,7 +97,7 @@ Want to start with a complete book? Extract one from Project Gutenberg:
 4. Enter a book ID (e.g., `84` for Frankenstein, `1342` for Pride and Prejudice)
 5. Click **"Run workflow"** button
 
-Wait a minute - your `_essay/` folder will be populated with chapter files automatically!
+Wait a minute - your `_essay/` folder will be populated with chapter files automatically! And your config files (`_config.yml` and `_data/theme.yml`) will be updated with the title, author, and cover image from Project Gutenberg.
 
 **Find books:** Browse [gutenberg.org](https://www.gutenberg.org/) and get the ID from the URL.
 
@@ -121,7 +122,7 @@ Here's a paragraph with a [link](https://example.com).
 ## Another Section
 
 - Bullet points work
-- As expected
+- As expected{% include essay/feature/aside.html text="So do asides!"%}
 
 ### Subsections too
 
@@ -192,16 +193,15 @@ CB-Essay requires a GitHub Action to build properly. Follow the complete setup g
 **[GitHub Pages Deployment Guide](https://collectionbuilder.github.io/cb-docs/docs/deploy/actions/)**
 
 **Quick summary:**
-1. Go to your repository **Settings** → **Pages**
+1. Go to your repository and click the **Settings** menu item at the end of the second row on the page
+2. Click on the **Pages** section on the left-hand side. 
 2. Under **Source**, select **GitHub Actions**
-3. GitHub will suggest the Jekyll workflow - click **Configure**
-4. **Important:** Check the Ruby version in the workflow file
-   - Look for `ruby-version:` (usually around line 35)
-   - Change from `3.1` to `3.4` if needed
-   - CB-Essay requires Ruby 3.4 or higher
-5. Commit the workflow file (saves as `.github/workflows/jekyll.yml`)
+3. GitHub will suggest the Jekyll workflow - ignore it! You've already got that file. 
+4. Go to your readme.md file in the root of your repository. 
+5. Make and commit a small change -- just add space! 
+6. Once you commit the change, the site will properly rebuild!
 
-That's it! Every time you commit changes, GitHub Actions will automatically build and deploy your site.
+That's it! Every time you commit changes from there on out, GitHub Actions will automatically build and deploy your site.
 
 ### Commit Your Changes
 
