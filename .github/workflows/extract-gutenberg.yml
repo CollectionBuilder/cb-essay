@@ -131,7 +131,7 @@ jobs:
           config['description'] = f"A digital edition of {title} by {author}, extracted from Project Gutenberg"
           
           with open('_config.yml', 'w') as f:
-              yaml.dump(config, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+              yaml.dump(config, f, default_flow_style=False, sort_keys=False, allow_unicode=True, default_style='"')
           
           print(f"Updated _config.yml:")
           print(f"  title: {title}")
