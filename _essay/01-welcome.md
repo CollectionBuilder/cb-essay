@@ -7,7 +7,7 @@ order: 1
 
 So many times, during the 15 years I've been doing this, I've given up at the end of a project and allowed this to happen, capitulating to the dominant, bloated, ugly and overwrought writing technology of the time in order to *make it easy* for faculty or students who are ostensibly producing writing for projects that are meant for the web and meant to improve the digital literacy of those completing them. 
 
-I think it's time we stopped doing that, and in order to make that easier, we are introducing here a tool that we hope helps us digital humanists truly ***write with, on, and for*** the web. 
+I think it's time we stopped doing that, and in order to make that easier, we made a tool that helps one to truly ***write with, on, and for*** the web. 
 
 ## What Is It?
 
@@ -33,7 +33,10 @@ CB-Essay operates on a **dual-collection model**:
 1. **Essay Collection** - Your narrative content lives in `_essay/` as Markdown files
 2. **Object Collection** - Primary sources and items defined in a CSV metadata file
 
-CB-Essay allows you to write ***with*** this collection of sources, allowing you to integrate your references, images, documents, recordings, and videos seamlessly into your writing and into the web. 
+CB-Essay allows you to write ***with*** this collection of sources, allowing you to integrate your references, images, documents, recordings, and videos seamlessly into your writing and into the web. Just follow the plan as in the below image. 
+
+{% include essay/feature/aside.html text="Below image credits: The Miriam and Ira D. Wallach Division of Art, Prints and Photographs: Photography Collection, The New York Public Library. 'Group farm plan writing meeting. Weld County, Colorado' The New York Public Library Digital Collections. [https://digitalcollections.nypl.org/items/1b0a3fc0-1d42-0139-bac7-0242ac110003](https://digitalcollections.nypl.org/items/1b0a3fc0-1d42-0139-bac7-0242ac110003)" %}
+{% include feature/image.html objectid="/assets/img/writing-plan.jpg" caption="The tool is no more complicated than following this gentleman's instructions!" alt="Group working on a farm plan writing project with man pointing at a complex plan written on a large sheet of paper at the front"%}
 
 ## Key Features at a Glance
 
@@ -67,49 +70,19 @@ CB-Essay is ideal for anyone who wants to write ***write with, on, and for*** th
 
 
 
-
-## See Examples
-
-CB-Essay powers a variety of digital humanities projects:
-
-### Tender Spaces: Multimodal, Multilingual 5-Part Essay
-
-{% include feature/image.html objectid="/assets/img/tender_spaces.png" alt="Tender Spaces screenshot" link="https://cdil.lib.uidaho.edu/tender-spaces/"%}
-
-This extensively customized multimodal and multilinqual essay explores artist Gaëtane Buttigieg's life, art, and forced institutionalization in the 1970s through personal narratives and video interviews. This project demonstrates CB-Essay's flexibility for highly designed, custom presentations.
-
-**View:** [cdil.lib.uidaho.edu/tender-spaces](https://cdil.lib.uidaho.edu/tender-spaces/)
-
-
-### Frankenstein: Extracted Book from Project Gutenberg
-
-{% include feature/image.html objectid="Frankenstein1910.jpg" alt="A still from the film Frankenstein (1910), showing Charles Stanton Ogle as the monster." link="https://dcnb.github.io/frankenstein/"%}
-
-A digital edition of Mary Shelley's classic novel demonstrating the **monograph theme**. Features chapter-by-chapter navigation, integrated scholarly apparatus, and historical context from Project Gutenberg.
-
-**View:** [dcnb.github.io/frankenstein](https://dcnb.github.io/frankenstein) 
-
-### The Wreck of the Deutschland: Single-page, scrollytold poem
-
-{% include feature/image.html objectid="/assets/img/deutschland.jpg" alt="Wreck of the Deutschland poem edition preview" link="https://dcnb.github.io/wreck-of-the-deutschland"%}
-
-Gerard Manley Hopkins's poem presented in the **essay theme** with scrolling transitions and visual breaks. Shows how CB-Essay handles poetry and single-page essays with dramatic effect.
-
-**View:** [dcnb.github.io/wreck-of-the-deutschland](https://dcnb.github.io/wreck-of-the-deutschland) 
-
-
 ### Bonus: Project Gutenberg Extractor
 
-Want to publish a public domain book? Use our **GitHub Action** to extract any of **60,000+ books** from Project Gutenberg directly into your `_essay/` folder - pre-formatted and ready to publish. 
+Want to publish a public domain book? Use our [**GitHub Action**](https://dcnb.github.io/frankenstein/action.mp4) to extract any of **60,000+ books** from Project Gutenberg directly into your `_essay/` folder - pre-formatted and ready to publish. 
 
 
 ## Next Steps
 
-Ready to get started? The remaining essays walk you through everything:
+Check out some examples sites, then get started. The remaining essays show off CB-Essay in the wild, and then walk you through setting up your first site and understanding the features.
 
-- **[Getting Started](02-getting-started.html)** - Set up your first essay in 10 minutes
-- **[Essay Features](03-essay-features.html)** - Learn and copy all available features
-- **[Collection Integration](04-collection-integration.html)** - Blend essays with collection items
+- **[See Examples](02-examples.html)** - See CB-Essay as used for DH projects and in demonstration 
+- **[Get Started](03-get-started.html)** - Set up your first essay in 10 minutes
+- **[Essay Features](04-essay-features.html)** - Learn and copy all available features
+- **[Collection Integration](05-collection-integration.html)** - Blend essays with collection items
 
 Or jump straight to the [documentation](https://github.com/CollectionBuilder/cb-essay/tree/main/docs/cb-essay) for reference guides.
 
