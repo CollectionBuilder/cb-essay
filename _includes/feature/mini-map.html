@@ -20,9 +20,10 @@
 <style>
 #{{ map_id }} { height: {{ include.height | default: '400px' }}; z-index: 98; }
 </style>
-<div id="{{ map_id }}"></div>
+<div id="{{ map_id }}" ></div>
 {% if include.map-link == true %}
 <a href="{{ '/map.html' | relative_url }}?location={{ map-item.latitude | default: include.latitude }},{{ map-item.longitude | default: include.longitude }}{%if include.objectid %}&marker={{ include.objectid }}{% endif %}" class="btn btn-outline-primary my-3">View on Full Map</a>{% endif %}
+{% if include.caption %}<p class="mt-0 mb-3 py-3 bg-light small ps-2">{{include.caption}}</p>{% endif %}
 <!-- load leaflet dependencies -->
 <link rel="stylesheet" href="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/leaflet.css">
 <link rel="stylesheet" href="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/leaflet.fullscreen.css">

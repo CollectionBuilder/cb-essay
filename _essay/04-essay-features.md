@@ -39,19 +39,21 @@ Styled quotations with optional attribution and source links.
    source="Book or Article Title" %}{% endraw %}
 ```
 
-### Large Centered Quote
+### Large Centered Quote w/ No Border
 
 {% include essay/feature/blockquote.html
    quote="The only way out is through"
    size="xl"
-   align="center" %}
+   align="center" 
+   border=false %}
 
 **Copy this:**
 ```liquid
 {% raw %}{% include essay/feature/blockquote.html
    quote="Your dramatic quote"
    size="xl"
-   align="center" %}{% endraw %}
+   align="center"
+   border=false  %}{% endraw %}
 ```
 
 **Size options:** `sm`, `md`, `lg`, `xl`, `xxl`
@@ -93,8 +95,11 @@ Collection items can appear in asides with thumbnails.{% include essay/feature/a
 
 Display multiple collection items as inline galleries.
 
+ {% include feature/gallery.html heading="Items after 1900"  captions=false filter="item.format contains 'image'" %}
+
+
 {% include essay/feature/image-gallery.html
-   objectid="demo_001;demo_005;demo_012" %}
+   objectid="demo_033;demo_031;demo_017" caption=false%}
 
 **Copy this:**
 ```liquid
@@ -113,14 +118,16 @@ Embed small maps at specific coordinates.
 {% include feature/mini-map.html
    latitude="46.727485"
    longitude="-117.014185"
-   zoom="12" %}
+   map-zoom="18" 
+   caption="This is the library where I work!" %}
 
 **Copy this:**
 ```liquid
 {% raw %}{% include feature/mini-map.html
    latitude="46.727485"
    longitude="-117.014185"
-   zoom="12" %}{% endraw %}
+   map-zoom="18" 
+   caption="This is the library where I work!" %}{% endraw %}
 ```
 
 **Finding coordinates:**
@@ -215,7 +222,7 @@ Thoreau's cabin was located on the shores of Walden Pond{% include essay/feature
 {% include feature/mini-map.html
    latitude="42.4407"
    longitude="-71.3428"
-   zoom="14" %}
+   map-zoom="14" %}
 
 The location provided the solitude Thoreau sought for his philosophical experiment in simple living.
 

@@ -54,10 +54,6 @@ Gerard Manley Hopkins's poem presented in the **essay theme** with scrolling tra
 **View:** [dcnb.github.io/wreck-of-the-deutschland](https://dcnb.github.io/wreck-of-the-deutschland) 
 
 
-### Bonus: Project Gutenberg Extractor
-
-Want to publish a public domain book? Use our **GitHub Action** to extract any of **60,000+ books** from Project Gutenberg directly into your `_essay/` folder - pre-formatted and ready to publish. 
-
 
 ## Next Steps
 

@@ -7,24 +7,62 @@
     E.G. --> {% include essay/feature/image-gallery.html objectid="demo_001" %}
     E.G. --> {% include essay/feature/image-gallery.html objectid="demo_001;demo_002;demo_003" width="75" %}
     E.G. --> {% include essay/feature/image-gallery.html objectid="/assets/img/photo.jpg" alt="Description" caption="My Photo" %}
+    E.G. --> {% include essay/feature/image-gallery.html filter="item.date > '1900'" heading="Items after 1900" %}
 
     Options:
-    - "objectid" = one or more items to display, several options below (required)
+    - "objectid" = one or more items to display, several options below (optional if using filter)
         1. one or more objectids from this collection, separated by semicolon, e.g. "demo_001" or "demo_001;demo_005"
         2. a full URL to an external image file, e.g. "https://example.com/image.jpg"
         3. a relative link to an image file stored in this repository (not in collection), e.g. "/assets/img/photo.jpg"
         IMPORTANT: Options 2 and 3 require an "alt" option for accessibility
+    - "filter" = liquid logic statement to filter collection items, e.g. "item.date > '1900'" or "item.subject contains 'postcard'" (optional, CASE-SENSITIVE)
+    - "filter-field" = metadata field to filter by (alternative to filter) (optional)
+    - "filter-value" = value to filter for (use with filter-field) (optional)
+    - "heading" = heading text above the gallery (optional)
+    - "image-heading" = objectid or image path for jumbotron header above gallery (optional)
+    - "context" = paragraph explanation of the gallery contents (optional)
     - "alt" = alternative text describing the image(s). Required for external URLs or relative links (options 2 and 3). For collection items, automatically uses image_alt_text, description, or title from metadata. For multiple images, separate with semicolons (optional for collection items, required for external/relative images)
     - "caption" = custom caption text. For collection items (option 1), defaults to item title from metadata; set to false ('caption=false' - no quotes) to remove caption. For external/relative images (options 2 and 3), only displays if explicitly set. For multiple images, separate with semicolons (optional)
     - "link" = custom URL for image links. For collection items, defaults to item page. For external/relative images, defaults to the image file itself. For multiple images, separate with semicolons (optional)
     - "width" = responsive width on desktop as percentage: "25", "50", "75", or "100" (will be 100% on mobile) (optional)
+    - "limit" = maximum number of items to display when using filter, default 50 (optional)
 
 {%- endcomment -%}
+{% comment %} Handle filter-based gallery {% endcomment %}
+{% if include.filter or include.filter-field %}
+{%- assign gallery-items = site.data[site.metadata] | where_exp: 'item','item.objectid and item.parentid == nil' -%}
+{%- assign gallery-items = gallery-items | where_exp: "item","item.image_small != nil or item.image_thumb != nil" -%}
+{%- if include.filter-field and include.filter-value -%}
+{%- assign gallery-items = gallery-items | where_exp: 'item','item[include.filter-field] contains include.filter-value' -%}
+{%- elsif include.filter -%}
+{%- assign gallery-items = gallery-items | where_exp: 'item',include.filter -%}
+{% endif %}
+{% assign gallery-limit = include.limit | default: 50 %}
+{% comment %} Generate objectid list from filtered items {% endcomment %}
+{%- capture filtered_objectids -%}
+{%- for item in gallery-items limit:gallery-limit -%}
+{{ item.objectid }}{% unless forloop.last %};{% endunless %}
+{%- endfor -%}
+{%- endcapture -%}
+{%- assign figures = filtered_objectids | split: ";" -%}
+{% else %}
 {%- assign figures = include.objectid | split: ";" %}
+{% endif %}
 {%- assign figcount = figures | size -%}
 {%- assign captions = include.caption | split: ";" %}
 {%- assign alts = include.alt | split: ";" -%}
 {%- assign links = include.link | split: ";" -%}
+
+{% comment %} Display optional header {% endcomment %}
+{% if include.image-heading and include.heading %}
+{% include feature/jumbotron.html objectid=include.image-heading heading=include.heading text=false padding="5rem" %}
+{% elsif include.image-heading %}
+{% include feature/jumbotron.html objectid=include.image-heading %}
+{% elsif include.heading %}
+<h2>{{ include.heading }}</h2>
+{% endif %}
+{% if include.context %}<p>{{ include.context }}</p>{% endif %}
+
 <div class="row">
 {% for i in figures %}
 {% if i contains "/" %}
