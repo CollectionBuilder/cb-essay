@@ -121,14 +121,14 @@ This makes it easy to insert essays later without renumbering everything.
 ## Learn More
 
 - Read the demo essays in this folder for examples
-- See [Essay Writing Guide](../docs/cb-essay/essay-writing.md) for detailed reference
-- See [Essay Features Reference](../docs/cb-essay/essay-features.md) for complete feature documentation
-- See [Collection Integration](../docs/cb-essay/gutenberg-extraction.md) for working with collection items
+- See [CB-Essay Documentation](/docs.html) for complete reference
+- Check the [Essay Features section](/docs.html#essay-features) for all available features
+- Learn about [Collection Integration](/docs.html#collection-integration)
 
 ## Getting Help
 
-- [CB-Essay Documentation](../docs/cb-essay/)
-- [CollectionBuilder Docs](../docs/)
+- [CB-Essay Documentation](/docs.html)
+- [CollectionBuilder Docs](https://collectionbuilder.github.io/cb-docs/)
 - [GitHub Issues](https://github.com/CollectionBuilder/cb-essay/issues)
 
 ---

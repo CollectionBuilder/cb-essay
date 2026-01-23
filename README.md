@@ -31,7 +31,7 @@ CB-Essay is a Jekyll-based static site generator that extends [CollectionBuilder
    order: 1
    ---
    ```
-3. **Deploy** - Push to GitHub and enable GitHub Pages
+3. **Deploy** - Go to Settings → Pages, select "GitHub Actions" as source, configure the Jekyll workflow (change ruby-version to 3.4 on line 40), and commit
 
 Essays appear in sequential order based on the `order` field, with automatic prev/next navigation.
 

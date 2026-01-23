@@ -362,7 +362,7 @@ no disaster has accompanied the commencement of an enterprise which you have
 regarded with such evil forebodings.
 ```
 
-See the [Gutenberg Extraction Guide](../docs/cb-essay/gutenberg-extraction.md) for complete workflow.
+See the [Gutenberg Extraction documentation](/docs.html#gutenberg) for complete workflow.
 
 ---
 
@@ -434,10 +434,10 @@ You now understand the complete CB-Essay ecosystem:
 
 ### Keep Learning
 
-- **[CB-CSV Documentation](https://collectionbuilder.github.io/cb-docs/)** - Complete CollectionBuilder reference
+- **[CB-Essay Documentation](/docs.html)** - Complete CB-Essay reference
+- **[CB-CSV Documentation](https://collectionbuilder.github.io/cb-docs/)** - CollectionBuilder reference
 - **[Metadata Guide](https://collectionbuilder.github.io/cb-docs/docs/metadata/csv_metadata/)** - Detailed field specifications
 - **[Features Documentation](https://collectionbuilder.github.io/cb-docs/docs/features/)** - All available includes
-- **[Essay Writing Guide](../docs/cb-essay/essay-writing.md)** - CB-Essay specific workflow
 
 ### Get Help
 

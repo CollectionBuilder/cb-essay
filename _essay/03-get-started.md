@@ -184,19 +184,19 @@ Essays will appear in navigation based on their `order` value, **not** the filen
 
 ## Step 6: Deploy to GitHub Pages
 
-When you're ready to publish your site, you have several options, as detailed here on our [CollectionBuilder's Deployment Documentation](https://collectionbuilder.github.io/cb-docs/docs/deploy/). You can build and publish these sites wherever you have access to a web server. 
+When you're ready to publish your site, you have several options, as detailed here on our [CollectionBuilder's Deployment Documentation](https://collectionbuilder.github.io/cb-docs/docs/deploy/). You can build and publish these sites wherever you have access to a web server.
 
 ### Set Up GitHub Pages with Jekyll Action
 
-The most common way to publish these sites is using GitHub pages below. CB-Essay requires a GitHub Action to build properly. The action is already built in so you don't need to create one, but you should follow the steps below to enable GitHub to publish your site: 
+The most common way to publish these sites is using GitHub Pages. CB-Essay requires a GitHub Action to build properly. Follow these steps to set up deployment:
 
 1. Go to your repository and click the **Settings** menu item at the end of the second row on the page
-2. Click on the **Pages** section on the left-hand side. 
-2. Under **Source**, select **GitHub Actions**
-3. GitHub will suggest the Jekyll workflow - ignore it! You've already got that file. 
-4. Go to your readme.md file in the root of your repository. 
-5. Make and commit a small change -- just add space! 
-6. Once you commit the change, the site will properly rebuild!
+2. Click on the **Pages** section on the left-hand side
+3. Under **Source**, select **GitHub Actions**
+4. GitHub will display a **Jekyll** workflow option - click **Configure** on that option
+5. In the workflow file that opens, find line 40 where it says `ruby-version: '3.1'`
+6. Change the version from `3.1` to `3.4`
+7. Click **Commit changes** to save the workflow file
 
 That's it! Every time you commit changes from there on out, GitHub Actions will automatically build and deploy your site.
 
@@ -219,7 +219,7 @@ Now that your site is running, explore what you can do:
 - **[Essay Features](04-essay-features.html)** - Learn all available features with copy-paste examples
 - **[Collection Integration](05-collection-integration.html)** - Add collection items to your essays
 
-Or dive into the [documentation](https://github.com/CollectionBuilder/cb-essay/tree/main/docs/cb-essay).
+Or dive into the [documentation](/docs.html).
 
 ---
 

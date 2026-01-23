@@ -63,7 +63,7 @@ Ready to get started? The remaining essays walk you through everything:
 - **[Essay Features](04-essay-features.html)** - Learn and copy all available features
 - **[Collection Integration](05-collection-integration.html)** - Blend essays with collection items
 
-Or jump straight to the [documentation](https://github.com/CollectionBuilder/cb-essay/tree/main/docs/cb-essay) for reference guides.
+Or jump straight to the [documentation](/docs.html) for reference guides.
 
 ---
 

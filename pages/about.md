@@ -75,10 +75,10 @@ This demo site is self-documenting. Each essay teaches you how to use CB-Essay w
 Ready to create your essay?
 
 1. [Use this template](https://github.com/CollectionBuilder/cb-essay/generate)
-2. Check out the [Getting Started Guide](/essay/02-getting-started.html)
-3. Explore the [documentation](https://github.com/CollectionBuilder/cb-essay/tree/main/docs/cb-essay)
+2. Check out the [Getting Started Guide](/essay/03-get-started.html)
+3. Explore the [documentation](/docs.html)
 
-Questions? See our [documentation](/docs/cb-essay/) or [open an issue](https://github.com/CollectionBuilder/cb-essay/issues).
+Questions? See our [documentation](/docs.html) or [open an issue](https://github.com/CollectionBuilder/cb-essay/issues).
 
 ---
 
