@@ -84,7 +84,7 @@ Check out some examples sites, then get started. The remaining essays show off C
 - **[Essay Features](04-essay-features.html)** - Learn and copy all available features
 - **[Collection Integration](05-collection-integration.html)** - Blend essays with collection items
 
-Or jump straight to the [documentation](/docs.html) for reference guides.
+Or jump straight to the [documentation]({{ '/docs.html' | relative_url }}) for reference guides.
 
 ---
 

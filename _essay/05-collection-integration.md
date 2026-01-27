@@ -434,7 +434,7 @@ You now understand the complete CB-Essay ecosystem:
 
 ### Keep Learning
 
-- **[CB-Essay Documentation](/docs.html)** - Complete CB-Essay reference
+- **[CB-Essay Documentation]({{ '/docs.html' | relative_url }})** - Complete CB-Essay reference
 - **[CB-CSV Documentation](https://collectionbuilder.github.io/cb-docs/)** - CollectionBuilder reference
 - **[Metadata Guide](https://collectionbuilder.github.io/cb-docs/docs/metadata/csv_metadata/)** - Detailed field specifications
 - **[Features Documentation](https://collectionbuilder.github.io/cb-docs/docs/features/)** - All available includes
