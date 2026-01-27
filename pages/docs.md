@@ -359,13 +359,21 @@ For complete theme documentation, see [Theme Options Guide](https://github.com/C
 
 ### `_config.yml`
 
-**Site basics:**
+**Homepage cover page settings:**
 ```yaml
 title: Your Essay Title
-author: Your Name
-tagline: A brief tagline
+author: Your Name  # Displays as "by Your Name" on cover
+tagline: A brief tagline  # Only shows if author is empty
 description: Longer description for search engines
 ```
+
+**Cover page display notes:**
+- `title` always displays prominently on the cover page
+- `author` appears as "by [Author Name]" beneath title
+  - If provided, replaces the tagline on cover page
+  - Use HTML for multi-line: `author: "Name<br>Edited by Editor"`
+- `tagline` only displays if `author` field is empty
+  - Can also use HTML for multi-line display
 
 **Essay collection (already configured):**
 ```yaml

@@ -29,6 +29,7 @@ concurrency:
 jobs:
   # Build job
   build:
+    if: github.repository == 'collectionbuilder/cb-essay'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -54,6 +55,7 @@ jobs:
 
   # Deployment job
   deploy:
+    if: github.repository == 'collectionbuilder/cb-essay'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

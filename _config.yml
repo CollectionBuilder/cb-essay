@@ -45,17 +45,37 @@ source-code: https://github.com/CollectionBuilder/collectionbuilder-csv
 ##########
 # SITE SETTINGS
 #
-# title of site appears in banner
+# HOMEPAGE COVER PAGE DISPLAY:
+# These fields control what appears on your homepage cover/title page
+#
+# title: Main title displayed prominently on the cover page (required)
 title: CB-Essay
-author: 
-# tagline, a short phrase that will appear throughout the site in the top banner
+#
+# author: Appears as "by [Author Name]" beneath the title on cover page (optional)
+# - If provided, this displays instead of the tagline
+# - Leave blank to show tagline instead
+# - You can use HTML to add line breaks or additional attribution:
+#   author: "Author Name<br>Edited by Editor Name<br>Translated by Translator Name"
+author:
+#
+# tagline: A subtitle/tagline that appears beneath the title (optional)
+# - Only displays if "author" field is empty
+# - Use for descriptive subtitle or project tagline
+# - Can also use HTML for multi-line display:
+#   tagline: "A Digital Edition<br>Published 2024"
 tagline: Essay in the front, CollectionBuilder in the back
-# description appears in meta tags and other locations
-# this description might appear in search result lists, keep around 160 characters max
+#
+# METADATA FIELDS (for search engines and social media):
+#
+# description: Longer description for search engines and social sharing (recommended)
+# - Appears in meta tags and search results
+# - Keep around 160 characters max for best display in search results
 description: "CB-Essay combines CollectionBuilder-CSV with essay and exhibit capabilities, allowing you to create multi-modal narratives that incorporate items from your digital collection directly into your writing and pages."
-# keywords, a short list of subjects describing the collection, separated by semicolon, to appear in rich markup
+#
+# keywords: Short list of subjects separated by semicolons, for rich markup metadata
 keywords: digital humanities; multimodal essays; lib-static
-# creator of the digital collection, to appear in meta tags; we typically use our GitHub usernames but feel free to just use your name
+#
+# exhibit-creator: Creator of the digital collection for meta tags (your name or GitHub username)
 exhibit-creator: dcnb
 
 ##########

@@ -1,6 +1,7 @@
 ---
 title: CB-Essay in the Wild
-order: 1
+order: 20
+byline: Devin Becker
 ---
 
 

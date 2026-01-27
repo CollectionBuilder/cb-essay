@@ -131,13 +131,23 @@ image-style: no-image
 
 ### Site Metadata
 
+Settings in `_config.yml` control your homepage cover page:
+
 ```yaml
 # In _config.yml
 title: "Your Essay Title"
-author: "Your Name"
-tagline: "A brief description"
+author: "Your Name"  # Displays as "by Your Name" on cover
+tagline: "A brief description"  # Only shows if author is empty
 description: "Longer description for search engines"
 ```
+
+**Cover Page Display:**
+- `title`: Main title (always displayed)
+- `author`: Appears as "by [Author Name]" beneath title
+  - If provided, replaces the tagline on the cover page
+  - Use HTML for multi-line attribution: `author: "Author Name<br>Edited by Editor<br>Translated by Translator"`
+- `tagline`: Subtitle/description (only displays if author is empty)
+  - Can also use HTML: `tagline: "A Digital Edition<br>Published 2024"`
 
 ### Featured Image
 
