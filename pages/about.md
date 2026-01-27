@@ -76,9 +76,9 @@ Ready to create your essay?
 
 1. [Use this template](https://github.com/CollectionBuilder/cb-essay/generate)
 2. Check out the [Getting Started Guide](/essay/03-get-started.html)
-3. Explore the [documentation](/docs.html)
+3. Explore the [documentation]({{ '/docs.html' | relative_url }})
 
-Questions? See our [documentation](/docs.html) or [open an issue](https://github.com/CollectionBuilder/cb-essay/issues).
+Questions? See our [documentation]({{ '/docs.html' | relative_url }}) or [open an issue](https://github.com/CollectionBuilder/cb-essay/issues).
 
 ---
 

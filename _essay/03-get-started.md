@@ -230,7 +230,7 @@ Now that your site is running, explore what you can do:
 - **[Essay Features](04-essay-features.html)** - Learn all available features with copy-paste examples
 - **[Collection Integration](05-collection-integration.html)** - Add collection items to your essays
 
-Or dive into the [documentation](/docs.html).
+Or dive into the [documentation]({{ '/docs.html' | relative_url }}).
 
 ---
 
