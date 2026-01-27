@@ -1,6 +1,6 @@
 ---
 title: Collection Integration
-order: 5
+order: 50
 ---
 
 CB-Essay's real power emerges when you integrate collection items with your narrative. This essay explains the **dual-collection model** and shows you how to weave digital objects seamlessly into your writing using real examples from this site's demo collection.

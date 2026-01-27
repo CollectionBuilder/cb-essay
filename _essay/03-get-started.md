@@ -1,6 +1,6 @@
 ---
 title: Get Started with CB-Essay
-order: 2
+order: 20
 ---
 
 This guide walks you through creating your first CB-Essay project from scratch. You'll have a working essay site in about 10 minutes.
@@ -143,12 +143,23 @@ Edit two main configuration files:
 
 ### `_config.yml` - Site Settings
 
+These settings control what appears on your homepage cover page:
+
 ```yaml
 title: "Your Essay Title"
-author: "Your Name"
-tagline: "A brief description"
+author: "Your Name"  # Displays as "by Your Name" on cover page
+tagline: "A brief description"  # Only shows if author is empty
 description: "Longer description for search engines (160 chars)"
 ```
+
+**Cover Page Display:**
+- **title**: Your main title (always displays)
+- **author**: Shows as "by [Author Name]" beneath the title
+  - If you provide an author, it displays *instead of* the tagline
+  - You can use HTML for multiple lines: `author: "Author Name<br>Edited by Editor Name"`
+- **tagline**: Only displays if author field is empty
+  - Use for subtitle or project description
+  - Can also use HTML: `tagline: "A Digital Edition<br>Published 2024"`
 
 ### `_data/theme.yml` - Appearance
 
