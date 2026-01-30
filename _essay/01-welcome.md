@@ -3,11 +3,11 @@ title: Welcome to CB-Essay
 order: 1
 ---
 
-**Let's all stop writing digital scholarship pieces in Microsoft Word.** And let's start encouraging students writing for digital projects to do the same. 
+**Let's all stop writing digital scholarship pieces in Microsoft Word.** And let's start encouraging students writing for digital projects to do the same.
 
 So many times, during the 15 years I've been doing this, I've given up at the end of a project and allowed this to happen, capitulating to the dominant, bloated, ugly and overwrought writing technology of the time in order to *make it easy*{% include essay/feature/aside.html text="As my colleague Evan notes: Word is not easy! It's incredibly complicated!" %} for faculty or students who are ostensibly producing writing for projects that are meant for the web and meant to improve the digital literacy of those completing them. 
 
-I think it's time we stopped doing that, and in order to make that easier, we made a tool that helps one to truly ***write with, on, and for*** the web. 
+I think it's time we stopped doing that, and in order to make that easier, we made a tool that helps one to truly ***write with, on, and for*** the web.{% include essay/feature/aside.html text="Note: If you need the WSIWYG, use Google Docs then download in Markdown!" %} 
 
 ## What Is It?
 
