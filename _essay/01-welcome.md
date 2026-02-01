@@ -5,13 +5,15 @@ order: 1
 
 **Let's all stop writing digital scholarship pieces in Microsoft Word.** And let's start encouraging students writing for digital projects to do the same.
 
-So many times, during the 15 years I've been doing this, I've given up at the end of a project and allowed this to happen, capitulating to the dominant, bloated, ugly and overwrought writing technology of the time in order to *make it easy*{% include essay/feature/aside.html text="As my colleague Evan notes: Word is not easy! It's incredibly complicated!" %} for faculty or students who are ostensibly producing writing for projects that are meant for the web and meant to improve the digital literacy of those completing them. 
+I know it's hard. So many times, during the 10+ years I've been doing this, I've given up at the end of a project and allowed this to happen, capitulating to the dominant, bloated, ugly and overwrought writing technology of the time in order to *make it easy*{% include essay/feature/aside.html text="As my colleague Evan notes: Word is not easy! It's incredibly complicated!" %} for the faculty or students who are producing writing for projects that are meant for the web and meant to improve the digital literacy of those completing them. 
 
-I think it's time we stopped doing that, and in order to make that easier, we made a tool that helps one to truly ***write with, on, and for*** the web.{% include essay/feature/aside.html text="Note: If you need the WSIWYG, use Google Docs then download in Markdown!" %} 
+And this is not to cast aspersions on them or myself: learning new technologies takes time, and time is short, especially during a semester. 
+
+I think it's time we stopped doing giving in tho. So in order to make that easier, we made a tool that helps one to truly ***write with, on, and for*** the web.{% include essay/feature/aside.html text="Note: If you need the WSIWYG, use Google Docs then download in Markdown!" %} 
 
 ## What Is It?
 
-CB-Essay is a Jekyll-based framework that combines **long-form essay writing** with **digital collection features**. Built on CollectionBuilder, it enables you to create multimodal scholarly narratives, written in Markdown, that integrate primary sources, archival materials, and multimedia items directly into your texts.
+CB-Essay is a Jekyll-based framework that combines **long-form essay writing** with **digital collection features**. Built on [CollectionBuilder](https://collectionbuilder.github.io/), it enables you to create multimodal scholarly narratives, written in Markdown, that integrate primary sources, archival materials, and multimedia items directly into your texts.
 
 ## What Makes CB-Essay Different?
 
