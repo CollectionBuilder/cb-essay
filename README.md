@@ -125,7 +125,6 @@ Built on [CollectionBuilder-CSV](https://github.com/CollectionBuilder/collection
 
 - **Code:** MIT License
 - **Documentation:** CC-BY
-- Demo content includes essays by Michel de Montaigne (public domain) and items from CDIL collections
 
 ---
 
