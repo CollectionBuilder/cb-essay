@@ -1,0 +1,32 @@
+name: Sync main to galley-demo
+
+on:
+  push:
+    branches: ["main"]
+  
+  # Allows manual trigger
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all branches
+          
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+      - name: Sync to galley-demo
+        run: |
+          git fetch origin galley-demo:galley-demo || git checkout -b galley-demo
+          git checkout galley-demo
+          git merge --ff-only origin/main || git merge origin/main -m "Sync from main branch"
+          git push origin galley-demo
