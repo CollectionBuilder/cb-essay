@@ -9,7 +9,7 @@ I know it's hard. So many times, during the 10+ years I've been doing this, I've
 
 And this is not to cast aspersions on them or myself: learning new technologies takes time, and time is short, especially during a semester. 
 
-I think it's time we stopped doing giving in tho. So in order to make that easier, we made a tool that helps one to truly ***write with, on, and for*** the web.{% include essay/feature/aside.html text="Note: If you need the WSIWYG, use Google Docs then download in Markdown!" %} 
+I think it's time we stopped giving in tho. So in order to make that easier, we made a tool that helps one to truly ***write with, on, and for*** the web.{% include essay/feature/aside.html text="Note: You can also always use Google Docs then download the file Markdown!" %} 
 
 ## What Is It?
 
