@@ -66,9 +66,14 @@ This demo site is self-documenting. Each essay teaches you how to use CB-Essay w
 
 ### Example Projects
 
-- **[Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/)** - Heavily customized multimodal essay exploring queer intimacy in Idaho
-- **Frankenstein** *(coming soon)* - Demonstrates monograph theme with chapter navigation
-- **Wreck of the Deutschland** *(coming soon)* - Essay theme featuring poetry with visual transitions
+- **[Frankenstein](https://dcnb.github.io/frankenstein/)** - Demonstrates monograph theme with chapter navigation
+- **[Wreck of the Deutschland](https://dcnb.github.io/wreck-of-the-deutschland/)** - Essay theme featuring poetry with visual transitions
+
+### Heavily Customized Examples
+
+- **[Sedimentation]https://cdil.lib.uidaho.edu/sedimentation/)** - Connected, sectioned essays on the history of Glen Canyon and the Glen Canyon Dam 
+- **[Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/)** - A multi-lingual, multimodal essay on Gaëtane Buttigieg's life, art, and forced institutionalization in the 1970s.
+
 
 ### Get Started
 

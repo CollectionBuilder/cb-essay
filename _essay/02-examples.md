@@ -19,7 +19,6 @@ The first CB-Essay, this essay uses archival items from the University of Idaho'
 
 **View:** [cdil.lib.uidaho.edu/fire-lines](https://cdil.lib.uidaho.edu/fire-lines/)
 
-
 ### Tender Spaces: Multimodal, Multilingual 5-Part Essay
 
 {% include feature/image.html objectid="/assets/img/tender_spaces.png" alt="Tender Spaces screenshot" link="https://cdil.lib.uidaho.edu/tender-spaces/"%}
@@ -44,9 +43,7 @@ You can watch me build this site in the video below!
 
 **View:** [dcnb.github.io/frankenstein](https://dcnb.github.io/frankenstein) 
 
-
-
-### The Wreck of the Deutschland: Single-page, scrollytold poem
+### The Wreck of the Deutschland: Single-page, sectioned poem with scroll interactions
 
 {% include feature/image.html objectid="/assets/img/wreck.png" alt="Wreck of the Deutschland poem edition preview" link="https://dcnb.github.io/wreck-of-the-deutschland"%}
 

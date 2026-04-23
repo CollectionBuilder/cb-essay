@@ -5,24 +5,25 @@ order: 1
 
 **Let's all stop writing digital scholarship pieces in Microsoft Word.** And let's start encouraging students writing for digital projects to do the same.
 
-I know it's hard. So many times, during the 10+ years I've been doing this, I've given up at the end of a project and allowed this to happen, capitulating to the dominant, bloated, ugly and overwrought writing technology of the time in order to *make it easy*{% include essay/feature/aside.html text="As my colleague Evan notes: Word is not easy! It's incredibly complicated!" %} for the faculty or students who are producing writing for projects that are meant for the web and meant to improve the digital literacy of those completing them. 
+I know it's hard. So many times, during the 10+ years I've been doing this, I've given up at the end of a project and allowed this to happen, capitulating to the dominant, overwrought writing technology of our time in order to *make it easy*{% include essay/feature/aside.html text="As my colleague Evan notes: Word is not easy! It's incredibly complicated!" %} on myself and the faculty or students we work with.  
 
 And this is not to cast aspersions on them or myself: learning new technologies takes time, and time is short, especially during a semester. 
 
-I think it's time we stopped giving in tho. So in order to make that easier, we made a tool that helps one to truly ***write with, on, and for*** the web.{% include essay/feature/aside.html text="Note: You can also always use Google Docs then download the file Markdown!" %} 
+I think it's time we stopped giving in tho. And in order to make that easier, we made a tool that helps users to truly ***write with, on, and for*** the web.{% include essay/feature/aside.html text="Note: And if you really need the WSIWYG, use Google Docs then download in Markdown!" %}
 
-## What Is It?
+This and the following mini-essays will serve as an introduction and starter documentation. 
 
-CB-Essay is a Jekyll-based framework that combines **long-form essay writing** with **digital collection features**. Built on [CollectionBuilder](https://collectionbuilder.github.io/), it enables you to create multimodal scholarly narratives, written in Markdown, that integrate primary sources, archival materials, and multimedia items directly into your texts.
+## So What Is It?
+
+***CB-Essay*** is a Jekyll-based framework that combines **long-form essay writing** with **digital collection features**. Built on [CollectionBuilder](https://collectionbuilder.github.io/), it enables you to create multimodal scholarly narratives, written in Markdown, that integrate primary sources, archival materials, and multimedia items directly into your texts.
 
 ## What Makes CB-Essay Different?
 
-Traditional digital publishing tools treat essays and collections as separate entities. CB-Essay unifies them, allowing you to:
+Traditional digital publishing tools treat essays and collections as separate entities. CB-Essay connects them, allowing you to:
 
-- Write in **simple Markdown** with specialized features for scholarly work
 - **Reference collection items** using simple includes
 - Create **asides and margin notes** that link to primary sources {% include /essay/feature/aside.html text="Like this!" %}
-- Build **interactive visualizations** from your metadata
+- Build **interactive visualizations** from your metadata that help contextualize your work
 - **Publish your work for free** on GitHub 
 - Fashion the readers' experience through **scroll-based interactions and custom typography/fonts** {% include /essay/feature/aside.html text="Keep scrolling to see the next section magically appear!" %}"
 
@@ -35,7 +36,9 @@ CB-Essay operates on a **dual-collection model**:
 1. **Essay Collection** - Your narrative content lives in `_essay/` as Markdown files
 2. **Object Collection** - Primary sources and items defined in a CSV metadata file
 
-CB-Essay allows you to write ***with*** this collection of sources, allowing you to integrate your references, images, documents, recordings, and videos seamlessly into your writing and into the web. Just follow the plan as in the below image. 
+CB-Essay allows you to write ***with*** your collection of sources, allowing you to integrate references, images, documents, recordings, and videos seamlessly into your writing and into the web. 
+
+Just follow the plan as in the below image. 
 
 {% include essay/feature/aside.html text="Below image credits: The Miriam and Ira D. Wallach Division of Art, Prints and Photographs: Photography Collection, The New York Public Library. 'Group farm plan writing meeting. Weld County, Colorado' The New York Public Library Digital Collections. [https://digitalcollections.nypl.org/items/1b0a3fc0-1d42-0139-bac7-0242ac110003](https://digitalcollections.nypl.org/items/1b0a3fc0-1d42-0139-bac7-0242ac110003)" %}
 {% include feature/image.html objectid="/assets/img/writing-plan.jpg" caption="The tool is no more complicated than following this gentleman's instructions!" alt="Group working on a farm plan writing project with man pointing at a complex plan written on a large sheet of paper at the front"%}
@@ -44,11 +47,10 @@ CB-Essay allows you to write ***with*** this collection of sources, allowing you
 
 - Sequential **prev/next navigation**
 - Flexible **essay or monograph** themes
-- Built-in **footnotes and citations** support
 - **Margin notes** with collection item integration
 - **Blockquotes** with full attribution
+- **Elegant Print Outputs** using Paged
 - **Image galleries** and **mini-maps** 
-- Integration with **timelines** and **subject clouds**
 - You can also **build your own features!** --> CB-Essay is all yours and totally customizable. 
 
 ### CollectionBuilder Features
@@ -56,8 +58,6 @@ CB-Essay allows you to write ***with*** this collection of sources, allowing you
 - **Compound objects** support
 - **Metadata-driven, SEO-enhanced** item pages  
 - **Search and filtering**
-
-
 
 
 ## Who Should Use CB-Essay?
@@ -74,7 +74,7 @@ CB-Essay is ideal for anyone who wants to write ***write with, on, and for*** th
 
 ### Bonus: Project Gutenberg Extractor
 
-Want to publish a public domain book? Use our [**GitHub Action**](https://dcnb.github.io/frankenstein/action.mp4) to extract any of **60,000+ books** from Project Gutenberg directly into your `_essay/` folder - pre-formatted and ready to publish. 
+Want to publish a public domain book? Use our [**GitHub Action**](https://dcnb.github.io/frankenstein/action.mp4) to extract any of **60,000+ books** from Project Gutenberg directly into your `_essay/` folder - pre-formatted for the site. 
 
 
 ## Next Steps

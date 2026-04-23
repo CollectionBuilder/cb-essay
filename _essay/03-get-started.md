@@ -53,6 +53,9 @@ Work entirely in your browser - **no local installation needed**:
 {% include essay/feature/aside.html
    text="**Bonus:** Use the **Project Gutenberg extractor** (Actions tab) to populate your `_essay/` folder with a complete book automatically!" %}
 
+## More Code-Based Options 
+
+{% capture option_b %}
 ### Option B: GitHub.dev (VS Code in Browser)
 
 Get [a full VS Code editor](https://docs.github.com/en/codespaces/the-githubdev-web-based-editor) without leaving your browser:
@@ -62,10 +65,12 @@ Get [a full VS Code editor](https://docs.github.com/en/codespaces/the-githubdev-
 3. Edit files in a full-featured code editor
    - Replace the content in the `_essay` folder with your own
    - Edit the `_config.yml` file and the `_data/theme.yml` file to change the site's title, theme, featured image, and typography
-4. Use [Source Control panel](https://docs.github.com/en/codespaces/the-githubdev-web-based-editor#commit-your-changes) (third option from the top on the far right) to stage and commit changes
+4. Use [Source Control panel](https://docs.github.com/en/codespaces/the-githubdev-web-based-editor#commit-your-changes) (third option from the top on the far left) to stage and commit changes
 
-**Perfect for:** Multiple file edits, search/replace, file management
+**Good for:** Multiple file edits, search/replace, file management
 
+{% endcapture %}
+{% capture option_c %}
 ### Option C: GitHub Codespaces (Cloud Development)
 
 Get a complete development environment in the cloud:
@@ -76,18 +81,21 @@ Get a complete development environment in the cloud:
 4. Preview with `bundle exec jekyll s`
 5. Use terminal, extensions, and full IDE features
 
-**Perfect for:** Testing features, previewing locally, advanced work
+**Good for:** Testing features, previewing locally, advanced work
 
+{% endcapture %}
+{% capture option_d %}
 ### Option D: Local Development (Advanced)
 
 For local development with Git and Jekyll installed on your computer, follow the [CollectionBuilder-CSV walkthrough](https://collectionbuilder.github.io/cb-docs/docs/walkthroughs/csv-walkthrough/). CB-Essay uses the same setup process.
 
-**Perfect for:** Offline work, full control, fastest preview cycle
+**Good for:** Offline work, full control, fastest preview cycle
+{% endcapture %}
+
+{% include feature/accordion.html title1="Option B: GitHub.dev (VS Code in Browser)" text1=option_b title2="Option C: GitHub Codespaces (Cloud Development)" text2=option_c title3="Option D: Local Development (Advanced)" text3=option_d %}
 
 
 ## Step 3: Add Content (Two Options)
-
-### Option A: Use the Gutenberg Extractor (Quickest!)
 
 Want to start with a complete book? Extract one from Project Gutenberg:
 
@@ -100,8 +108,6 @@ Want to start with a complete book? Extract one from Project Gutenberg:
 Wait a minute - your `_essay/` folder will be populated with chapter files automatically! And your config files (`_config.yml` and `_data/theme.yml`) will be updated with the title, author, and cover image from Project Gutenberg.
 
 **Find books:** Browse [gutenberg.org](https://www.gutenberg.org/) and get the ID from the URL.
-
-### Option B: Write Your Own Essay
 
 No matter which editing method you chose in Step 2, essays use the same format.
 
