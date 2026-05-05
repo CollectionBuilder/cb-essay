@@ -1,0 +1,755 @@
+/*
+ * PRINT-PAGED.SCSS
+ * ================
+ * Compiled into assets/css/print.css — loaded ONLY from print.html.
+ * Never imported into cb.scss.
+ *
+ * Font and color are driven by CSS custom properties injected by print.html
+ * from theme.yml values:
+ *   --print-font   body font family (defaults to Georgia)
+ *   --print-mono   monospace font family (defaults to Courier New)
+ *   --print-text   body text color (defaults to #191919)
+ *
+ * ARCHITECTURAL NOTE:
+ * Essay content HTML may contain `{% include essay/new-section.html %}`
+ * which outputs a raw </div> + <div class="step">. This breaks content out
+ * of .print-essay-body — subsequent sections land in sibling .step divs.
+ * Therefore: styles must apply to element selectors (p, h2, img) or both
+ * .print-essay-body AND .step, not scoped to .print-essay-body alone.
+ * Page column width is defined by @page margins, not CSS max-width.
+ */
+
+/* ============================================================
+   BASE RESET
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: white;
+}
+
+body.print-body {
+  font-family: var(--print-font, Georgia, serif);
+  font-size: 11pt;
+  line-height: 1.68;
+  color: var(--print-text, #191919);
+  background: white;
+}
+
+
+/* ============================================================
+   GLOBAL SUPPRESSION — safe because print.css never loads on the
+   live site. Global (not scoped to parent) because Paged.js
+   restructures the DOM and scoped selectors stop matching.
+   ============================================================ */
+
+.visually-hidden,
+.visually-hidden-focusable,
+.sr-only {
+  display: none !important;
+}
+
+.d-none {
+  display: none !important;
+}
+
+small.mini,
+.mini {
+  display: none !important;
+}
+
+small.text-secondary {
+  display: none !important;
+}
+
+.spotlight-hint,
+[data-spotlight-hint] {
+  display: none !important;
+}
+
+svg[aria-label="fullscreen"],
+svg[aria-label="close"],
+svg[aria-label="arrows-fullscreen"],
+svg[aria-label="link to page"],
+svg[aria-label="external link"] {
+  display: none !important;
+}
+
+/* Site chrome */
+.section-nav-menu,
+.scroll-nav-float,
+.navbar,
+footer,
+#skip-to-content {
+  display: none !important;
+}
+
+/* Scrollama wrappers — force content visible */
+.step {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+
+/* ============================================================
+   @PAGE — margins define the text column width.
+   On Letter (8.5in wide), 1.25in each side = 6in text area.
+   string() and content() wrapped in #{""} to prevent Dart Sass
+   from intercepting them as Sass function calls.
+   ============================================================ */
+
+@page {
+  size: letter;
+  margin-top: 1in;
+  margin-bottom: 1.25in;
+  margin-left: 1.25in;
+  margin-right: 1.5in;
+
+  @top-center {
+    content: #{"string(essay-title)"};
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 9pt;
+    color: rgba(0, 0, 0, 0.45);
+    letter-spacing: 0.05em;
+  }
+
+  @bottom-right {
+    content: counter(page);
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 9pt;
+    color: rgba(0, 0, 0, 0.45);
+  }
+}
+
+@page :left {
+  margin-left: 1.25in;
+  margin-right: 1.25in;
+
+  @bottom-left {
+    content: counter(page);
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 9pt;
+    color: rgba(0, 0, 0, 0.45);
+  }
+
+  @bottom-right { content: none; }
+}
+
+@page :right {
+  margin-left: 1.25in;
+  margin-right: 1.25in;
+
+  @top-center {
+    content: #{"string(section-heading)"};
+  }
+}
+
+@page :first {
+  @top-center { content: none; }
+  @bottom-right { content: none; }
+  @bottom-left { content: none; }
+}
+
+@page :blank {
+  @top-center { content: none; }
+  @bottom-right { content: none; }
+  @bottom-left { content: none; }
+}
+
+
+/* ============================================================
+   TYPOGRAPHY — element-level selectors, no parent scoping.
+   Applies whether content is in .print-essay-body or a .step
+   sibling that broke out of it via new-section.html.
+   ============================================================ */
+
+.print-essay-title { string-set: essay-title #{"content(text)"}; }
+h2 { string-set: section-heading #{"content(text)"}; }
+
+h1 {
+  font-family: var(--print-font, Georgia, serif);
+  font-size: 30pt;
+  font-weight: 300;
+  line-height: 1.2;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: var(--print-text, #191919);
+}
+
+h2 {
+  font-family: var(--print-font, Georgia, serif);
+  font-size: 24pt;
+  font-weight: 400;
+  line-height: 1.3;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--print-text, #191919);
+  break-after: avoid;
+}
+
+h3 {
+  font-family: var(--print-mono, 'Courier New', Courier, monospace);
+  font-size: 13pt;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 2rem;
+  margin-bottom: 0.6rem;
+  color: var(--print-text, #191919);
+  break-after: avoid;
+}
+
+p {
+  margin-bottom: 0.75rem;
+  orphans: 3;
+  widows: 3;
+}
+
+/* Suppress footnote heading from updating the running section header */
+section.footnotes h2 {
+  string-set: none;
+}
+
+blockquote {
+  margin: 1.5rem 0 1.5rem 1.5rem;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.15);
+  font-style: italic;
+  color: var(--print-text, #191919);
+
+  p { margin-bottom: 0.25rem; }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+sup a {
+  font-family: var(--print-mono, 'Courier New', Courier, monospace);
+  font-size: 7.5pt;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+ul, ol {
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+
+  li {
+    margin-bottom: 0.25rem;
+    orphans: 2;
+    widows: 2;
+  }
+}
+
+/* Code blocks — Jekyll/Rouge wraps pre in .highlight; target both */
+pre {
+  font-family: var(--print-mono, 'Courier New', Courier, monospace);
+  font-size: 8.5pt;
+  line-height: 1.55;
+  background: #f4f4f4;
+  border: 0.5pt solid rgba(0, 0, 0, 0.1);
+  padding: 0.65rem 0.85rem;
+  margin: 0.75rem 0;
+  /* Wrap long lines instead of overflowing the page column */
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  /* Keep short-to-medium blocks on one page; long blocks will still split */
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+code {
+  font-family: var(--print-mono, 'Courier New', Courier, monospace);
+  font-size: 0.88em;
+  background: #f4f4f4;
+  padding: 0.1em 0.25em;
+}
+
+pre code {
+  font-size: inherit;
+  background: none;
+  padding: 0;
+  white-space: inherit;
+}
+
+
+/* ============================================================
+   IMAGES
+   ============================================================ */
+
+img {
+  max-width: 100% !important;
+  max-height: 4in !important;
+  height: auto !important;
+  display: block;
+}
+
+figure,
+.figure,
+.spotlight,
+.feature-img,
+.cb-image-wrap {
+  display: block;
+  break-inside: avoid;
+  margin: 1.25rem 0;
+  max-width: 100%;
+}
+
+figcaption,
+.figure-caption,
+.spotlight-caption,
+.img-caption {
+  font-family: var(--print-mono, 'Courier New', Courier, monospace);
+  font-size: 9pt;
+  color: rgba(0, 0, 0, 0.48);
+  margin-top: 0.4rem;
+  line-height: 1.4;
+}
+
+a:has(img) {
+  display: block;
+  text-decoration: none;
+}
+
+video {
+  max-width: 100% !important;
+  max-height: 4in !important;
+  height: auto !important;
+}
+
+
+/* ============================================================
+   BOOTSTRAP UTILITIES USED IN ESSAY CONTENT
+   Defined here since Bootstrap CSS is not loaded on print pages.
+   ============================================================ */
+
+.float-start { float: left; }
+.float-end { float: right; }
+.float-start figure { padding-right: 8px; }
+
+.w-25 { width: 25%; }
+.w-50 { width: 48%; }  /* slightly less than 50% to avoid overflow */
+.w-75 { width: 74%; }
+.w-100 { width: 100%; }
+
+/* CB feature image width/float classes — defined in _base.scss for web,
+   must be duplicated here since cb.scss is not loaded on print pages. */
+.feature-w-25 { width: 25%; }
+.feature-w-50 { width: 50%; }
+.feature-w-75 { width: 75%; }
+.feature-w-100 { width: 100%; }
+.feature-float-end { float: right !important; }
+.feature-float-start { float: left !important; }
+
+.pe-4 { padding-right: 1rem; }
+.ps-4 { padding-left: 1rem; }
+.pe-3 { padding-right: 0.75rem; }
+.ps-3 { padding-left: 0.75rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mt-3 { margin-top: 0.75rem; }
+.mx-3 { margin-left: 0.75rem; margin-right: 0.75rem; }
+.text-center { text-align: center; }
+
+/* Bootstrap grid — flatten into single column, strip flex/grid */
+.row {
+  display: block;
+  margin-left: 0;
+  margin-right: 0;
+  overflow: hidden;
+}
+
+.col-md,
+[class*="col-"] {
+  display: block;
+  width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+  flex: none;
+  max-width: none;
+}
+
+.figure-img { display: block; }
+.img-fluid {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Clearfix for float groups */
+.row::after,
+.print-essay-body::after,
+.step::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.d-flex { display: block; }
+.align-items-center { }
+.justify-content-center { }
+.text-info { color: var(--print-text, #191919); }
+.text-muted { color: rgba(0, 0, 0, 0.48); }
+.border { border: 1px solid rgba(0, 0, 0, 0.15); }
+.rounded { border-radius: 2pt; }
+.p-4 { padding: 1rem; }
+.bg-light { background: #f8f8f8; }
+
+
+/* ============================================================
+   FOOTNOTES — Kramdown outputs <section class="footnotes">
+   at end of content. In print, these are endnotes.
+   ============================================================ */
+
+section.footnotes {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 0.5pt solid rgba(0, 0, 0, 0.15);
+  break-before: avoid;
+
+  h2 {
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 10pt;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-style: normal;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--print-text, #191919);
+  }
+
+  ol {
+    font-size: 9.5pt;
+    line-height: 1.55;
+    padding-left: 1.25rem;
+    color: var(--print-text, #191919);
+
+    li {
+      margin-bottom: 0.4rem;
+      p { margin: 0; }
+    }
+  }
+
+  a.reversefootnote { display: none; }
+}
+
+
+/* ============================================================
+   ASIDES / MARGIN NOTES
+   ============================================================ */
+
+svg.bi-asterisk { display: none !important; }
+
+/* Inline mode (default) — aside rendered as an indented callout block */
+span.aside {
+  display: block;
+  clear: both;
+  margin: 0.75rem 0 0.75rem 1.25rem;
+  padding-left: 0.75rem;
+  border-left: 1pt solid rgba(0, 0, 0, 0.15);
+  font-size: 9pt;
+  line-height: 1.55;
+  color: var(--print-text, #191919);
+
+  img { max-height: 2in !important; }
+  a { color: inherit; text-decoration: underline; }
+}
+
+/* Margin note mode — float aside into widened right @page gutter.
+   @page margin widening is injected as a <style> tag in <head> by print.html
+   when aside-style: margin is set in theme.yml. */
+body.print-margin-notes {
+  svg.bi-asterisk {
+    display: inline !important;
+    opacity: 0.5;
+    width: 6px;
+    height: 6px;
+    vertical-align: super;
+  }
+
+  span.aside {
+    float: right;
+    clear: right;
+    width: 2.1in;
+    margin-right: -2.5in;
+    margin-top: 0.1rem;
+    margin-left: 0.25rem;
+    margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
+    border-left: 0.5pt solid rgba(0, 0, 0, 0.15);
+    font-size: 8.5pt;
+
+    img { max-height: 1.75in !important; }
+  }
+}
+
+
+/* ============================================================
+   INTERACTIVE ELEMENTS — graceful print degradation
+   ============================================================ */
+
+[id^="mini-map"] { display: none !important; }
+a[href*="/map.html"].btn { display: none !important; }
+
+.accordion-button { display: none !important; }
+.accordion-collapse {
+  display: block !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+video { display: none !important; }
+.ratio { display: none !important; }
+
+
+/* ============================================================
+   PRINT TITLE PAGE
+   ============================================================ */
+
+.print-title-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 8in;
+  text-align: center;
+  break-after: page;
+
+  .print-ornament {
+    margin-bottom: 3rem;
+    opacity: 0.35;
+    font-size: 1.25rem;
+    letter-spacing: 0.3em;
+  }
+
+  /* Title page h1 — overrides global h1 above */
+  h1,
+  .print-essay-title {
+    font-family: var(--print-font, Georgia, serif);
+    font-size: 32pt;
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--print-text, #191919);
+    margin: 0 0 1.25rem;
+    max-width: none;
+    font-style: normal;
+  }
+
+  .print-essay-subtitle {
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 11pt;
+    color: rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 0 0 0.75rem;
+  }
+
+  .print-essay-meta {
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 10pt;
+    color: rgba(0, 0, 0, 0.45);
+    margin: 0;
+  }
+}
+
+
+/* ============================================================
+   BOOK COVER PAGE
+   ============================================================ */
+
+.print-cover-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* min-height injected per format by print.html JS — must fit within content area */
+  text-align: center;
+  break-after: right;
+
+  .print-cover-ornament {
+    margin-bottom: 4rem;
+    opacity: 0.35;
+    font-size: 1.25rem;
+    letter-spacing: 0.3em;
+  }
+
+  .print-cover-title {
+    font-family: var(--print-font, Georgia, serif);
+    font-size: 38pt;
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--print-text, #191919);
+    margin: 0 0 1.5rem;
+  }
+
+  .print-cover-subtitle {
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 13pt;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.5);
+    margin: 0 0 4rem;
+  }
+
+  .print-cover-meta {
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 10pt;
+    color: rgba(0, 0, 0, 0.45);
+    line-height: 1.8;
+  }
+}
+
+
+/* ============================================================
+   TABLE OF CONTENTS
+   ============================================================ */
+
+.print-toc {
+  break-before: page;
+  break-after: page;
+
+  h2 {
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 10pt;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    color: var(--print-text, #191919);
+    font-style: normal;
+    string-set: none;
+  }
+
+  ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 0.5pt dotted rgba(0, 0, 0, 0.15);
+      padding: 0.5rem 0;
+      font-size: 13pt;
+
+      a {
+        color: inherit;
+        text-decoration: none;
+        flex: 1;
+
+        &::after {
+          content: #{"target-counter(attr(href), page)"};
+          float: right;
+          font-family: var(--print-mono, 'Courier New', Courier, monospace);
+          font-size: 8.5pt;
+          color: rgba(0, 0, 0, 0.48);
+        }
+      }
+    }
+  }
+}
+
+
+/* ============================================================
+   PRINT CONTROL BAR (screen-only)
+   Dark background ensures clear separation from white page content.
+   ============================================================ */
+
+.print-control-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: #2a2a2a;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  padding: 0.55rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--print-mono, 'Courier New', Courier, monospace);
+  font-size: 0.8rem;
+
+  .print-control-title {
+    flex: 1;
+    color: #d8d8d8;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .format-selector { display: flex; gap: 2px; }
+
+  .format-btn {
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 0.72rem;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: transparent;
+    color: #c0c0c0;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: all 120ms ease;
+    line-height: 1.4;
+
+    &:hover { background: rgba(255, 255, 255, 0.1); color: #f0f0f0; }
+
+    &.active {
+      background: #f0f0f0;
+      color: #2a2a2a;
+      border-color: #f0f0f0;
+    }
+  }
+
+  .print-btn {
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 0.72rem;
+    padding: 0.25rem 0.9rem;
+    background: #f0f0f0;
+    color: #2a2a2a;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1.4;
+    transition: background 120ms ease;
+
+    &:hover { background: #ffffff; }
+  }
+
+  .print-back-link {
+    color: #909090;
+    text-decoration: none;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+
+    &:hover { color: #e0e0e0; }
+  }
+}
+
+body.has-print-bar { padding-top: 3rem; }
+
+@media print {
+  .print-control-bar { display: none !important; }
+  body.has-print-bar { padding-top: 0; }
+}
+
+/* Screen-only: constrain content width before/while Paged.js renders */
+@media screen {
+  #print-content {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 1rem 2rem 4rem;
+  }
+}

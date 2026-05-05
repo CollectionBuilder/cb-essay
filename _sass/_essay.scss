@@ -190,3 +190,7 @@ video::cue {
         position: relative;
         margin-top: -1px; /* To avoid any gap between sections */
     }
+
+    .accordion-header {
+        margin-top:0px !important;
+    }

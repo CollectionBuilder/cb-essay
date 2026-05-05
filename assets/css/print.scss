@@ -1,0 +1,38 @@
+---
+---
+@import "print-paged";
+
+/* Running headers: site title + current essay title on every page.
+   All three @page selectors must be overridden separately — the :right rule
+   in _print-paged.scss otherwise shows string(section-heading) (the last h2).
+   string() wrapped in #{""} to prevent Dart Sass from evaluating it. */
+
+@page {
+  @top-center {
+    content: "{{ site.title }}" " — " #{"string(essay-title)"};
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 9pt;
+    color: rgba(0, 0, 0, 0.45);
+    letter-spacing: 0.05em;
+  }
+}
+
+@page :left {
+  @top-center {
+    content: "{{ site.title }}" " — " #{"string(essay-title)"};
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 9pt;
+    color: rgba(0, 0, 0, 0.45);
+    letter-spacing: 0.05em;
+  }
+}
+
+@page :right {
+  @top-center {
+    content: "{{ site.title }}" " — " #{"string(essay-title)"};
+    font-family: var(--print-mono, 'Courier New', Courier, monospace);
+    font-size: 9pt;
+    color: rgba(0, 0, 0, 0.45);
+    letter-spacing: 0.05em;
+  }
+}

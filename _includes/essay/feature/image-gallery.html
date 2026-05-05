@@ -7,62 +7,24 @@
     E.G. --> {% include essay/feature/image-gallery.html objectid="demo_001" %}
     E.G. --> {% include essay/feature/image-gallery.html objectid="demo_001;demo_002;demo_003" width="75" %}
     E.G. --> {% include essay/feature/image-gallery.html objectid="/assets/img/photo.jpg" alt="Description" caption="My Photo" %}
-    E.G. --> {% include essay/feature/image-gallery.html filter="item.date > '1900'" heading="Items after 1900" %}
 
     Options:
-    - "objectid" = one or more items to display, several options below (optional if using filter)
+    - "objectid" = one or more items to display, several options below (required)
         1. one or more objectids from this collection, separated by semicolon, e.g. "demo_001" or "demo_001;demo_005"
         2. a full URL to an external image file, e.g. "https://example.com/image.jpg"
         3. a relative link to an image file stored in this repository (not in collection), e.g. "/assets/img/photo.jpg"
         IMPORTANT: Options 2 and 3 require an "alt" option for accessibility
-    - "filter" = liquid logic statement to filter collection items, e.g. "item.date > '1900'" or "item.subject contains 'postcard'" (optional, CASE-SENSITIVE)
-    - "filter-field" = metadata field to filter by (alternative to filter) (optional)
-    - "filter-value" = value to filter for (use with filter-field) (optional)
-    - "heading" = heading text above the gallery (optional)
-    - "image-heading" = objectid or image path for jumbotron header above gallery (optional)
-    - "context" = paragraph explanation of the gallery contents (optional)
     - "alt" = alternative text describing the image(s). Required for external URLs or relative links (options 2 and 3). For collection items, automatically uses image_alt_text, description, or title from metadata. For multiple images, separate with semicolons (optional for collection items, required for external/relative images)
     - "caption" = custom caption text. For collection items (option 1), defaults to item title from metadata; set to false ('caption=false' - no quotes) to remove caption. For external/relative images (options 2 and 3), only displays if explicitly set. For multiple images, separate with semicolons (optional)
     - "link" = custom URL for image links. For collection items, defaults to item page. For external/relative images, defaults to the image file itself. For multiple images, separate with semicolons (optional)
     - "width" = responsive width on desktop as percentage: "25", "50", "75", or "100" (will be 100% on mobile) (optional)
-    - "limit" = maximum number of items to display when using filter, default 50 (optional)
 
 {%- endcomment -%}
-{% comment %} Handle filter-based gallery {% endcomment %}
-{% if include.filter or include.filter-field %}
-{%- assign gallery-items = site.data[site.metadata] | where_exp: 'item','item.objectid and item.parentid == nil' -%}
-{%- assign gallery-items = gallery-items | where_exp: "item","item.image_small != nil or item.image_thumb != nil" -%}
-{%- if include.filter-field and include.filter-value -%}
-{%- assign gallery-items = gallery-items | where_exp: 'item','item[include.filter-field] contains include.filter-value' -%}
-{%- elsif include.filter -%}
-{%- assign gallery-items = gallery-items | where_exp: 'item',include.filter -%}
-{% endif %}
-{% assign gallery-limit = include.limit | default: 50 %}
-{% comment %} Generate objectid list from filtered items {% endcomment %}
-{%- capture filtered_objectids -%}
-{%- for item in gallery-items limit:gallery-limit -%}
-{{ item.objectid }}{% unless forloop.last %};{% endunless %}
-{%- endfor -%}
-{%- endcapture -%}
-{%- assign figures = filtered_objectids | split: ";" -%}
-{% else %}
 {%- assign figures = include.objectid | split: ";" %}
-{% endif %}
 {%- assign figcount = figures | size -%}
 {%- assign captions = include.caption | split: ";" %}
 {%- assign alts = include.alt | split: ";" -%}
 {%- assign links = include.link | split: ";" -%}
-
-{% comment %} Display optional header {% endcomment %}
-{% if include.image-heading and include.heading %}
-{% include feature/jumbotron.html objectid=include.image-heading heading=include.heading text=false padding="5rem" %}
-{% elsif include.image-heading %}
-{% include feature/jumbotron.html objectid=include.image-heading %}
-{% elsif include.heading %}
-<h2>{{ include.heading }}</h2>
-{% endif %}
-{% if include.context %}<p>{{ include.context }}</p>{% endif %}
-
 <div class="row">
 {% for i in figures %}
 {% if i contains "/" %}
@@ -71,24 +33,28 @@
 {%- capture image_alt -%}{{ alts[forloop.index0] }}{%- endcapture -%}
 {%- capture image_link -%}{{ links[forloop.index0] | default: image_src }}{%- endcapture -%}
 {% else %}
-{%- assign figure = site.data[site.metadata] | where: "objectid", i | first -%}
+{%- assign metadata_source = page.metadata | default: site.metadata -%}
+{%- assign figure = site.data[metadata_source] | where: "objectid", i | first -%}
+{%- if figure == nil -%}
+  {%- assign figure = site.data[site.metadata] | where: "objectid", i | first -%}
+{%- endif -%}
 {%- capture image_link -%}{{ '/items/' | relative_url }}{% if figure.parentid %}{{ figure.parentid }}.html#{{ figure.objectid }}{% else %}{{ figure.objectid }}.html{% endif %}{% endcapture %}
 {%- capture image_caption -%}{{ captions[forloop.index0] | default: figure.title }}{%- endcapture -%}
 {%- capture image_alt -%}{{ alts[forloop.index0] | default: figure.image_alt_text | default: figure.description | default: figure.title }}{%- endcapture -%}
-{%- capture image_src -%}{{ figure.image_small | default: figure.object_location | relative_url }}{% endcapture %}
+{%- capture image_src -%}{{ figure.object_location | default: figure.image_small | relative_url }}{% endcapture %}
 {% endif %}
 <div class="col-md {% if figcount == 1 %}text-center{% elsif forloop.first %}text-md-end{% elsif forloop.last %}text-md-start{% else %}text-center{% endif %}">
 <figure class="figure mx-3{% if include.width %} feature-w-{{ include.width }}{% endif %}">
 {% if i contains "/" %}
 <a class="spotlight gallery-img" data-download="true" title="{{ image_caption | escape }}" href="{{ image_src }}">
-    <div><div class="visually-hidden">Click for full screen</div><small class="mini text-secondary float-end">{% include feature/icon.html icon="arrows-fullscreen" label="fullscreen" class="ms-1 mini mb-1"%}</small></div>
+    <div class="visually-hidden">Click for full screen</div>
     <img src="{{ image_src }}" alt="{{ image_alt | escape }}" class="img-fluid">
 </a>
 {% else %}
 <a class="spotlight gallery-img" data-objectid="{{ figure.objectid }}" data-download="true" title="{{ figure.title | escape }}" href="{{ figure.object_location }}">
-    <div><div class="visually-hidden">Click to view</div><small class="mini text-secondary float-end">{% include feature/icon.html icon="arrows-fullscreen" label="fullscreen" class="ms-1 mini mb-1"%}</small></div>
+    <div class="visually-hidden">Click to view</div>
     {% if figure.image_small or figure.image_thumb %}
-    <img src="{{ figure.image_small | default: figure.image_thumb | relative_url }}" alt="{{ figure.image_alt_text | default: figure.description | default: figure.title | escape }}" class="img-fluid">
+    <img src="{% if figure.repository contains 'Northern Arizona University' %}{{ figure.object_location | default: figure.image_small | relative_url }}{% else %}{{ figure.image_small | default: figure.object_location  | relative_url }}{% endif %}" alt="{{ figure.image_alt_text | default: figure.description | default: figure.title | escape }}" class="img-fluid">
     {% else %}
     <div class="d-flex align-items-center justify-content-center border rounded p-4 bg-light" style="min-height: 200px;">
         <div class="text-center">
@@ -100,7 +66,7 @@
 </a>
 {% endif %}
 
-{% unless include.caption == false %}<figcaption class="figure-caption text-center mt-2">{% if i contains "/" %}{{ image_caption }}{% else %}<a class="text-info" href="{{ image_link }}" title="link to item page">{{ image_caption }} {% include feature/icon.html icon="box-arrow-up-right" label="link to page" class="ms-1 mini mb-1"%}</a>{% endif %}</figcaption>{% endunless %}
+{% unless include.caption == false %}<figcaption class="figure-caption text-center mt-2">{% if i contains "/" %}{{ image_caption }}{% else %}<a class="text-info" href="{{ image_link }}" title="link to item page">{{ image_caption }} <svg class="bi icon-sprite ms-1 mini mb-1" role="img" aria-label="link to page" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg></a>{% endif %}</figcaption>{% endunless %}
 </figure>
 </div>{% endfor %}
 </div>

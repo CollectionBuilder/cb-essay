@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<!--
+  PRINT LAYOUT — Standalone (no default.html inheritance)
+  =========================================================
+  Routes:
+    /print/book/                       — full book (all essays)
+    /print/book/?essays=slug1,slug2    — filtered to specific essays
+
+  URL PARAMETERS:
+    ?format=letter|a4|69     Page size (persisted to localStorage)
+    ?essays=slug1,slug2,...  Book mode: limit to specified chapters
+
+  ACCESSIBILITY:
+    Chrome's PDF engine builds a tagged PDF from the HTML accessibility tree.
+    Key decisions in this layout:
+    - Paged.js margin boxes (running headers, page numbers) get aria-hidden="true"
+      to mark them as pagination artifacts — excluded from the PDF tag tree.
+    - Footnote sections get role="doc-endnotes" (DPUB-ARIA).
+    - window.PagedConfig = { auto: false } delays Paged.js until the
+      A11yHandler is registered.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  {% assign print_author = site.data.theme.print.author | default: "" %}
+
+  <!-- PDF metadata: Chrome uses <title> for document title, <meta name="author"> for author -->
+  <title>{% if page.book %}{{ site.title }} — Print Edition{% else %}{{ page.title | default: "Print" }} — {{ site.title }}{% endif %}</title>
+  <meta name="author" content="{{ print_author }}">
+  <meta name="description" content="{% if page.book %}Complete print edition of {{ site.title }}{% else %}{{ page.title }} — {{ site.title }}{% endif %}">
+
+  <!-- Prevent Paged.js from auto-rendering before we register our accessibility handler -->
+  <script>window.PagedConfig = { auto: false };</script>
+
+  <!-- Optional: load font-cdn from theme.yml (e.g. a Google Fonts stylesheet URL) -->
+  {% if site.data.theme.font-cdn %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="{{ site.data.theme.font-cdn }}">
+  {% endif %}
+
+  <!-- Print-only CSS (NOT cb.css — that loads globally and would break the live site) -->
+  <link rel="stylesheet" href="{{ '/assets/css/print.css' | relative_url }}">
+
+  <!-- Paged.js hoists @media print rules to global scope (PrintMedia handler), which
+       hides .print-control-bar and removes body padding during the screen preview.
+       media="screen" + data-pagedjs-ignore keeps this block out of Paged.js entirely,
+       so the control bar stays visible while previewing and hidden only when printing. -->
+  <style media="screen" data-pagedjs-ignore>
+    .print-control-bar { display: flex !important; }
+    body.has-print-bar { padding-top: 3rem !important; }
+  </style>
+
+  <!-- CSS custom properties from theme.yml — drive fonts and colors in print.css -->
+  <style>
+    :root {
+      --print-font: {{ site.data.theme.base-font-family | default: 'Georgia, serif' }};
+      --print-mono: 'Courier New', Courier, monospace;
+      --print-text: {{ site.data.theme.text-color | default: '#191919' }};
+    }
+  </style>
+
+  <!-- Format override: reads ?format= URL param and injects @page size rule.
+       Also injects .print-cover-page min-height matched to each format's content
+       area (page height − top margin − bottom margin − small safety buffer), so
+       Paged.js can always fit the cover on page 1 without triggering a blank page. -->
+  <script>
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var format = params.get('format') || localStorage.getItem('print-format') || 'letter';
+      var sizes = { letter: '8.5in 11in', a4: '210mm 297mm', '69': '6in 9in' };
+      // Content area = page height − 1in top − 1.25in bottom − 0.25in buffer
+      var coverHeights = { letter: '8.5in', a4: '9in', '69': '6.25in' };
+      if (sizes[format]) {
+        document.head.insertAdjacentHTML('beforeend',
+          '<style>' +
+          '@page { size: ' + sizes[format] + '; }' +
+          '.print-cover-page { min-height: ' + (coverHeights[format] || '8.5in') + '; }' +
+          '</style>');
+      }
+      window._printFormat = format;
+    })();
+  </script>
+
+  {% if site.data.theme.print.aside-style == 'margin' %}
+  <script>
+    /* Consistent right margin on every page for aside gutter.
+       Three separate rules required — grouped @page selectors are not valid CSS. */
+    document.head.insertAdjacentHTML('beforeend',
+      '<style>' +
+      '@page { margin-right: 2.5in; margin-left: 1.5in; }' +
+      '@page :left { margin-right: 2.5in; margin-left: 1.5in; }' +
+      '@page :right { margin-right: 2.5in; margin-left: 1.5in; }' +
+      '</style>'
+    );
+  </script>
+  {% endif %}
+</head>
+<body class="has-print-bar print-body{% if site.data.theme.print.aside-style == 'margin' %} print-margin-notes{% endif %}">
+
+  <!-- Screen-only control bar — hidden at print time via CSS -->
+  <nav class="print-control-bar" aria-label="Print controls">
+    <span class="print-control-title" aria-live="polite">
+      {% if page.book %}{{ site.title }} — Full Book
+      {% else %}{{ page.title }}{% endif %}
+    </span>
+
+    <a href="{{ '/print/' | relative_url }}" class="print-back-link">← Print Hub</a>
+
+    <div class="format-selector" role="group" aria-label="Page size">
+      <button class="format-btn" data-format="letter" aria-pressed="false">Letter</button>
+      <button class="format-btn" data-format="a4" aria-pressed="false">A4</button>
+      <button class="format-btn" data-format="69" aria-pressed="false">6×9″</button>
+    </div>
+
+    <button class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </nav>
+
+  <!-- Main content — landmark used by screen readers to skip to content -->
+  <main id="print-content">
+
+  {% if page.book %}
+    <!-- ==================== BOOK MODE ==================== -->
+
+    <!-- Cover page -->
+    <div class="print-cover-page">
+      <div class="print-cover-ornament" aria-hidden="true">— — —</div>
+      <h1 class="print-cover-title">{{ site.title }}</h1>
+      {% if site.data.theme.print.cover-subtitle %}<p class="print-cover-subtitle">{{ site.data.theme.print.cover-subtitle }}</p>{% endif %}
+      <div class="print-cover-meta">
+        {% if print_author %}{{ print_author }}<br>{% endif %}
+        {% if site.data.theme.print.institution %}{{ site.data.theme.print.institution }}{% endif %}
+      </div>
+    </div>
+
+    <!-- Table of contents — nav landmark so AT can jump to it -->
+    <nav class="print-toc" aria-label="Table of contents">
+      <h2>Contents</h2>
+      <ol>
+        {% assign sorted_essays = site.essay | sort: "order" %}
+        {% for essay in sorted_essays %}
+        <li><a href="#chapter-{{ essay.slug }}">{{ essay.title }}</a></li>
+        {% endfor %}
+      </ol>
+    </nav>
+
+    <!-- Chapters — each is a self-contained article -->
+    {% for essay in sorted_essays %}
+    <article class="print-chapter" id="chapter-{{ essay.slug }}" data-essay="{{ essay.slug }}" aria-label="{{ essay.title }}">
+
+      <div class="print-title-page">
+        <div class="print-ornament" aria-hidden="true">— —</div>
+        <h1 class="print-essay-title">{{ essay.title }}</h1>
+        {% if essay.byline %}<p class="print-essay-subtitle">{{ essay.byline }}</p>{% endif %}
+        {% if print_author or site.data.theme.print.institution %}
+        <p class="print-essay-meta">{% if print_author %}{{ print_author }}{% endif %}{% if print_author and site.data.theme.print.institution %} · {% endif %}{% if site.data.theme.print.institution %}{{ site.data.theme.print.institution }}{% endif %}</p>
+        {% endif %}
+      </div>
+
+      <div class="print-essay-body">
+        {{ essay.content }}
+      </div>
+
+    </article>
+    {% endfor %}
+
+  {% else %}
+    <div class="print-essay-body">{{ content }}</div>
+  {% endif %}
+
+  </main><!-- end #print-content -->
+
+
+  <!-- ============================================================
+       PRE-RENDER PREP — runs before Paged.js lays out pages
+       ============================================================ -->
+  <script>
+    (function() {
+      // 0. Resolve lazy-loaded images — feature/image.html uses data-src + blank SVG placeholder.
+      //    lazysizes.js is not loaded in print, so images never render without this.
+      document.querySelectorAll('img[data-src]').forEach(function(img) {
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+        img.classList.remove('lazyload');
+      });
+
+      // 0b. Force-expand Bootstrap accordion panels (collapsed by default).
+      document.querySelectorAll('.accordion-collapse').forEach(function(el) {
+        el.classList.add('show');
+        el.style.display = 'block';
+        el.style.height = 'auto';
+      });
+      document.querySelectorAll('.accordion-button').forEach(function(el) {
+        el.style.display = 'none';
+      });
+
+      // 0c. Hide Leaflet mini-maps and iframes (JS-only, not printable).
+      document.querySelectorAll('[id^="mini-map"]').forEach(function(el) {
+        el.style.display = 'none';
+      });
+      document.querySelectorAll('iframe').forEach(function(el) {
+        el.style.display = 'none';
+      });
+
+      // 0d. Handle video — show poster frame if available, then hide player.
+      document.querySelectorAll('video').forEach(function(video) {
+        if (video.poster) {
+          var img = document.createElement('img');
+          img.src = video.poster;
+          img.alt = video.getAttribute('aria-label') || 'Video';
+          video.parentNode.insertBefore(img, video);
+        }
+        video.style.display = 'none';
+      });
+
+      // 1. Footnotes: DPUB-ARIA role on section; relabel heading to "Notes".
+      //    Do NOT set role="doc-endnote" on <li> — it generates a non-standard
+      //    PDF tag that orphans <Lbl>/<LBody> children.
+      document.querySelectorAll('section.footnotes').forEach(function(sec) {
+        sec.setAttribute('role', 'doc-endnotes');
+        var h = sec.querySelector('h2');
+        if (h) h.textContent = 'Notes';
+        sec.querySelectorAll('li').forEach(function(li) { li.removeAttribute('role'); });
+      });
+
+      // 2. Footnote back-links: remove from DOM so they don't appear in the PDF tag tree.
+      document.querySelectorAll('a.reversefootnote').forEach(function(a) {
+        a.parentNode.removeChild(a);
+      });
+
+      // 3. Footnote superscript links: label so AT announces "footnote 1" not just "1".
+      document.querySelectorAll('sup[id^="fnref"] a').forEach(function(a) {
+        var num = a.textContent.trim();
+        if (num) a.setAttribute('aria-label', 'footnote ' + num);
+      });
+
+      // 4. Image links: set aria-label from img alt; remove href so PDF doesn't
+      //    produce broken links to item pages.
+      document.querySelectorAll('a.spotlight.gallery-img').forEach(function(a) {
+        var img = a.querySelector('img');
+        if (img && img.alt) a.setAttribute('aria-label', img.alt);
+        a.removeAttribute('href');
+        a.removeAttribute('data-download');
+      });
+
+      // 5. Ensure every <img> has an alt attribute. Chrome requires it (even if
+      //    empty) to generate a properly tagged PDF Figure entry.
+      document.querySelectorAll('img').forEach(function(img) {
+        if (!img.hasAttribute('alt')) img.setAttribute('alt', '');
+        img.removeAttribute('loading');
+        img.removeAttribute('style');
+      });
+
+      // 6. Ensure <figure> elements have an accessible label for the PDF Figure tag.
+      //    Prefer figcaption text, fall back to img alt. Keep <figure> as-is — replacing
+      //    it with <div> breaks Paged.js layout measurement (causes "Unable to layout item").
+      document.querySelectorAll('figure').forEach(function(fig) {
+        if (!fig.getAttribute('aria-label') && !fig.getAttribute('aria-labelledby')) {
+          var caption = fig.querySelector('figcaption');
+          var img = fig.querySelector('img');
+          if (caption && caption.textContent.trim()) {
+            fig.setAttribute('aria-label', caption.textContent.trim());
+          } else if (img && img.alt) {
+            fig.setAttribute('aria-label', img.alt);
+          }
+        }
+      });
+
+      // 7. Book mode: filter chapters by ?essays= URL param.
+      //    Remove non-matching elements from the DOM entirely — display:none
+      //    leaves elements in the tree and Paged.js still walks them, which
+      //    generates blank pages for each hidden block.
+      var params = new URLSearchParams(window.location.search);
+      var requested = params.get('essays');
+      if (requested) {
+        var allowed = requested.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+        document.querySelectorAll('.print-chapter').forEach(function(ch) {
+          if (allowed.indexOf(ch.dataset.essay) === -1) {
+            ch.parentNode.removeChild(ch);
+          }
+        });
+        if (allowed.length === 1) {
+          var cover = document.querySelector('.print-cover-page');
+          if (cover) cover.parentNode.removeChild(cover);
+          var toc = document.querySelector('.print-toc');
+          if (toc) toc.parentNode.removeChild(toc);
+        }
+      }
+
+      // 8. Format selector button state + click handler
+      var currentFormat = window._printFormat || 'letter';
+      document.querySelectorAll('.format-btn').forEach(function(btn) {
+        var isActive = btn.dataset.format === currentFormat;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        btn.addEventListener('click', function() {
+          var fmt = this.dataset.format;
+          localStorage.setItem('print-format', fmt);
+          var url = new URL(window.location.href);
+          url.searchParams.set('format', fmt);
+          window.location.href = url.toString();
+        });
+      });
+    })();
+  </script>
+
+  <!-- Paged.js — loads after content is in DOM.
+       PagedConfig.auto=false (set in <head>) prevents auto-render
+       so we can register our accessibility handler first. -->
+  <script src="{{ '/assets/lib/paged.polyfill.js' | relative_url }}"></script>
+
+  <!-- Register accessibility handler, then trigger layout. -->
+  <script>
+    (function() {
+      // Runs after Paged.js lays out all pages. Marks injected margin boxes
+      // (running headers, page numbers) aria-hidden so they are excluded from
+      // the PDF tag tree as pagination artifacts per PDF/UA requirements.
+      class A11yHandler extends Paged.Handler {
+        afterRendered(pages) {
+          pages.forEach(function(page) {
+            page.element.querySelectorAll('.pagedjs_margin, .pagedjs_margin-content').forEach(function(m) {
+              m.setAttribute('aria-hidden', 'true');
+            });
+            page.element.setAttribute('role', 'none');
+          });
+
+          // Force the control bar visible. Paged.js's PrintMedia handler hoists
+          // @media print rules to global scope — display:none ends up unconditional.
+          // Inline !important beats any stylesheet !important rule.
+          var bar = document.querySelector('.print-control-bar');
+          if (bar) {
+            bar.style.setProperty('display', 'flex', 'important');
+            // Hide bar for the actual print/PDF operation, restore after.
+            window.addEventListener('beforeprint', function() {
+              bar.style.setProperty('display', 'none', 'important');
+            });
+            window.addEventListener('afterprint', function() {
+              bar.style.setProperty('display', 'flex', 'important');
+            });
+          }
+        }
+      }
+
+      Paged.registerHandlers(A11yHandler);
+
+      // Move content into a detached DocumentFragment before calling preview().
+      // This empties and hides #print-content immediately so there is never a
+      // moment where both the original content and the paginated .pagedjs_pages
+      // are simultaneously visible — eliminating double-render for all URLs and
+      // formats without depending on afterRendered timing.
+      var shell = document.getElementById('print-content');
+      var fragment = document.createDocumentFragment();
+      while (shell.firstChild) {
+        fragment.appendChild(shell.firstChild);
+      }
+      shell.setAttribute('aria-hidden', 'true');
+      shell.style.setProperty('display', 'none', 'important');
+      window.PagedPolyfill.preview(fragment);
+    })();
+  </script>
+
+</body>
+</html>

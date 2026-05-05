@@ -18,6 +18,20 @@
 # Learn more: docs/cb-essay/theme-options.md
 base-theme: essay # essay or monograph
 
+##########
+# PRINT / PDF
+#
+# Paged.js-based print and PDF output for the essay collection.
+# The print hub is available at /print/ once added to config-nav.csv.
+#
+print:
+  author:                  # Author name for PDF <meta> and cover page
+  institution:             # Institution shown on cover page
+  cover-subtitle:          # Subtitle line beneath site title on book cover
+  show-individual: true    # true/false — show individual essay print cards
+  show-book: true          # true/false — show book builder section
+  aside-style: margin      # margin (float into page gutter) | inline (indented callout block)
+
 # TYPOGRAPHY & FONTS
 # Customize text appearance for optimal reading experience
 base-font-size: 1.3em                # Larger fonts work well for long-form reading (1.2em - 1.4em recommended)

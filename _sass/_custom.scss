@@ -33,8 +33,178 @@
     }
 
     #spotlight .spl-footer .spl-button {
-       
+
         text-align: left;
         float: none;
     }
+}
+
+/* ========================================
+   Print Hub Page (/print/)
+   Screen-only UI for composing print/PDF output.
+   ======================================== */
+
+.print-hub {
+  max-width: 860px;
+  margin: 3rem auto;
+  padding: 0 1.5rem 4rem;
+
+  .print-hub-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+    h1 {
+      font-family: system-ui, sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #555;
+      max-width: 55ch;
+      margin: 0;
+    }
+  }
+
+  .print-hub-section {
+    margin-bottom: 2.5rem;
+
+    > h2 {
+      font-family: system-ui, sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .format-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-bottom: 0;
+
+    .format-label {
+      font-family: system-ui, sans-serif;
+      font-size: 0.75rem;
+      color: #777;
+      margin-right: 0.4rem;
+    }
+
+    .format-btn {
+      font-family: system-ui, sans-serif;
+      font-size: 0.72rem;
+      padding: 0.25rem 0.65rem;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      background: transparent;
+      color: #333;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: all 120ms ease;
+
+      &:hover { background: rgba(0, 0, 0, 0.05); }
+
+      &.active {
+        background: #333;
+        color: #fff;
+        border-color: #333;
+      }
+    }
+  }
+
+  .tributary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+
+  .tributary-card {
+    background: #fafafa;
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: #1a1a1a;
+      margin: 0;
+    }
+
+    .card-link {
+      font-family: system-ui, sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #555;
+      text-decoration: none;
+      margin-top: auto;
+      padding-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+
+      &:hover { color: #000; }
+      svg { opacity: 0.6; flex-shrink: 0; }
+    }
+  }
+
+  .book-builder {
+    background: #fafafa;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1.25rem 1.5rem;
+
+    .book-checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.5rem;
+
+      li {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-family: system-ui, sans-serif;
+        font-size: 0.8rem;
+        color: #333;
+
+        input[type="checkbox"] {
+          width: 13px;
+          height: 13px;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .book-generate-btn {
+      font-family: system-ui, sans-serif;
+      font-size: 0.72rem;
+      padding: 0.45rem 1.1rem;
+      background: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      transition: background 120ms ease;
+
+      &:hover { background: #000; }
+    }
+  }
 }
