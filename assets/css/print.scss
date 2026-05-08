@@ -1,6 +1,7 @@
 ---
+# print styles sheet for paged.js cb-essay output
 ---
-@import "print-paged";
+@use "print-paged";
 
 /* Running headers: site title + current essay title on every page.
    All three @page selectors must be overridden separately — the :right rule
