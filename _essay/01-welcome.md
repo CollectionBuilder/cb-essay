@@ -5,7 +5,7 @@ order: 1
 
 We've been encouraging users of CollectionBuilder to write *with* their collections since we first started promoting the framework in 2019, mainly through contextual pages like our About page. 
 
-More recently, we worked with several [Center for Digital Inquiry and Learning](https://cdil.lib.uidaho.edu/) Graduate Student Fellows who wanted to flip our setup around so they could write essays with CollectionBuilder underneath.{% include essay/feature/aside.html text="See [Sedimentation](https://cdil.lib.uidaho.edu/sedimentation/), [Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/), and [Fire Lines](https://cdil.lib.uidaho.edu/fire-lines/)" %} It's led to some great work, and we're excited to open up the framework we've built from those projects to more users. 
+More recently, we worked with several [Center for Digital Inquiry and Learning (CDIL)](https://cdil.lib.uidaho.edu/) Graduate Student Fellows who wanted to flip things around so they could write essays with CollectionBuilder underneath.{% include essay/feature/aside.html text="See [Sedimentation](https://cdil.lib.uidaho.edu/sedimentation/), [Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/), and [Fire Lines](https://cdil.lib.uidaho.edu/fire-lines/)" %} It's led to some great work, and we're excited to open up the framework we've built from those projects to more users. 
 
 CB-Essay is  a publishing framework that lets you ***write with, on, and for*** the web{% include essay/feature/aside.html text="And if you prefer WYSIWYG editors, you can draft in Google Docs and export to Markdown!" %} while maintaining complete control over how your work appears online and in print.
 
