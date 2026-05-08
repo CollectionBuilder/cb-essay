@@ -7,7 +7,7 @@ Additionally, see "color-theme.md" for information about automatic theming Boots
 
 By modifying `navbar-color` and `navbar-background` the basic colors of the navigation elements can be switched following Bootstrap theme colors (see [Bootstrap navbar docs](https://getbootstrap.com/docs/5.1/components/navbar/)).
 
-- `navbar-color`: either navbar-light" for use with light background colors, or "navbar-dark" for dark background colors
+- `navbar-color`: either "light" for use with light background colors, or "dark" for dark background colors
 - `navbar-background`: choose from standard Bootstrap color utilities, bg-primary, bg-secondary, bg-success, bg-danger, bg-warning, bg-info, bg-light, bg-dark, or bg-white
 
 ## Bootswatch themes
