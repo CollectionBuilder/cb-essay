@@ -41,6 +41,37 @@ Essay content can include specialized features via Liquid includes:
 
 These includes are located in `_includes/essay/` and `_includes/feature/`.
 
+### Print/PDF Output
+
+CB-Essay includes sophisticated print and PDF generation capabilities powered by Paged.js:
+
+**Print Hub** (`/print/`):
+- Individual essay printing with selectable page formats (Letter, A4, 6×9″)
+- Book builder for creating custom PDF compilations
+- Format selection persisted in localStorage
+
+**Features**:
+- Paged.js-based pagination with running headers and page numbers
+- Multiple page formats (Letter, A4, 6×9″) via URL parameters
+- Accessible PDF generation with ARIA roles and tagged PDF support
+- Configurable aside/margin note styles (margin float or inline callout)
+- Smart handling of web-only elements (videos, maps, accordions)
+
+**Configuration** (`_data/theme.yml` → `print:` section):
+- `author`: Author name for PDF metadata and cover page
+- `institution`: Institution shown on cover page
+- `cover-subtitle`: Subtitle for book cover
+- `show-individual`: Toggle individual essay print cards (default: true)
+- `show-book`: Toggle book builder section (default: true)
+- `aside-style`: `margin` (floats into page gutter) or `inline` (indented callout block)
+
+**Technical Details**:
+- Print layouts in `_layouts/print.html` and `_layouts/print-hub.html`
+- Print styles in `assets/css/print.scss` and `_sass/_print-paged.scss`
+- Paged.js polyfill loaded from `assets/lib/paged.polyfill.js`
+- URL parameters: `?format=letter|a4|69` and `?essays=slug1,slug2` for filtering
+- Chrome's PDF engine builds tagged PDFs from HTML accessibility tree
+
 ### Page Generation
 
 Custom Jekyll plugin (`_plugins/cb_page_gen.rb`) generates individual pages for collection items based on metadata CSV. The plugin reads configuration from `_config.yml` (page_gen section, optional).
