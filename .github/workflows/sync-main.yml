@@ -1,71 +1,32 @@
-name: Deploy Galley Demo site from galley-demo branch
+name: Sync main to galley-demo
 
 on:
-  workflow_run:
-    workflows:
-      - Sync main to galley-demo
-    types:
-      - completed
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: galley-demo-pages
-  cancel-in-progress: false
+  contents: write
 
 jobs:
-  build:
-    if: >
-      github.repository == 'CollectionBuilder/cb-essay' &&
-      (
-        github.event_name == 'workflow_dispatch' ||
-        github.event.workflow_run.conclusion == 'success'
-      )
+  sync:
+    if: github.repository == 'CollectionBuilder/cb-essay'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout galley-demo branch
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: galley-demo
+          fetch-depth: 0
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.4'
-          bundler-cache: true
-          cache-version: 0
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v5
-
-      - name: Build with Jekyll
-        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
-        env:
-          JEKYLL_ENV: production
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-
-  deploy:
-    if: >
-      github.repository == 'CollectionBuilder/cb-essay' &&
-      (
-        github.event_name == 'workflow_dispatch' ||
-        github.event.workflow_run.conclusion == 'success'
-      )
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Force galley-demo to match main
+        run: |
+          git fetch origin main
+          git checkout -B galley-demo origin/main
+          git push --force-with-lease origin galley-demo
