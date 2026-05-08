@@ -3,15 +3,17 @@ title: Welcome to CB-Essay
 order: 1
 ---
 
-**Let's all stop writing digital scholarship pieces in Microsoft Word.** And let's start encouraging students writing for digital projects to do the same.
+We've been encouraging users of CollectionBuilder to write *with* their collections since we first started promoting the framework in 2019, mainly through contextual pages like our About page. 
 
-I know it's hard. So many times, during the 10+ years I've been doing this, I've given up at the end of a project and allowed this to happen, capitulating to the dominant, overwrought writing technology of our time in order to *make it easy*{% include essay/feature/aside.html text="As my colleague Evan notes: Word is not easy! It's incredibly complicated!" %} on myself and the faculty or students we work with.  
+More recently, we've worked with Grad Students through our [Center for Digital Inquiry and Learning](https://cdil.lib.uidaho.edu/) who wanted to flip our framework around so they could write essays with CollectionBuilder underneath.{% include essay/feature/aside.html text="See [Sedimentation](https://cdil.lib.uidaho.edu/sedimentation/), [Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/), and [Fire Lines](https://cdil.lib.uidaho.edu/fire-lines/)" %} It's led to some great work, and we're excited to open up the framework we've built from those projects to more users. 
 
-And this is not to cast aspersions on them or myself: learning new technologies takes time, and time is short, especially during a semester. 
+CB-Essay is  a publishing framework that lets you ***write with, on, and for*** the web{% include essay/feature/aside.html text="And if you prefer WYSIWYG editors, you can draft in Google Docs and export to Markdown!" %} while maintaining complete control over how your work appears online and in print.
 
-I think it's time we stopped giving in tho. And in order to make that easier, we made a tool that helps users to truly ***write with, on, and for*** the web.{% include essay/feature/aside.html text="Note: And if you really need the WSIWYG, use Google Docs then download in Markdown!" %}
+For the past 10+ years, we've watched digital scholarship projects default to familiar word processors, even when publishing to the web. It makes sense—learning new tools takes time, and time is precious.{% include essay/feature/aside.html text="As my colleague Evan notes: Word is not easy! It's incredibly complicated!" %} But this compromise often means students aren't learning how to write on/with the web and potential web projects aren't being built.
 
-This and the following mini-essays will serve as an introduction and starter documentation. 
+CB-Essay offers a different path: write in Markdown, integrate primary sources and multimedia directly into your text, and publish sophisticated multimodal scholarship to both web and print formats.
+
+The mini-essays below will introduce you to the system and get you started. 
 
 ## So What Is It?
 
@@ -38,9 +40,8 @@ CB-Essay operates on a **dual-collection model**:
 
 CB-Essay allows you to write ***with*** your collection of sources, allowing you to integrate references, images, documents, recordings, and videos seamlessly into your writing and into the web. 
 
-Just follow the plan as in the below image. 
+Just follow the plan as in the below image.{% include essay/feature/aside.html text="Below image credits: The Miriam and Ira D. Wallach Division of Art, Prints and Photographs: Photography Collection, The New York Public Library. 'Group farm plan writing meeting. Weld County, Colorado' The New York Public Library Digital Collections. [https://digitalcollections.nypl.org/items/1b0a3fc0-1d42-0139-bac7-0242ac110003](https://digitalcollections.nypl.org/items/1b0a3fc0-1d42-0139-bac7-0242ac110003)" %}
 
-{% include essay/feature/aside.html text="Below image credits: The Miriam and Ira D. Wallach Division of Art, Prints and Photographs: Photography Collection, The New York Public Library. 'Group farm plan writing meeting. Weld County, Colorado' The New York Public Library Digital Collections. [https://digitalcollections.nypl.org/items/1b0a3fc0-1d42-0139-bac7-0242ac110003](https://digitalcollections.nypl.org/items/1b0a3fc0-1d42-0139-bac7-0242ac110003)" %}
 {% include feature/image.html objectid="/assets/img/writing-plan.jpg" caption="The tool is no more complicated than following this gentleman's instructions!" alt="Group working on a farm plan writing project with man pointing at a complex plan written on a large sheet of paper at the front"%}
 
 ## Key Features at a Glance
@@ -49,8 +50,8 @@ Just follow the plan as in the below image.
 - Flexible **essay or monograph** themes
 - **Margin notes** with collection item integration
 - **Blockquotes** with full attribution
-- **Elegant Print Outputs** using Paged
-- **Image galleries** and **mini-maps** 
+- **Print & PDF output** with Paged.js (Letter, A4, or 6×9″ formats)
+- **Image galleries** and **mini-maps**
 - You can also **build your own features!** --> CB-Essay is all yours and totally customizable. 
 
 ### CollectionBuilder Features
