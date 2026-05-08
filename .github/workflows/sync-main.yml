@@ -2,9 +2,8 @@ name: Sync main to galley-demo
 
 on:
   push:
-    branches: ["main"]
-  
-  # Allows manual trigger
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -12,21 +11,35 @@ permissions:
 
 jobs:
   sync:
+    if: github.repository == 'CollectionBuilder/cb-essay'
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch all history for all branches
-          
+          fetch-depth: 0
+
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-      - name: Sync to galley-demo
+
+      - name: Ensure galley-demo branch exists locally
         run: |
-          git fetch origin galley-demo:galley-demo || git checkout -b galley-demo
-          git checkout galley-demo
+          if git ls-remote --exit-code --heads origin galley-demo; then
+            git fetch origin galley-demo:galley-demo
+          else
+            git checkout --orphan galley-demo
+            git reset --hard
+            git checkout main
+          fi
+
+      - name: Sync main into galley-demo
+        run: |
+          git checkout galley-demo || git checkout -b galley-demo
           git merge --ff-only origin/main || git merge origin/main -m "Sync from main branch"
+
+      - name: Push galley-demo
+        run: |
           git push origin galley-demo
