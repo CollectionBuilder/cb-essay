@@ -1,9 +1,9 @@
-name: Deploy Galley Demo site from galley-demo branch
+name: Deploy Demo Site from demo-site branch
 
 on:
   workflow_run:
     workflows:
-      - Sync main to galley-demo
+      - Sync main to demo-site
     types:
       - completed
   workflow_dispatch:
@@ -14,7 +14,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: galley-demo-pages
+  group: demo-site-pages
   cancel-in-progress: false
 
 jobs:
@@ -28,10 +28,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout galley-demo branch
+      - name: Checkout demo-site branch
         uses: actions/checkout@v4
         with:
-          ref: galley-demo
+          ref: demo-site
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
