@@ -71,7 +71,7 @@ This demo site is self-documenting. Each essay teaches you how to use CB-Essay w
 
 ### Heavily Customized Examples
 
-- **[Sedimentation]https://cdil.lib.uidaho.edu/sedimentation/)** - Connected, sectioned essays on the history of Glen Canyon and the Glen Canyon Dam 
+- **[Sedimentation](https://cdil.lib.uidaho.edu/sedimentation/)** - Connected, sectioned essays on the history of Glen Canyon and the Glen Canyon Dam 
 - **[Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/)** - A multi-lingual, multimodal essay on Gaëtane Buttigieg's life, art, and forced institutionalization in the 1970s.
 
 

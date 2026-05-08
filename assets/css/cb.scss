@@ -38,6 +38,7 @@ $theme-link-color: {{ site.data.theme.link-color | default: '""' }};
 
 );
 {% endif %}
+
 /* pull in essay styles to override everything else */
 @use "essay";
 

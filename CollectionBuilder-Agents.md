@@ -198,7 +198,7 @@ browse-child-objects: false               # include child objects in browse/sear
 map-child-objects: true                  # show child objects on map
 
 # BASIC STYLING
-navbar-color: navbar-dark                # navbar-light or navbar-dark  
+navbar-color: dark                # light or dark  
 bootswatch:                             # optional Bootswatch theme name
 base-font-size: 1.2em                  # custom font sizing
 ```

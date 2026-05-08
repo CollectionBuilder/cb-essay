@@ -177,7 +177,7 @@ base-font-family: Georgia  # or any web-safe font
 ### Navigation Colors
 
 ```yaml
-navbar-color: navbar-light    # or navbar-dark
+navbar-color: light    # or navbar-dark
 navbar-background: bg-light   # Bootstrap color classes
 ```
 

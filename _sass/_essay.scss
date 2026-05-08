@@ -2,6 +2,22 @@
     essay - style tweaks related to essay layout and essay features
 */
 
+/* scroll to top tweaks */
+#scroll-to-top {
+    font-size: 30px; 
+}
+
+#scroll-to-top a {
+    display: block;
+    font-size: 30px;
+}
+
+/* essay navigation arrows - horizontal layout like keyboard arrows */
+.scroll-nav-arrows {
+    display: flex;
+    justify-content: center;
+}
+
 p{ margin-bottom: 1.3em; }
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
     margin-top: 1.7em;
