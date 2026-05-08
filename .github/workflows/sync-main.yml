@@ -1,45 +1,71 @@
-name: Sync main to galley-demo
+name: Deploy Galley Demo site from galley-demo branch
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows:
+      - Sync main to galley-demo
+    types:
+      - completed
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: galley-demo-pages
+  cancel-in-progress: false
 
 jobs:
-  sync:
-    if: github.repository == 'CollectionBuilder/cb-essay'
+  build:
+    if: >
+      github.repository == 'CollectionBuilder/cb-essay' &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        github.event.workflow_run.conclusion == 'success'
+      )
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout galley-demo branch
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: galley-demo
 
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+          cache-version: 0
 
-      - name: Ensure galley-demo branch exists locally
-        run: |
-          if git ls-remote --exit-code --heads origin galley-demo; then
-            git fetch origin galley-demo:galley-demo
-          else
-            git checkout --orphan galley-demo
-            git reset --hard
-            git checkout main
-          fi
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
 
-      - name: Sync main into galley-demo
-        run: |
-          git checkout galley-demo || git checkout -b galley-demo
-          git merge --ff-only origin/main || git merge origin/main -m "Sync from main branch"
+      - name: Build with Jekyll
+        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+        env:
+          JEKYLL_ENV: production
 
-      - name: Push galley-demo
-        run: |
-          git push origin galley-demo
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    if: >
+      github.repository == 'CollectionBuilder/cb-essay' &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        github.event.workflow_run.conclusion == 'success'
+      )
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
