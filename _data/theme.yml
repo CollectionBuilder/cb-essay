@@ -154,8 +154,8 @@ search-child-objects: true # true / false - if true, child objects will appear o
 
 # NAVBAR COLORS [optional!]
 # navbar text color
-# Choose from "navbar-light" for use with light background colors, or "navbar-dark" for dark background colors
-navbar-color: navbar-light
+# Choose from "light" for use with light background colors, or "dark" for dark background colors
+navbar-color: light
 # navbar background color
 # Choose from bg-primary, bg-secondary, bg-success, bg-danger, bg-warning, bg-info, bg-light, bg-dark, bg-white
 navbar-background: bg-light
