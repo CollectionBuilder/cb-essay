@@ -29,7 +29,7 @@ concurrency:
 jobs:
   # Build job
   build:
-    if: github.repository == 'collectionbuilder/cb-essay'
+    if: github.repository == 'CollectionBuilder/cb-essay'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
