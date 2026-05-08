@@ -37,7 +37,7 @@ We set these sites up as demonstrations of the various themes and effects of the
 
 A digital edition of Mary Shelley's classic novel demonstrating the **monograph theme**. Features chapter-by-chapter navigation, integrated scholarly apparatus, and historical context from Project Gutenberg.
 
-You can watch me build this site in the video below!
+You can watch me build the Frankenstein site in the video below!
 
 {% include feature/video.html objectid="https://objects.lib.uidaho.edu/frankenstein.mp4" caption="I go through a few simple steps to build out this site, after having made a copy of the repository" %}
 
