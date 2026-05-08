@@ -355,6 +355,125 @@ For complete theme documentation, see [Theme Options Guide](https://github.com/C
 
 ---
 
+## Print & PDF Output {#print-pdf}
+
+CB-Essay includes sophisticated print and PDF generation powered by Paged.js, allowing you to create publication-ready PDFs directly from your browser.
+
+### Accessing Print Features
+
+Visit the **Print Hub** at `/print/` to:
+- Print individual essays in Letter, A4, or 6×9″ formats
+- Build custom PDF books by selecting specific essays
+- Preview paginated layout before printing
+- Generate accessible, tagged PDFs
+
+### Configuration
+
+Configure print output in `_data/theme.yml`:
+
+```yaml
+print:
+  author: "Your Name"           # Author shown on cover and in PDF metadata
+  institution: "Your Org"        # Institution displayed on cover page
+  cover-subtitle: ""             # Optional subtitle for book cover
+  show-individual: true          # Show individual essay print cards
+  show-book: true                # Show book builder section
+  aside-style: margin            # margin or inline
+```
+
+### Aside Styles
+
+**Margin style:**
+```yaml
+aside-style: margin
+```
+- Margin notes float into page gutter (traditional scholarly format)
+- Requires wider right margin on pages
+- Best for print-heavy workflows
+
+**Inline style:**
+```yaml
+aside-style: inline
+```
+- Margin notes appear as indented callout blocks
+- Works within standard page margins
+- Best for general use
+
+### What Works in Print
+
+✅ **Fully supported:**
+- Blockquotes with attribution
+- Asides (as margin notes or inline callouts)
+- Images with captions
+- Section breaks
+- Footnotes (formatted as endnotes)
+- Accordions (auto-expanded)
+- Running headers with page numbers
+- Table of contents (multi-essay books)
+- Professional cover pages
+
+❌ **Web-only features:**
+- Mini-maps (interactive Leaflet maps)
+- Timelines (interactive TimelineJS)
+- Videos (replaced with poster frame if available)
+- iframes and external embeds
+
+### Page Formats
+
+Select from three standard formats:
+
+**Letter (8.5" × 11")**
+- US standard page size
+- Default format
+
+**A4 (210mm × 297mm)**
+- International standard
+- Slightly taller than Letter
+
+**6" × 9"**
+- Book/monograph format
+- Compact, professional
+
+### Print Workflow
+
+1. **Configure** print settings in `_data/theme.yml`
+2. **Write** your essays with print-friendly features
+3. **Preview** at `/print/` using the Print Hub
+4. **Select** page format (Letter, A4, or 6×9″)
+5. **Generate** individual essay PDFs or custom book compilations
+6. **Print/Save** using browser's print dialog (Ctrl/Cmd+P or "Print / Save PDF" button)
+
+### Print Optimization Tips
+
+**For best results:**
+- Use high-resolution images (1200px+ width recommended)
+- Keep aside text concise (1-3 sentences)
+- Test both margin and inline aside styles to see which works better for your content
+- Place asides strategically to avoid layout conflicts
+- Include descriptive alt text for all images
+- Preview print output early and often during writing
+
+### Accessibility
+
+Print PDFs are generated with accessibility in mind:
+- **Tagged PDFs** - Chrome's PDF engine builds tagged PDFs from HTML accessibility tree
+- **ARIA roles** - Proper semantic structure (articles, sections, endnotes)
+- **Alt text** - All images require alt attributes for proper Figure tagging
+- **Navigation aids** - Table of contents with clickable links in multi-essay books
+- **Metadata** - Author, title, and description embedded in PDF
+
+### Technical Details
+
+- **Engine:** Paged.js polyfill for CSS Paged Media
+- **Browser:** Best results with Chrome/Chromium (for tagged PDF output)
+- **Layouts:** `_layouts/print.html` and `_layouts/print-hub.html`
+- **Styles:** `assets/css/print.scss` and `_sass/_print-paged.scss`
+- **URL Parameters:**
+  - `?format=letter|a4|69` - Select page format
+  - `?essays=slug1,slug2` - Filter to specific essays
+
+---
+
 ## Configuration {#configuration}
 
 ### `_config.yml`

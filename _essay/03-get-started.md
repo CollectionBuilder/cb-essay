@@ -199,7 +199,32 @@ Essays will appear in navigation based on their `order` value, **not** the filen
 {% include essay/feature/aside.html
    text="**Pro tip:** Use order values like 10, 20, 30 instead of 1, 2, 3. This makes it easy to insert essays later without renumbering everything." %}
 
-## Step 6: Deploy to GitHub Pages
+## Step 6: Configure Print/PDF Output (Optional)
+
+CB-Essay includes sophisticated print and PDF generation using Paged.js. Configure it in `_data/theme.yml`:
+
+```yaml
+print:
+  author: "Your Name"           # Author shown on cover and in PDF metadata
+  institution: "Your Org"        # Institution on cover page
+  cover-subtitle: ""             # Optional subtitle for book cover
+  show-individual: true          # Show individual essay print cards
+  show-book: true                # Show book builder
+  aside-style: margin            # margin or inline
+```
+
+**Aside styles:**
+- `margin`: Margin notes float into page gutter (requires wider right margin)
+- `inline`: Margin notes appear as indented callout blocks
+
+Once configured, access the **Print Hub** at `/print/` to:
+- Print individual essays in Letter, A4, or 6×9″ formats
+- Build custom PDF books by selecting specific essays
+- Generate print-ready PDFs directly from your browser
+
+{% include essay/feature/aside.html text="**Tip:** The Print Hub is automatically added to your site navigation via `_data/config-nav.csv`" %}
+
+## Step 7: Deploy to GitHub Pages
 
 When you're ready to publish your site, you have several options, as detailed here on our [CollectionBuilder's Deployment Documentation](https://collectionbuilder.github.io/cb-docs/docs/deploy/). You can build and publish these sites wherever you have access to a web server.
 

@@ -321,6 +321,45 @@ order: 1
 
 ---
 
+## Print/PDF Considerations
+
+CB-Essay generates beautiful print PDFs using Paged.js. Most features work seamlessly in print, but some require special handling:
+
+### Features That Work in Print
+
+✅ **Blockquotes** - Render with proper typography and attribution
+✅ **Asides** - Display as margin notes (if `aside-style: margin`) or inline callouts
+✅ **Images** - High-quality rendering with captions
+✅ **Section breaks** - Create visual chapter divisions
+✅ **Footnotes** - Automatically formatted as endnotes
+✅ **Accordions** - Expand automatically to show all content
+
+### Features That Don't Print
+
+❌ **Mini-maps** - Interactive maps are hidden (web-only)
+❌ **Videos** - Replaced with poster frame if available
+❌ **iframes** - External embeds are hidden
+
+### Print-Specific Features
+
+The print layout automatically:
+- Adds running headers with site title and essay title
+- Inserts page numbers on every page
+- Generates a table of contents for multi-essay books
+- Creates a professional cover page with author/institution info
+- Builds accessible, tagged PDFs for screen readers
+
+### Access Print Output
+
+Visit the **[Print Hub](/print/)** to:
+- Print individual essays in Letter, A4, or 6×9″ formats
+- Build custom PDF books by selecting specific essays
+- Preview before printing
+
+{% include essay/feature/aside.html text="**Tip:** Test your print output early in the writing process to ensure your layout works well on the page!" %}
+
+---
+
 ## Best Practices
 
 ### Blockquotes
@@ -333,13 +372,13 @@ order: 1
 - Maximum 3-4 per essay
 - Keep text brief (1-3 sentences)
 - Ensure objectids exist in metadata
-- Test display on mobile
+- Test display on mobile AND in print preview
 
 ### Maps
 - Verify coordinates are accurate
 - Choose appropriate zoom level (12-14 for cities)
 - Add context about the location in text
-- Consider map tile loading time
+- Note: Maps won't appear in print PDFs (web-only feature)
 
 ### Section Breaks
 - Use for major structural divisions

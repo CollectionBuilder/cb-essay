@@ -395,6 +395,40 @@ See the [Gutenberg Extraction documentation](/docs.html#gutenberg) for complete 
 
 ---
 
+## Collection Items in Print/PDF
+
+Collection items render beautifully in print PDFs with some important considerations:
+
+### What Works in Print
+
+✅ **Asides with images** - Display as margin notes or inline callouts
+✅ **Image includes** - High-quality image rendering with captions
+✅ **Card includes** - Full metadata and image display
+✅ **PDF items** - First page shown as thumbnail
+✅ **Audio items** - Icon shown with metadata
+
+### What Doesn't Print
+
+❌ **Maps** - Interactive Leaflet maps are web-only
+❌ **Timelines** - TimelineJS is web-only
+❌ **Videos** - Replaced with poster frame if available
+
+### Print Optimization Tips
+
+**For best print results:**
+- Use high-resolution images (1200px+ width recommended)
+- Ensure all collection items have descriptive alt text
+- Test margin note layout with `aside-style: margin` vs `aside-style: inline`
+- Keep aside text concise so it fits within margin space
+- Consider print layout when placing multiple asides on same page
+
+**Access your print output:**
+Visit the **[Print Hub](/print/)** to generate PDFs with all your integrated collection items.
+
+{% include essay/feature/aside.html text="**Print tip:** Collection item thumbnails in asides automatically scale for optimal print quality!" %}
+
+---
+
 ## Troubleshooting
 
 ### Item not displaying
