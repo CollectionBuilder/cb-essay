@@ -1,6 +1,7 @@
 ---
 title: Welcome to CB-Essay
 order: 1
+part: Overview and Examples
 ---
 
 We've been encouraging users of CollectionBuilder to write *with* their collections since we first started promoting the framework in 2019, mostly through contextual pages like the About page.
@@ -25,7 +26,7 @@ Traditional digital publishing tools treat essays and collections as separate en
 
 {% include essay/new-section.html %}
 
-## How It Works
+## How Does It Work?
 
 CB-Essay operates on a **dual-collection model**:
 
