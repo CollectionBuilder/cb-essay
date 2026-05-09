@@ -445,7 +445,9 @@ section.footnotes {
    ASIDES / MARGIN NOTES
    ============================================================ */
 
-svg.bi-asterisk { display: none !important; }
+/* Inline mode (default) — hide marker and number; the callout block makes position self-evident */
+.aside-ref,
+.aside-num { display: none !important; }
 
 /* Inline mode (default) — aside rendered as an indented callout block */
 span.aside {
@@ -466,12 +468,22 @@ span.aside {
    @page margin widening is injected as a <style> tag in <head> by print.html
    when aside-style: margin is set in theme.yml. */
 body.print-margin-notes {
-  svg.bi-asterisk {
+  /* Restore inline marker and margin note number in margin-note mode */
+  .aside-ref {
     display: inline !important;
-    opacity: 0.5;
-    width: 6px;
-    height: 6px;
+    font-size: 0.65em;
     vertical-align: super;
+    font-style: normal;
+    color: rgba(0, 0, 0, 0.5);
+    line-height: 1;
+  }
+
+  .aside-num {
+    display: inline !important;
+    font-size: 0.65em;
+    vertical-align: super;
+    font-style: normal;
+    color: rgba(0, 0, 0, 0.5);
   }
 
   span.aside {
@@ -518,7 +530,7 @@ video { display: none !important; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 8in;
+  /* min-height injected per format by print.html JS — must fit within content area */
   text-align: center;
   break-after: page;
 

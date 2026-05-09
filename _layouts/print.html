@@ -72,12 +72,14 @@
       var format = params.get('format') || localStorage.getItem('print-format') || 'letter';
       var sizes = { letter: '8.5in 11in', a4: '210mm 297mm', '69': '6in 9in' };
       // Content area = page height − 1in top − 1.25in bottom − 0.25in buffer
-      var coverHeights = { letter: '8.5in', a4: '9in', '69': '6.25in' };
+      var coverHeights = { letter: '8.5in', a4: '9in',  '69': '6.25in' };
+      var titleHeights = { letter: '8.5in', a4: '9in',  '69': '6.5in'  };
       if (sizes[format]) {
         document.head.insertAdjacentHTML('beforeend',
           '<style>' +
           '@page { size: ' + sizes[format] + '; }' +
           '.print-cover-page { min-height: ' + (coverHeights[format] || '8.5in') + '; }' +
+          '.print-title-page { min-height: ' + (titleHeights[format] || '8.5in') + '; }' +
           '</style>');
       }
       window._printFormat = format;
@@ -153,9 +155,8 @@
       <div class="print-title-page">
         <div class="print-ornament" aria-hidden="true">— —</div>
         <h1 class="print-essay-title">{{ essay.title }}</h1>
-        {% if essay.byline %}<p class="print-essay-subtitle">{{ essay.byline }}</p>{% endif %}
-        {% if print_author or site.data.theme.print.institution %}
-        <p class="print-essay-meta">{% if print_author %}{{ print_author }}{% endif %}{% if print_author and site.data.theme.print.institution %} · {% endif %}{% if site.data.theme.print.institution %}{{ site.data.theme.print.institution }}{% endif %}</p>
+        {% if essay.byline and essay.byline != print_author %}
+        <p class="print-essay-subtitle">{{ essay.byline }}</p>
         {% endif %}
       </div>
 
