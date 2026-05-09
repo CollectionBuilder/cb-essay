@@ -1,8 +1,8 @@
-{% unless site.data.theme.base-theme == "monograph" %}
-<button class="navbar-toggler {% if page.layout == 'home' %}text-white{% else %}text-dark bg-light{% endif %}" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Open navigation">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16" style="width:1.5em;height: 1.5em;">
-            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-          </svg>
+{% unless site.data.theme.show-contents-nav %}
+<button class="essay-nav-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Open navigation menu">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+    </svg>
 </button>
 {% endunless %}
 <div class="offcanvas offcanvas-end bg-dark" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
@@ -16,12 +16,12 @@
                     <li class="nav-item">
                         <a class="nav-link text-light{% if page.url == '/' %} active{% endif %}" href="{{ '/' | relative_url }}">Home</a>
                     </li>
+                    {%- assign actual_essays = site.essay | where_exp: "item", "item.title and item.order" -%}
+                    {%- assign essay_count = actual_essays.size -%}
+                    {% unless site.data.theme.show-contents-nav or essay_count == 1 %}
                     <li class="nav-item">
                         <a class="nav-link text-light{% if page.url == site.essay[0].url %} active{% endif %}" href="{{ site.essay[0].url | relative_url }}">Read</a>
                     </li>
-                    {%- assign actual_essays = site.essay | where_exp: "item", "item.title and item.order" -%}
-                    {%- assign essay_count = actual_essays.size -%}
-                    {% unless site.data.theme.base-theme == "monograph" or essay_count == 1 %}
                     <li class="nav-item dropdown">  
                         {%- assign essayStubs = site.essay | map: 'url' -%}
                         <a class="nav-link text-light dropdown-toggle{% if essayStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Contents</a>

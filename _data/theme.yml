@@ -3,44 +3,6 @@
 ##########
 ## CB-ESSAY THEME OPTIONS
 ##########
-
-# BASE THEME: Choose your presentation style
-#
-# essay - Traditional essay layout with linear reading flow
-#   - Simple navigation, "Read the Essay" homepage button
-#   - Best for: single continuous essays, article collections, blog-like presentations
-#
-# monograph - Book-like layout with table of contents
-#   - Table of contents on homepage listing all essays
-#   - "Contents" button on homepage
-#   - Best for: multi-chapter books, edited volumes, reference works
-#
-# Learn more: docs/cb-essay/theme-options.md
-base-theme: essay # essay or monograph
-
-##########
-# PRINT / PDF
-#
-# Paged.js-based print and PDF output for the essay collection.
-# The print hub is available at /print/ once added to config-nav.csv.
-#
-print:
-  author:                  # Author name for PDF <meta> and cover page
-  institution:             # Institution shown on cover page
-  cover-subtitle:          # Subtitle line beneath site title on book cover
-  show-individual: true    # true/false — show individual essay print cards
-  show-book: true          # true/false — show book builder section
-  aside-style: margin      # margin (float into page gutter) | inline (indented callout block)
-
-# TYPOGRAPHY & FONTS
-# Customize text appearance for optimal reading experience
-base-font-size: 1.3em                # Larger fonts work well for long-form reading (1.2em - 1.4em recommended)
-text-color: "#191919"                # Main text color
-link-color: "#0d6efd"                # Link color
-base-font-family: Georgia            # Serif fonts (Georgia, Garamond) for traditional scholarship; Sans-serif (Roboto, Open Sans) for modern feel
-font-cdn:                            # Optional: Add Google Fonts stylesheet URL here
-
-
 ##########
 # HOMEPAGE FEATURED IMAGE
 #
@@ -59,6 +21,68 @@ image-style: full-image              # full-image, half-image, or no-image
 featured-image: /assets/img/writing-instruments.jpg
 featured-image-credit: "General Research Division, The New York Public Library. 'An illustration of writing brushes' The New York Public Library Digital Collections. 1908. [https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34](https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34)"
 featured-image-alt-text: "An illustration of writing brushes with Japanese labels" # Add alt text for accessibility
+
+
+# NAVIGATION & HOMEPAGE LAYOUT
+#
+# Mix and match these to suit your project:
+#
+# show-contents-nav  - true: navbar shows a "Contents" button that opens the essay chapter list
+#                      false: navbar shows only the site title and menu toggle
+#
+# show-homepage-toc  - true: homepage displays a table of contents listing all essays
+#                      false: homepage shows only the banner image and "Read" button
+#
+# show-section-nav   - true: essay pages show a fixed floating sidebar (on wide screens)
+#                      built automatically from H2 headings within each essay
+#                      false: no sidebar (default)
+#
+show-contents-nav: true
+show-homepage-toc: true
+show-section-nav: true
+
+
+# TYPOGRAPHY & FONTS
+# Customize text appearance for optimal reading experience
+base-font-size: 1.25em                # Larger fonts work well for long-form reading (1.2em - 1.4em recommended)
+text-color: "#191919"                # Main text color
+link-color: "#003a55"                # Link color
+base-font-family: Georgia            # Default: Georgia (no CDN required, works everywhere)
+font-cdn:                            # Optional: Add Google Fonts stylesheet URL here or use the suggested fonts below via commenting/uncommenting
+
+
+#### SELECTED GOOGLE FONT OPTIONS
+# To use a Google Font: comment out base-font-family and font-cdn above 
+# (i.e. add a '# ' before the options),
+# then uncomment one option below (both lines together).
+#
+#### Option A — Literata: warm and approachable; designed for sustained screen reading
+# font-cdn: "https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap"
+# base-font-family: "'Literata', Georgia, serif"
+#
+#### Option B — Source Serif 4: clean and editorial; Adobe open source
+# font-cdn: https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap
+# base-font-family: "'Source Serif 4', Georgia, serif"
+#
+#### Option C — Vollkorn: bookish and sturdy; designed specifically for long-form reading
+# font-cdn: https://fonts.googleapis.com/css2?family=Vollkorn:ital,wght@0,400;0,600;1,400;1,600&display=swap
+# base-font-family: "'Vollkorn', Georgia, serif"
+
+
+##########
+# PRINT / PDF
+#
+# Paged.js-based print and PDF output for the essay collection.
+# The print hub is available at /print/ once added to config-nav.csv.
+#
+print:
+  author: Devin Becker                 # Author name for PDF <meta> and cover page
+  institution: CDIL          # Institution shown on cover page
+  cover-subtitle: The Way of CB          # Subtitle line beneath site title on book cover
+  show-individual: true    # true/false — show individual essay print cards
+  show-book: true          # true/false — show book builder section
+  aside-style: margin      # margin (float into page gutter) | inline (indented callout block)
+
 
 ##########
 # CollectionBuilder Theme Customization
@@ -154,8 +178,8 @@ search-child-objects: true # true / false - if true, child objects will appear o
 
 # NAVBAR COLORS [optional!]
 # navbar text color
-# Choose from "light" for use with light background colors, or "dark" for dark background colors
-navbar-color: light
+# Choose from "navbar-light" for use with light background colors, or "navbar-dark" for dark background colors
+navbar-color: navbar-light
 # navbar background color
 # Choose from bg-primary, bg-secondary, bg-success, bg-danger, bg-warning, bg-info, bg-light, bg-dark, bg-white
 navbar-background: bg-light

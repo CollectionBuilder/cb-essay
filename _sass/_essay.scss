@@ -25,7 +25,12 @@ p{ margin-bottom: 1.3em; }
 
 a {
     text-decoration: underline;
+    text-underline-offset: 0.15em;
     color: inherit;
+
+    &:hover {
+        text-decoration-color: var(--bs-link-color);
+    }
 }
 
 
@@ -79,7 +84,7 @@ a {
 .essay-main {
     max-width: 633px;
     width: 60%;
-    margin: 0 17.5% 0;
+    margin: 0 12.5% 0;
     @media (max-width: 768px) {
         width: 90%;
         margin: 0 2%;
@@ -93,36 +98,99 @@ aside, .aside {
     position: relative;
     width: 20vw;
     margin-right: -26vw;
-    font-size: 14px;
+    font-size: 0.82em;
     font-style: italic;
-
+    line-height: 1.45;
+    color: oklch(35% 0.004 90);
 }
 
-/*Marginal Notes on mobile*/
-    @media (max-width: 768px) {
+/*Marginal Notes on mobile — kept as fallback for no-JS; JS hides and replaces with flag system */
+@media (max-width: 768px) {
     aside, .aside {
-    display: block;
-    float: none;
-    margin: 5% 10%;
-    width: 80%;
-    font-size: 15px;
-    font-style: italic;
+        display: block;
+        float: none;
+        margin: 1.25em 0 1.25em 1.5em;
+        width: auto;
+        font-size: 0.875em;
+        font-style: italic;
+        color: oklch(40% 0.004 90);
     }
 }
 
+/* Aside reference marker (replaces asterisk) */
+.aside-ref {
+    font-size: 0.6em;
+    vertical-align: super;
+    font-style: normal;
+    font-family: inherit;
+    color: var(--bs-link-color);
+    line-height: 1;
+    cursor: default;
+    user-select: none;
+}
 
-p{
-  
+/* Number prepended inside aside on desktop */
+.aside-num {
+    font-size: 0.72em;
+    vertical-align: super;
+    font-style: normal;
+    color: var(--bs-link-color);
+    margin-right: 0.2em;
+    line-height: 1;
+}
+
+/* Mobile: flag tab on right viewport edge */
+.aside-flag {
+    position: fixed;
+    right: 0;
+    width: 22px;
+    padding: 6px 3px;
+    background-color: var(--bs-link-color, #3d7b53);
+    color: #fff;
+    border: none;
+    border-radius: 4px 0 0 4px;
+    font-size: 0.68rem;
+    font-style: normal;
+    font-family: Georgia, serif;
+    line-height: 1.2;
+    cursor: pointer;
+    z-index: 100;
+    text-align: center;
+    transition: width 0.15s ease;
+
+    &:hover,
+    &:focus {
+        width: 28px;
+        outline: none;
+    }
+}
+
+/* Modal aside content styling */
+.aside-modal-num {
+    font-size: 0.65rem;
+    font-style: normal;
+    font-family: inherit;
+    color: var(--bs-link-color);
+    letter-spacing: 0.04em;
+}
+
+.aside-modal-content {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: oklch(35% 0.004 90);
     line-height: 1.6;
+}
 
 
+p {
+    line-height: 1.65;
 }
 
 .text-justify  { text-align: justify !important; }
 
 
 video::cue {
-    font-family: "Libre Bodoni ", serif;
+    font-family: Georgia, serif;
     font-size: 1.04em;
     line-height: 1.2;
     padding: 0 0.5em;
@@ -138,7 +206,7 @@ video::cue {
 }
 
 .btn-link {
-    color: #3d7b53;
+    color: var(--bs-link-color);
 }
 
 .mini {
@@ -199,17 +267,238 @@ video::cue {
     }
     .gradient-fade-out {
         height: 333px;
-        background-image: linear-gradient(to bottom, #3d7b53, white);
+        background-image: linear-gradient(to bottom, oklch(13% 0.004 90), oklch(97.5% 0.003 90));
         position: relative;
-        margin-top: -1px; /* To avoid any gap between sections */
+        margin-top: -1px;
     }
     .gradient-fade-in {
         height: 133px;
-        background-image: linear-gradient(to bottom, white,#3d7b53);
+        background-image: linear-gradient(to bottom, oklch(97.5% 0.003 90), oklch(13% 0.004 90));
         position: relative;
-        margin-top: -1px; /* To avoid any gap between sections */
+        margin-top: -1px;
     }
 
     .accordion-header {
         margin-top:0px !important;
     }
+
+/* ============================================
+   Essay Navigation System
+   ============================================ */
+
+.essay-navbar {
+    background: oklch(97.5% 0.003 90);
+    border-bottom: 1px solid oklch(87% 0.003 90);
+    padding: 1rem;
+
+    .navbar-brand {
+        font-style: italic;
+        font-weight: normal;
+        font-size: 1.6rem;
+        letter-spacing: -0.01em;
+        line-height: 1.2;
+        color: oklch(13% 0.004 90);
+        text-decoration: none;
+        transition: color 0.2s ease;
+
+        &:hover { color: oklch(42% 0.004 90); }
+    }
+
+    .essay-nav-btn {
+        background: none;
+        border: none;
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: oklch(42% 0.004 90);
+        cursor: pointer;
+        padding: 0.5rem 0.75rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        transition: color 0.15s ease;
+
+        &:hover { color: oklch(13% 0.004 90); }
+        svg { flex-shrink: 0; }
+    }
+}
+
+/* Essay-mode: fluid title so long site names don't overflow */
+.essay-navbar__title-wrap { max-width: calc(100% - 60px); }
+
+.essay-navbar__fluid-title {
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.2;
+}
+
+/* Contents off-canvas (slides from left) */
+#offcanvasContents {
+    width: min(340px, 90vw);
+    background: oklch(98% 0.002 90);
+    border-right: 1px solid oklch(87% 0.003 90) !important;
+
+    .offcanvas-header {
+        border-bottom: 1px solid oklch(90% 0.002 90);
+        padding: 0.875rem 1.5rem;
+    }
+
+    .offcanvas-title {
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: oklch(50% 0.003 90);
+        margin: 0;
+    }
+
+    .offcanvas-body { padding: 0; }
+}
+
+.essay-toc-link {
+    display: block;
+    padding: 0.875rem 1.5rem;
+    text-decoration: none;
+    color: oklch(20% 0.004 90);
+    border-bottom: 1px solid oklch(91% 0.002 90);
+    transition: background 0.15s ease;
+
+    &:hover { background: oklch(95% 0.002 90); }
+
+    &.is-current {
+        font-style: italic;
+        font-weight: 600;
+        color: oklch(13% 0.004 90);
+        background: oklch(94% 0.002 90);
+    }
+
+    .essay-toc-num {
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: oklch(50% 0.003 90);
+        display: block;
+        margin-bottom: 0.15em;
+    }
+
+    .essay-toc-title {
+        font-size: 1rem;
+        line-height: 1.3;
+        display: block;
+    }
+}
+
+/* ============================================
+   Section Nav — floating in-page H2 sidebar
+   Only rendered when show-section-nav: true
+   Pinned to bottom-left, expands upward
+   ============================================ */
+.section-nav-menu {
+    position: fixed;
+    left: 20px;
+    bottom: 10px;
+    width: 180px;
+    max-height: calc(100vh - 220px);
+    padding: 20px 0;
+    z-index: 500;
+    overflow-y: auto;
+    overflow-x: hidden;
+    backdrop-filter: blur(8px);
+    border-radius: 3px;
+    border: .5px solid oklch(.87 .003 90);
+    scrollbar-width: thin;
+    scrollbar-color: oklch(.75 .003 90) rgba(0, 0, 0, 0);
+    transition: opacity 200ms ease;
+
+    @media (max-width: 1199px) { display: none; }
+
+    &.footer-visible {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb {
+        background-color: oklch(75% 0.003 90);
+        border-radius: 2px;
+    }
+}
+
+.nav-open .section-nav-menu {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.section-nav-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: oklch(50% 0.003 90);
+    padding: 0 15px 12px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid oklch(87% 0.003 90);
+}
+
+.section-nav-title-text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.section-nav-print {
+    flex-shrink: 0;
+    color: oklch(60% 0.003 90);
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: color 150ms ease;
+    &:hover { color: oklch(30% 0.004 90); }
+}
+
+.section-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    li { margin: 0; }
+}
+
+.section-nav-link {
+    display: block;
+    padding: 8px 15px;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: oklch(45% 0.003 90);
+    text-decoration: none;
+    transition: color 150ms ease, background-color 150ms ease;
+
+    &:hover {
+        color: oklch(20% 0.004 90);
+        background: oklch(94% 0.002 90);
+    }
+
+    &.active {
+        color: oklch(20% 0.004 90);
+        font-weight: 600;
+        background: oklch(93% 0.002 90);
+    }
+}
+
+/* Collection item card embeds within essays */
+.item-content .card {
+    background-color: transparent;
+    border: none;
+}

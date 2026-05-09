@@ -1,0 +1,131 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Guard: prevent observer from overriding active state during click-scroll
+  let isClickScrolling = false;
+
+  // Extract all H2 headings from the essay content wrapper
+  const h2Elements = document.querySelectorAll('#scrolly h2');
+
+  if (h2Elements.length === 0) return;
+
+  // Get the page title from the dedicated heading or fall back to document title
+  const pageTitle = document.getElementById('page-title')?.textContent.trim() ||
+                    document.querySelector('h1')?.textContent.trim() ||
+                    document.title.split('|')[0].trim();
+
+  // Build print link for the current essay page (/essay/[slug]/ → /print/book/?essays=[slug])
+  const pathParts = window.location.pathname.split('/').filter(Boolean);
+  const essayIndex = pathParts.indexOf('essay');
+  const rawSlug = essayIndex >= 0 ? pathParts[essayIndex + 1] : null;
+  const essaySlug = rawSlug ? rawSlug.replace(/\.html$/, '') : null;
+  const printBase = '{{ "/print/book/" | relative_url }}';
+  const printHref = essaySlug ? (printBase + '?essays=' + essaySlug) : null;
+  const printLinkHtml = printHref
+    ? `<a href="${printHref}" class="section-nav-print" aria-label="Print or save this essay as PDF" title="Print or save as PDF" target="_blank" rel="noopener">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+          <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
+        </svg>
+      </a>`
+    : '';
+
+  // Create the section navigation menu
+  const navMenu = document.createElement('div');
+  navMenu.className = 'section-nav-menu';
+  navMenu.innerHTML = `<div class="section-nav-title"><span class="section-nav-title-text">${pageTitle}</span>${printLinkHtml}</div><ul class="section-nav-list"></ul>`;
+
+  const navList = navMenu.querySelector('.section-nav-list');
+
+  // Generate anchor IDs and menu items for each H2
+  h2Elements.forEach((h2, index) => {
+    const text = h2.textContent.trim();
+    const slug = text.toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    h2.id = slug || `section-${index}`;
+
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = `#${h2.id}`;
+    a.textContent = text;
+    a.className = 'section-nav-link';
+    a.dataset.section = h2.id;
+
+    li.appendChild(a);
+    navList.appendChild(li);
+  });
+
+  document.body.appendChild(navMenu);
+
+  // Hide section nav when footer is visible
+  const footerEl = document.querySelector('footer');
+  if (footerEl) {
+    const footerObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        navMenu.classList.toggle('footer-visible', entry.isIntersecting);
+      });
+    }, { threshold: 0 });
+    footerObserver.observe(footerEl);
+  }
+
+  // Smooth scroll handler
+  document.querySelectorAll('.section-nav-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').substring(1);
+      const targetElement = document.getElementById(targetId);
+
+      if (targetElement) {
+        history.pushState(null, null, `#${targetId}`);
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        updateActiveSection(targetId);
+        isClickScrolling = true;
+        setTimeout(() => { isClickScrolling = false; }, 800);
+      }
+    });
+  });
+
+  function updateActiveSection(sectionId) {
+    document.querySelectorAll('.section-nav-link').forEach(link => {
+      link.classList.toggle('active', link.dataset.section === sectionId);
+    });
+  }
+
+  // Intersection Observer to track which section is in view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !isClickScrolling) {
+        updateActiveSection(entry.target.id);
+        if (history.replaceState) {
+          history.replaceState(null, null, `#${entry.target.id}`);
+        }
+      }
+    });
+  }, {
+    root: null,
+    rootMargin: '-20% 0px -60% 0px',
+    threshold: 0
+  });
+
+  h2Elements.forEach(h2 => observer.observe(h2));
+
+  // Handle initial page load with hash
+  if (window.location.hash) {
+    const initialSection = window.location.hash.substring(1);
+    isClickScrolling = true;
+    setTimeout(() => {
+      const targetElement = document.getElementById(initialSection);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'auto', block: 'start' });
+        updateActiveSection(initialSection);
+      }
+      setTimeout(() => { isClickScrolling = false; }, 800);
+    }, 1200);
+  } else if (h2Elements.length > 0) {
+    updateActiveSection(h2Elements[0].id);
+  }
+});
+</script>
