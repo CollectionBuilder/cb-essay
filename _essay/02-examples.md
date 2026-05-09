@@ -39,7 +39,7 @@ A digital edition of Mary Shelley's classic novel demonstrating the **monograph 
 
 You can watch me build the Frankenstein site in the video below!
 
-{% include feature/video.html objectid="https://objects.lib.uidaho.edu/frankenstein.mp4" caption="I go through a few simple steps to build out this site, after having made a copy of the repository" %}
+{% include feature/video.html objectid="https://www.lib.uidaho.edu/collectionbuilder/cb-essay/frankenstein.mp4" caption="I go through a few simple steps to build out this site, after having made a copy of the repository" %}
 
 **View:** [dcnb.github.io/frankenstein](https://dcnb.github.io/frankenstein) 
 
