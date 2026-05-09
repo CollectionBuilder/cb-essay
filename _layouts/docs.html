@@ -11,44 +11,7 @@ layout: default
           <input type="text" class="form-control form-control-sm" id="docs-search" placeholder="Search documentation..." aria-label="Search documentation" aria-autocomplete="list" aria-controls="search-results" autocomplete="off">
           <div id="search-results" class="search-results" role="listbox" aria-label="Search results"></div>
         </div>
-        <ul class="nav flex-column" id="docs-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="#overview">Overview</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#quick-start">Quick Start</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#essay-writing">Essay Writing</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#essay-features">Essay Features</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#collection-integration">Collection Integration</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#theme-options">Theme Options</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#configuration">Configuration</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#gutenberg">Gutenberg Extractor</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#publishing">Publishing</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#collectionbuilder">CollectionBuilder Features</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#troubleshooting">Troubleshooting</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#resources">External Resources</a>
-          </li>
-        </ul>
+        <ul class="nav flex-column" id="docs-nav"></ul>
       </div>
     </nav>
 
@@ -417,10 +380,34 @@ layout: default
     });
   }
 
+  // Build sidebar nav from page H2s
+  function buildNav() {
+    const nav = document.getElementById('docs-nav');
+    docsContent.querySelectorAll('h2[id]').forEach(h2 => {
+      const li = document.createElement('li');
+      li.className = 'nav-item';
+      const a = document.createElement('a');
+      a.className = 'nav-link';
+      a.href = `#${h2.id}`;
+      a.textContent = h2.textContent.trim();
+      li.appendChild(a);
+      nav.appendChild(li);
+    });
+  }
+
   // Initialize search
   function init() {
-    // Build index
+    // Build nav and search index from page headings
+    buildNav();
     searchIndex = buildSearchIndex();
+
+    // Smooth scrolling for sidebar nav links
+    document.querySelectorAll('#docs-nav a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        navigateToSection(this.getAttribute('href').substring(1));
+      });
+    });
 
     // Search input handler
     searchInput.addEventListener('input', function(e) {
@@ -455,15 +442,6 @@ layout: default
       }
     });
   }
-
-  // Smooth scrolling for sidebar nav links
-  document.querySelectorAll('#docs-nav a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      const id = this.getAttribute('href').substring(1);
-      navigateToSection(id);
-    });
-  });
 
   // Update active nav on scroll
   const observerOptions = {
