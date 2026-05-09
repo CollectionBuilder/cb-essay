@@ -18,7 +18,7 @@ CB-Essay extends CollectionBuilder-CSV with essay/monograph authoring capabiliti
 ### CB-Essay Specific Tasks:
 - **Add essay content**: Create markdown in `_essay/` with front matter (`title`, `order`, `byline`)
 - **Essay features**: Use `_includes/essay/feature/` includes (blockquote, map, item spotlight)
-- **Theme mode**: Change `base-theme` in `_data/theme.yml` (essay or monograph)
+- **Nav & homepage**: Set `show-contents-nav`, `show-homepage-toc`, `show-section-nav` in `_data/theme.yml`
 - **Homepage**: Customize `_layouts/home-essay.html` or `_data/theme.yml` (featured-image, image-style)
 - **Essay navigation**: Sequential prev/next via `order` field in front matter
 
@@ -104,9 +104,10 @@ CB-Essay manages two types of collections simultaneously:
 
 ### Essay-Specific Features
 
-**Theme Modes** (`_data/theme.yml`)
-- `base-theme: essay` - Traditional essay with linear reading flow
-- `base-theme: monograph` - Book format with table of contents on homepage
+**Navigation & Homepage Flags** (`_data/theme.yml`)
+- `show-contents-nav` - navbar "Contents" button + off-canvas chapter list panel
+- `show-homepage-toc` - chapter table of contents on homepage
+- `show-section-nav` - floating H2 sidebar on essay pages (wide screens only)
 
 **Essay Includes** (`_includes/essay/feature/`)
 - `blockquote.html` - Styled quotations with optional speaker attribution
@@ -117,7 +118,7 @@ CB-Essay manages two types of collections simultaneously:
 **Homepage Layouts**
 - `home-essay.html` - Custom homepage with featured image and essay entry point
 - Image styles: `full-image`, `half-image`, `no-image`
-- Table of contents for monograph mode
+- Table of contents when `show-homepage-toc: true`
 
 ### Decision Trees:
 
@@ -126,7 +127,7 @@ CB-Essay manages two types of collections simultaneously:
 2. **Essay feature (quote, map, etc.)?** → Use `_includes/essay/feature/` includes
 3. **Embed collection item?** → Use `{% include feature/image.html objectid="..." %}` or similar
 4. **Essay styling?** → Adjust `base-font-size`, `text-color`, `font-family` in `theme.yml`
-5. **Change essay/monograph mode?** → Update `base-theme` in `theme.yml`
+5. **Change nav/homepage layout?** → Set `show-contents-nav`, `show-homepage-toc`, `show-section-nav` in `theme.yml`
 6. **Homepage customization?** → Modify `featured-image`, `image-style` in `theme.yml`
 
 #### When User Asks About Styling:
@@ -863,9 +864,11 @@ metadata-facets-fields: "subject,creator,format"
 
 ### Configuration Access
 ```liquid
-{%- assign base_theme = site.data.theme.base-theme -%}
-{% if site.data.theme.base-theme == 'monograph' %}
+{% if site.data.theme.show-homepage-toc %}
   <!-- Display table of contents -->
+{% endif %}
+{% if site.data.theme.show-contents-nav %}
+  <!-- Show Contents button in navbar -->
 {% endif %}
 ```
 
@@ -928,7 +931,9 @@ The concept of the "monstrous" in Renaissance thought reflects...
 **Essay-specific settings** (in addition to standard CollectionBuilder config):
 ```yaml
 ## CB-Essay specific
-base-theme: essay  # or monograph for book-style TOC
+show-contents-nav: true   # navbar "Contents" button + chapter panel
+show-homepage-toc: true   # chapter table of contents on homepage
+show-section-nav: false   # floating H2 sidebar on essay pages
 base-font-size: 1.3em
 text-color: "#191919"
 link-color: "#0d6efd"

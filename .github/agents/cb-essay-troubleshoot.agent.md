@@ -19,7 +19,7 @@ When a user reports a problem, work through these layers in order — stop as so
 Check these first — they cause the most common failures:
 
 - **`_config.yml`**: YAML syntax (no tabs, colons need quoting), `metadata` field points to a real CSV in `_data/`, `url`/`baseurl` correct for environment, `collections.essay` configured properly
-- **`_data/theme.yml`**: Valid YAML, `base-theme` is `essay` or `monograph`, `featured-image` path exists if set
+- **`_data/theme.yml`**: Valid YAML, `show-contents-nav`/`show-homepage-toc`/`show-section-nav` are `true` or `false`, `featured-image` path exists if set
 - **`_data/config-nav.csv`**: Header row is `display_name,stub,dropdown_parent`, stub URLs start with `/`
 - **`_data/config-browse.csv`**, **`config-metadata.csv`**, **`config-search.csv`**: Correct headers, no extra blank lines
 
@@ -78,7 +78,7 @@ When you find a problem:
 | Include error | Wrong path (check `_includes/` directory), or missing required parameter |
 | GitHub Pages build fails | Ruby version in workflow doesn't match Gemfile |
 | `featured-image` not showing | Path doesn't start with `/`, or file doesn't exist |
-| Blank homepage | `base-theme` value is not `essay` or `monograph` |
+| TOC not showing | `show-homepage-toc` is not `true`, or essays lack `order` field |
 | `Liquid Exception` | Unclosed tag, typo in include name, or objectid not found in CSV |
 
 ## Output Format
