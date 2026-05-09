@@ -15,7 +15,11 @@
 <meta name="generator" content="collectionbuilder-csv" />
 
 <!-- load style sheets -->
-{% if site.data.theme.font-cdn %}{{ site.data.theme.font-cdn }}{%- endif -%}
+{% if site.data.theme.font-cdn contains "link" %}{{ site.data.theme.font-cdn }}{% else %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="{{ site.data.theme.font-cdn }}" rel="stylesheet">
+{%- endif -%}
 <link rel="stylesheet" href="{% if site.data.theme.bootswatch %}https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist/{{ site.data.theme.bootswatch }}/bootstrap.min.css{% else %}{{ site.lib-assets | default: '/assets/lib' | relative_url }}/bootstrap.min.css{% endif %}" type="text/css">
 {% if page.layout == 'data' %}<link rel="stylesheet" type="text/css" href="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/datatables/datatables.min.css">{%- endif -%}
 {% if page.layout == 'map' %}<link rel="stylesheet" href="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/leaflet.css">
