@@ -8,6 +8,8 @@
     { 
         {% for f in fields %}{% if item[f] %}{{ f | jsonify }}: {{ item[f] | jsonify }},{% endif %}
         {% endfor %}{% if item.image_thumb %}"object_thumb": "{{ item.image_thumb | absolute_url }}",{% endif %}
+        "objectid": {{ item.objectid | jsonify }},
+        "display_template": {{ item.display_template | jsonify }},
         "object_location": "{{ item.object_location | absolute_url }}",
         "reference_url": "{{ '/items/' | relative_url }}{% if item.parentid %}{{ item.parentid }}.html#{{ item.objectid }}{% else %}{{ item.objectid }}.html{% endif %}"
     }{% unless forloop.last %},{% endunless %}
