@@ -44,3 +44,9 @@ custom-foot: essay/js/spotlight-media-handler.html
 <script src="{{ '/assets/lib/scrollama.js' | relative_url }}"></script>
 {% include essay/js/essay-scroll-js.html %}
 {% endunless %}
+
+{% if site.data.theme.show-section-nav %}
+{% include essay/js/section-nav.html %}
+{% endif %}
+
+{% include essay/js/aside-flags.html %}

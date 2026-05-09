@@ -1,0 +1,42 @@
+<nav class="essay-navbar" role="navigation" aria-label="Site navigation">
+  <div class="container">
+
+    <!-- Mobile layout: title centered, buttons below -->
+    <div class="d-lg-none w-100">
+      <div class="text-center py-2">
+        <a class="navbar-brand" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+      </div>
+      <div class="d-flex justify-content-between align-items-center pb-2 px-1">
+        <button class="essay-nav-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasContents" aria-controls="offcanvasContents" aria-label="Open table of contents">
+          Contents
+        </button>
+        <button class="essay-nav-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Open navigation menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Desktop layout: Contents (left) | Site title (center) | Menu (right) -->
+    <div class="d-none d-lg-flex align-items-center w-100 position-relative">
+      <button class="essay-nav-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasContents" aria-controls="offcanvasContents" aria-label="Open table of contents">
+        Contents
+      </button>
+      <div class="position-absolute top-50 start-50 translate-middle text-center">
+        <a class="navbar-brand" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+      </div>
+      <div class="ms-auto">
+        <button class="essay-nav-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Open navigation menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+{% include essay/off-canvas-contents.html %}
+{% include essay/off-canvas-menu.html %}
