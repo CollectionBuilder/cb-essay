@@ -112,23 +112,15 @@ Navigation appears at:
 
 ## Essay Themes
 
-CB-Essay supports two homepage/navigation themes set in `_data/theme.yml`:
+Control navigation and homepage layout independently in `_data/theme.yml`:
 
-### Essay Theme (Default)
 ```yaml
-base-theme: essay
+show-contents-nav: true    # navbar "Contents" button + chapter panel
+show-homepage-toc: true    # chapter table of contents on homepage
+show-section-nav: false    # floating H2 sidebar on essay pages (wide screens)
 ```
-- Traditional blog-like layout
-- Linear reading experience
-- Simple navigation
 
-### Monograph Theme
-```yaml
-base-theme: monograph
-```
-- Book-like presentation
-- Table of contents on homepage
-- Chapter-style navigation
+See [Theme Options](theme-options.md) for common configurations and full details.
 
 ## Using Essay Includes
 

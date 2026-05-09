@@ -292,34 +292,36 @@ For complete CollectionBuilder documentation, see [CollectionBuilder Docs](https
 
 ## Theme Options {#theme-options}
 
-CB-Essay supports two presentation themes set in `_data/theme.yml`:
-
-### Essay Theme
+CB-Essay lets you mix and match navigation and homepage features independently in `_data/theme.yml`:
 
 ```yaml
-base-theme: essay
+show-contents-nav: true    # "Contents" button in navbar opens chapter list panel
+show-homepage-toc: true    # chapter table of contents on the homepage
+show-section-nav: false    # floating sidebar TOC built from H2s on each essay page
 ```
 
-**Best for:** Traditional essays, article collections, linear narratives
+**Common configurations:**
 
-**Features:**
-- Clean homepage with "Read the Essay" button
-- Linear reading flow
-- Minimal navigation
-
-### Monograph Theme
-
+Simple essay (single narrative, minimal nav):
 ```yaml
-base-theme: monograph
+show-contents-nav: false
+show-homepage-toc: false
+show-section-nav: false
 ```
 
-**Best for:** Multi-chapter books, edited volumes, reference works
+Multi-chapter monograph:
+```yaml
+show-contents-nav: true
+show-homepage-toc: true
+show-section-nav: false
+```
 
-**Features:**
-- Table of contents on homepage
-- Chapter-style navigation
-- Book-like presentation
-- Byline display in TOC
+Long single essay with in-page navigation:
+```yaml
+show-contents-nav: false
+show-homepage-toc: false
+show-section-nav: true
+```
 
 ### Homepage Image Options
 
@@ -509,9 +511,11 @@ metadata: your-metadata-filename  # without .csv extension
 
 ### `_data/theme.yml`
 
-**Theme selection:**
+**Navigation & homepage:**
 ```yaml
-base-theme: essay  # or monograph
+show-contents-nav: true
+show-homepage-toc: true
+show-section-nav: false
 image-style: full-image
 featured-image: /assets/img/banner.jpg
 ```
@@ -669,14 +673,14 @@ For full CollectionBuilder documentation:
 **Item doesn't display in aside:**
 - Verify objectid exists in `_data/[metadata].csv`
 - Check objectid spelling matches exactly (case-sensitive)
-- Ensure item has required fields (image_small, image_thumb for images)
+- Ensure item has fields: display_template, image_small, image_thumb
 - Test that item page loads: `/items/objectid.html`
 
 ### Theme Issues
 
 **Table of contents not showing:**
-- Verify `base-theme: monograph` in `_data/theme.yml`
-- Check essays have `order` field
+- Verify `show-homepage-toc: true` in `_data/theme.yml`
+- Check essays have `order` field in front matter
 - Rebuild site (may need to clear cache)
 
 **Featured image not displaying:**
@@ -690,7 +694,6 @@ For full CollectionBuilder documentation:
 **Site not updating:**
 - Wait 2-3 minutes for GitHub Pages rebuild
 - Check Actions tab for build errors
-- Try force rebuild: Settings → Pages → Change source and change back
 
 **Local build fails:**
 - Run `bundle install` to update dependencies
@@ -733,15 +736,8 @@ Solution: Check CSV file has matching objectid in metadata
 - [Markdown Guide](https://www.markdownguide.org/)
 - [Liquid Template Language](https://shopify.github.io/liquid/)
 
-### Example Projects
-
-- [Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/) - Heavily customized multimodal essay
-- [Digital Dramaturgy](https://digitaldramaturgy.github.io/) - Annotated playscripts
-- More examples at [CollectionBuilder Showcase](https://collectionbuilder.github.io/showcase.html)
-
 ### Community & Support
 
-- [CollectionBuilder Community](https://collectionbuilder.github.io/community.html)
 - [GitHub Discussions](https://github.com/CollectionBuilder/collectionbuilder-csv/discussions)
 - [GitHub Issues](https://github.com/CollectionBuilder/cb-essay/issues)
 
@@ -750,7 +746,6 @@ Solution: Check CSV file has matching objectid in metadata
 - [Markdown Tutorial](https://www.markdowntutorial.com/)
 - [Git Basics](https://docs.github.com/en/get-started/using-git/about-git)
 - [GitHub Pages Guide](https://docs.github.com/en/pages)
-- [CollectionBuilder Workshops](https://collectionbuilder.github.io/workshops/)
 
 ---
 
