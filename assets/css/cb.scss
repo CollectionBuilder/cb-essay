@@ -11,6 +11,19 @@ $theme-base-font-size: {{ site.data.theme.base-font-size | default: '""' }};
 $theme-text-color: {{ site.data.theme.text-color | default: '""' }};
 $theme-link-color: {{ site.data.theme.link-color | default: '""' }};
 
+/* theme.primary overrides link-color when set, creating a single source of truth */
+{% if site.data.theme.primary %}
+$theme-link-color: {{ site.data.theme.primary }};
+{% endif %}
+
+/* color token system — generates --cb-surface-*, --cb-border-*, --cb-text-* custom properties */
+@forward "color-tokens" with (
+  $cb-primary:        {% if site.data.theme.primary %}{{ site.data.theme.primary }}{% else %}#003a55{% endif %},
+  {% if site.data.theme.accent %}$cb-accent: {{ site.data.theme.accent }},{% endif %}
+  $cb-colorized:      {% if site.data.theme.primary %}true{% else %}false{% endif %},
+  $cb-surface-chroma: {% if site.data.theme.chroma %}{{ site.data.theme.chroma }}{% else %}0.008{% endif %}
+);
+
 /* base tweaks to Bootstrap */
 @forward "base" with (
   $base-font-family: $theme-base-font-family,

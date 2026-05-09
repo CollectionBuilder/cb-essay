@@ -101,7 +101,7 @@ aside, .aside {
     font-size: 0.82em;
     font-style: italic;
     line-height: 1.45;
-    color: oklch(35% 0.004 90);
+    color: var(--cb-text-800);
 }
 
 /*Marginal Notes on mobile — kept as fallback for no-JS; JS hides and replaces with flag system */
@@ -113,7 +113,7 @@ aside, .aside {
         width: auto;
         font-size: 0.875em;
         font-style: italic;
-        color: oklch(40% 0.004 90);
+        color: var(--cb-text-800);
     }
 }
 
@@ -177,7 +177,7 @@ aside, .aside {
 .aside-modal-content {
     font-size: 0.9rem;
     font-style: italic;
-    color: oklch(35% 0.004 90);
+    color: var(--cb-text-800);
     line-height: 1.6;
 }
 
@@ -267,13 +267,13 @@ video::cue {
     }
     .gradient-fade-out {
         height: 333px;
-        background-image: linear-gradient(to bottom, oklch(13% 0.004 90), oklch(97.5% 0.003 90));
+        background-image: linear-gradient(to bottom, var(--cb-text-950), var(--cb-surface-100));
         position: relative;
         margin-top: -1px;
     }
     .gradient-fade-in {
         height: 133px;
-        background-image: linear-gradient(to bottom, oklch(97.5% 0.003 90), oklch(13% 0.004 90));
+        background-image: linear-gradient(to bottom, var(--cb-surface-100), var(--cb-text-950));
         position: relative;
         margin-top: -1px;
     }
@@ -287,8 +287,8 @@ video::cue {
    ============================================ */
 
 .essay-navbar {
-    background: oklch(97.5% 0.003 90);
-    border-bottom: 1px solid oklch(87% 0.003 90);
+    background: var(--cb-surface-100);
+    border-bottom: 1px solid var(--cb-border-200);
     padding: 1rem;
 
     .navbar-brand {
@@ -297,11 +297,11 @@ video::cue {
         font-size: 1.6rem;
         letter-spacing: -0.01em;
         line-height: 1.2;
-        color: oklch(13% 0.004 90);
+        color: var(--cb-text-950);
         text-decoration: none;
         transition: color 0.2s ease;
 
-        &:hover { color: oklch(42% 0.004 90); }
+        &:hover { color: var(--cb-text-700); }
     }
 
     .essay-nav-btn {
@@ -311,7 +311,7 @@ video::cue {
         font-size: 0.72rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: oklch(42% 0.004 90);
+        color: var(--cb-text-700);
         cursor: pointer;
         padding: 0.5rem 0.75rem;
         text-decoration: none;
@@ -320,7 +320,7 @@ video::cue {
         gap: 0.35rem;
         transition: color 0.15s ease;
 
-        &:hover { color: oklch(13% 0.004 90); }
+        &:hover { color: var(--cb-text-950); }
         svg { flex-shrink: 0; }
     }
 }
@@ -338,11 +338,11 @@ video::cue {
 /* Contents off-canvas (slides from left) */
 #offcanvasContents {
     width: min(340px, 90vw);
-    background: oklch(98% 0.002 90);
-    border-right: 1px solid oklch(87% 0.003 90) !important;
+    background: var(--cb-surface-100);
+    border-right: 1px solid var(--cb-border-200) !important;
 
     .offcanvas-header {
-        border-bottom: 1px solid oklch(90% 0.002 90);
+        border-bottom: 1px solid var(--cb-border-100);
         padding: 0.875rem 1.5rem;
     }
 
@@ -351,7 +351,7 @@ video::cue {
         font-size: 0.72rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: oklch(50% 0.003 90);
+        color: var(--cb-text-600);
         margin: 0;
     }
 
@@ -362,17 +362,17 @@ video::cue {
     display: block;
     padding: 0.875rem 1.5rem;
     text-decoration: none;
-    color: oklch(20% 0.004 90);
-    border-bottom: 1px solid oklch(91% 0.002 90);
+    color: var(--cb-text-900);
+    border-bottom: 1px solid var(--cb-border-100);
     transition: background 0.15s ease;
 
-    &:hover { background: oklch(95% 0.002 90); }
+    &:hover { background: var(--cb-surface-200); }
 
     &.is-current {
         font-style: italic;
         font-weight: 600;
-        color: oklch(13% 0.004 90);
-        background: oklch(94% 0.002 90);
+        color: var(--cb-text-950);
+        background: var(--cb-surface-300);
     }
 
     .essay-toc-num {
@@ -380,7 +380,7 @@ video::cue {
         font-size: 0.68rem;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: oklch(50% 0.003 90);
+        color: var(--cb-text-600);
         display: block;
         margin-bottom: 0.15em;
     }
@@ -409,9 +409,9 @@ video::cue {
     overflow-x: hidden;
     backdrop-filter: blur(8px);
     border-radius: 3px;
-    border: .5px solid oklch(.87 .003 90);
+    border: .5px solid var(--cb-border-200);
     scrollbar-width: thin;
-    scrollbar-color: oklch(.75 .003 90) rgba(0, 0, 0, 0);
+    scrollbar-color: var(--cb-muted) rgba(0, 0, 0, 0);
     transition: opacity 200ms ease;
 
     @media (max-width: 1199px) { display: none; }
@@ -424,7 +424,7 @@ video::cue {
     &::-webkit-scrollbar { width: 4px; }
     &::-webkit-scrollbar-track { background: transparent; }
     &::-webkit-scrollbar-thumb {
-        background-color: oklch(75% 0.003 90);
+        background-color: var(--cb-muted);
         border-radius: 2px;
     }
 }
@@ -444,10 +444,10 @@ video::cue {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: oklch(50% 0.003 90);
+    color: var(--cb-text-600);
     padding: 0 15px 12px;
     margin-bottom: 8px;
-    border-bottom: 1px solid oklch(87% 0.003 90);
+    border-bottom: 1px solid var(--cb-border-200);
 }
 
 .section-nav-title-text {
@@ -460,12 +460,12 @@ video::cue {
 
 .section-nav-print {
     flex-shrink: 0;
-    color: oklch(60% 0.003 90);
+    color: var(--cb-text-500);
     display: flex;
     align-items: center;
     text-decoration: none;
     transition: color 150ms ease;
-    &:hover { color: oklch(30% 0.004 90); }
+    &:hover { color: var(--cb-text-900); }
 }
 
 .section-nav-list {
@@ -481,19 +481,19 @@ video::cue {
     font-family: system-ui, -apple-system, sans-serif;
     font-size: 0.8rem;
     line-height: 1.4;
-    color: oklch(45% 0.003 90);
+    color: var(--cb-text-700);
     text-decoration: none;
     transition: color 150ms ease, background-color 150ms ease;
 
     &:hover {
-        color: oklch(20% 0.004 90);
-        background: oklch(94% 0.002 90);
+        color: var(--cb-text-900);
+        background: var(--cb-surface-300);
     }
 
     &.active {
-        color: oklch(20% 0.004 90);
+        color: var(--cb-text-900);
         font-weight: 600;
-        background: oklch(93% 0.002 90);
+        background: var(--cb-surface-300);
     }
 }
 
@@ -501,4 +501,12 @@ video::cue {
 .item-content .card {
     background-color: transparent;
     border: none;
+}
+
+/* Accent color applied to horizontal rules in essay body.
+   Uses --cb-accent-hue (explicit accent, or primary hue when no accent set)
+   and --cb-accent-chroma (0 = gray when no primary set, 0.05 = tinted when colorized). */
+.essay-main hr {
+    border-top-color: oklch(78% var(--cb-accent-chroma) var(--cb-accent-hue));
+    opacity: 1;
 }

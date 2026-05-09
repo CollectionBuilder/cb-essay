@@ -1,0 +1,65 @@
+/*
+  CB-Essay Color Token System
+  ===========================
+  Emits CSS custom properties used throughout the essay interface.
+
+  Variables passed from assets/css/cb.scss via @forward … with (…):
+    $cb-primary:        hex color — the primary brand color
+    $cb-accent:         hex color or null — optional second color
+    $cb-colorized:      boolean — true when primary: is set in theme.yml
+    $cb-surface-chroma: 0.005–0.02 — intensity of surface tinting (default 0.008)
+
+  When $cb-colorized is false (default), surfaces use warm-neutral hue 90
+  (identical to the original hardcoded behavior). When true, the primary
+  color's hue tints all surfaces, borders, and text tokens.
+*/
+
+@use 'sass:color';
+
+$cb-primary:        #003a55 !default;
+$cb-accent:         null    !default;
+$cb-colorized:      false   !default;
+$cb-surface-chroma: 0.008   !default;  // configurable via theme.yml chroma:
+
+// Neutral mode: hue 90 (warm cream paper), chroma 0.003 (barely-there warmth)
+// Colorized mode: primary hue, configurable chroma
+// Use @if not if() — SCSS if() eagerly evaluates both arms, breaking on null colors.
+$_hue:    90deg;
+$_chroma: 0.003;
+@if $cb-colorized {
+  $_hue:    color.hue($cb-primary);
+  $_chroma: $cb-surface-chroma;
+}
+
+// Accent hue: explicit accent, or falls back to primary hue (no random complementary)
+$_accent-hue: $_hue;
+@if $cb-accent != null {
+  $_accent-hue: color.hue($cb-accent);
+}
+
+:root {
+  --cb-hue:           #{$_hue};
+  --cb-accent-hue:    #{$_accent-hue};
+  // 0 when neutral (hr looks gray), 0.05 when colorized (hr shows the accent hue)
+  --cb-accent-chroma: #{if($cb-colorized, 0.05, 0)};
+
+  // Surface palette — tinted backgrounds for UI chrome
+  --cb-surface-100: oklch(97.5% #{$_chroma} #{$_hue});
+  --cb-surface-200: oklch(95%   #{$_chroma} #{$_hue});
+  --cb-surface-300: oklch(93%   #{$_chroma} #{$_hue});
+
+  // Border palette
+  --cb-border-100:  oklch(91% #{$_chroma} #{$_hue});
+  --cb-border-200:  oklch(87% #{$_chroma} #{$_hue});
+
+  // Muted — scrollbar thumb, faded elements
+  --cb-muted:       oklch(75% 0.003 #{$_hue});
+
+  // Text palette — used for nav labels, meta text, body-adjacent text
+  --cb-text-500:    oklch(60% 0.003 #{$_hue});
+  --cb-text-600:    oklch(50% 0.003 #{$_hue});
+  --cb-text-700:    oklch(45% 0.003 #{$_hue});
+  --cb-text-800:    oklch(35% 0.004 #{$_hue});
+  --cb-text-900:    oklch(20% 0.004 #{$_hue});
+  --cb-text-950:    oklch(13% 0.004 #{$_hue});
+}

@@ -37,7 +37,7 @@ featured-image-alt-text: "An illustration of writing brushes with Japanese label
 #                      built automatically from H2 headings within each essay
 #                      false: no sidebar (default)
 #
-show-contents-nav: true
+show-contents-nav: false
 show-homepage-toc: true
 show-section-nav: true
 
@@ -68,6 +68,26 @@ font-cdn:                            # Optional: Add Google Fonts stylesheet URL
 # font-cdn: https://fonts.googleapis.com/css2?family=Vollkorn:ital,wght@0,400;0,600;1,400;1,600&display=swap
 # base-font-family: "'Vollkorn', Georgia, serif"
 
+# COLOR THEME [Optional]
+# Set 1–2 colors to give the site a cohesive hue across UI surfaces and links.
+# Leave blank (or remove) for neutral warm-gray appearance (the default).
+# Format: standard hex color string, e.g. "#2a5f8a"
+#
+# When primary is set it:
+#   - tints all UI surfaces (navbar, sidebar, TOC, section nav) with the color's hue
+#   - overrides link-color for links, aside markers, and flag buttons
+#   - also update config-theme-colors.csv "primary" row to match for button coherence
+#
+primary: "#0b1524"   # Primary color — tints surfaces + sets link/marker color
+
+# Surface color intensity. Only applies when primary is set.
+# 0.005 = barely-there whisper | 0.008 = default | 0.012 = noticeable | 0.02 = vivid
+chroma: 0.008
+
+# accent:            # Optional second color — shows on hr rules in essay body
+
+
+
 
 ##########
 # PRINT / PDF
@@ -76,9 +96,9 @@ font-cdn:                            # Optional: Add Google Fonts stylesheet URL
 # The print hub is available at /print/ once added to config-nav.csv.
 #
 print:
-  author: Devin Becker                 # Author name for PDF <meta> and cover page
-  institution: CDIL          # Institution shown on cover page
-  cover-subtitle: The Way of CB          # Subtitle line beneath site title on book cover
+  author:                  # Author name for PDF <meta> and cover page
+  institution:             # Institution shown on cover page
+  cover-subtitle:          # Subtitle line beneath site title on book cover
   show-individual: true    # true/false — show individual essay print cards
   show-book: true          # true/false — show book builder section
   aside-style: margin      # margin (float into page gutter) | inline (indented callout block)
