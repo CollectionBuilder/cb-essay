@@ -23,11 +23,15 @@ body {
     @if $base-font-size != "" { font-size: $base-font-size; }
     @if $text-color != "" { color: $text-color; }
 }
+@if $link-color != "" {
+    :root { --bs-link-color: #{$link-color}; }
+}
+
 a {
-    /* remove link underline */ 
+    /* remove link underline */
     text-decoration: none;
-    @if $link-color != "" { 
-        color: $link-color; 
+    @if $link-color != "" {
+        color: $link-color;
         &:hover {
             @if $text-color != "" { color: $text-color; }
         }

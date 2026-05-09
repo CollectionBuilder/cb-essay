@@ -46,8 +46,8 @@ Essays have both title and order in front matter
 
     /* Half-width image styles */
     .home-header-half {
-        background: #f8f9fa;
-        border-bottom: 1px solid rgba(17, 17, 17, 0.1);
+        background: oklch(97.5% 0.003 90);
+        border-bottom: 1px solid oklch(87% 0.003 90);
     }
     .min-vh-50 {
         min-height: 50vh;
@@ -100,56 +100,67 @@ Essays have both title and order in front matter
 
     /* No-image styles */
     .home-header-no-image {
-        background: #f8f9fa;
-        border-bottom: 1px solid rgba(17, 17, 17, 0.1);
+        background: oklch(97.5% 0.003 90);
+        border-bottom: 1px solid oklch(87% 0.003 90);
         min-height: 50vh;
     }
     .home-header-no-image h1 {
-        font-family: 'Georgia', serif;
         font-size: 3.5rem;
         font-weight: normal;
     }
     .home-header-no-image .tagline {
         font-size: 1.25rem;
-        color: #555;
+        color: oklch(42% 0.004 90);
     }
 
     /* Monograph TOC Styles */
     .monograph-toc {
-        font-family: "Georgia", "Times New Roman", serif;
-        background-color: #fff;
+        background-color: oklch(98% 0.002 90);
         position: relative;
         z-index: 10;
     }
     .monograph-toc .chapter-num {
         font-family: var(--bs-body-font-family);
-        font-size: 0.85rem;
-        letter-spacing: 0.15em;
+        font-size: 0.8rem;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: #6c757d;
+        color: oklch(50% 0.003 90);
         display: block;
         margin-bottom: 0.25rem;
     }
     .monograph-toc .chapter-title {
-        font-size: 1.75rem;
+        font-size: 1.65rem;
         font-weight: normal;
-        color: #212529;
+        color: oklch(13% 0.004 90);
     }
     .monograph-toc .chapter-byline {
         font-style: italic;
-        color: #6c757d;
+        color: oklch(42% 0.004 90);
         margin-top: 0.25rem;
     }
     .monograph-toc .list-group-item {
         background: transparent;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
-        transition: background-color 0.3s ease;
+        border-bottom: 1px solid oklch(87% 0.003 90);
+        transition: background-color 0.2s ease;
     }
     .monograph-toc .list-group-item:hover {
-        background-color: rgba(0,0,0,0.02);
+        background-color: oklch(95% 0.002 90);
     }
     .monograph-toc a {
         text-decoration: none;
+    }
+    .monograph-toc .toc-part {
+        margin-bottom: 2.5rem;
+    }
+    .monograph-toc .toc-part-heading {
+        font-size: 0.75rem;
+        font-weight: normal;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: oklch(50% 0.003 90);
+        margin-bottom: 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid oklch(87% 0.003 90);
     }
     
     {%- if essay_count == 1 -%}
@@ -181,7 +192,7 @@ Same logic as before for full-image, half-image, or no-image
                     
                     {%- if essay_count > 1 -%}
                     <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read &raquo;</a>
-                    {% if site.data.theme.base-theme == 'monograph' %}<br>
+                    {% if site.data.theme.show-homepage-toc %}<br>
                     <a class="btn btn-outline-dark mt-3 text-decoration-none ms-3" href="#table-of-contents">Contents &darr;</a>
                     {% endif %}
                     {%- else -%}
@@ -211,7 +222,7 @@ Same logic as before for full-image, half-image, or no-image
                         
                         {%- if essay_count > 1 -%}
                         <a class="btn btn-light btn-lg text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
-                        {% if site.data.theme.base-theme == 'monograph' %}<br>
+                        {% if site.data.theme.show-homepage-toc %}<br>
                         <a class="btn btn-outline-light mt-2 text-decoration-none w-25" href="#table-of-contents">Contents &darr;</a>
                         {% endif %}
                         {%- else -%}
@@ -280,7 +291,7 @@ Same logic as before for full-image, half-image, or no-image
         {%- if essay_count > 1 -%}
         <a class="btn btn-lg py-3 px-5 display-6 fs-2 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read &raquo;</a>
 
-        {% if site.data.theme.base-theme == 'monograph' %}
+        {% if site.data.theme.show-homepage-toc %}
         <a class="btn btn-sm py-2 px-4 fs-5 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="#table-of-contents">Table of Contents &darr;</a>
         {% endif %}
         {%- else -%}
@@ -353,28 +364,75 @@ If only one essay exists, render it inline with essay-content structure
 MONOGRAPH TABLE OF CONTENTS
 Only show if multiple essays exist
 {%- endcomment -%}
-{%- if site.data.theme.base-theme == 'monograph' and essay_count > 1 -%}
+{%- if site.data.theme.show-homepage-toc and essay_count > 1 -%}
 <div id="table-of-contents" class="container-fluid py-5 monograph-toc">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
             <div class="text-left mb-5">
-                <h2 class="display-4 mb-3" style="font-family: 'Georgia', serif; font-style: italic;">Contents</h2>
-                <div style="width: 50px; height: 2px; background-color: #3d7b53; margin-bottom: 0;"></div>
+                <h2 class="display-4 mb-2" style="font-style: italic;">Contents</h2>
             </div>
             
-            <div class="list-group list-group-flush">
-                {% assign essays = site.essay | sort: 'order' %}
-                {% for item in essays %}
+            {%- assign essays = site.essay | sort: 'order' -%}
+            {%- assign toc_parts = essays | map: 'part' | compact | uniq -%}
+
+            {%- if toc_parts.size > 0 -%}
+            {%- comment -%} Grouped TOC: essays grouped under part headings {%- endcomment -%}
+            {%- for part in toc_parts -%}
+            <div class="toc-part">
+                <h3 class="toc-part-heading">{{ part }}</h3>
+                <div class="list-group list-group-flush mb-2">
+                    {%- for item in essays -%}
+                    {%- if item.part == part -%}
+                    <a href="{{ item.url | relative_url }}" class="list-group-item list-group-item-action py-4 px-4">
+                        <div class="d-flex flex-column align-items-left text-left">
+                            {%- if item.chapter -%}<span class="chapter-num">{{ item.chapter }}</span>{%- endif -%}
+                            <h3 class="chapter-title mb-0">{{ item.title }}</h3>
+                            {%- unless item.byline == site.data.theme.essay[0].author -%}{%- if item.byline -%}
+                            <div class="chapter-byline">{{ item.byline }}</div>
+                            {%- endif -%}{%- endunless -%}
+                        </div>
+                    </a>
+                    {%- endif -%}
+                    {%- endfor -%}
+                </div>
+            </div>
+            {%- endfor -%}
+            {%- comment -%} Essays without a part, shown ungrouped at the end {%- endcomment -%}
+            {%- assign has_unparted = false -%}
+            {%- for item in essays -%}{%- unless item.part -%}{%- assign has_unparted = true -%}{%- endunless -%}{%- endfor -%}
+            {%- if has_unparted -%}
+            <div class="list-group list-group-flush mt-3">
+                {%- for item in essays -%}
+                {%- unless item.part -%}
                 <a href="{{ item.url | relative_url }}" class="list-group-item list-group-item-action py-4 px-4">
                     <div class="d-flex flex-column align-items-left text-left">
+                        {%- if item.chapter -%}<span class="chapter-num">{{ item.chapter }}</span>{%- endif -%}
                         <h3 class="chapter-title mb-0">{{ item.title }}</h3>
-                        {% unless item.byline == site.data.theme.essay[0].author %}{% if item.byline %}
+                        {%- unless item.byline == site.data.theme.essay[0].author -%}{%- if item.byline -%}
                         <div class="chapter-byline">{{ item.byline }}</div>
-                        {% endif %}{% endunless %}
+                        {%- endif -%}{%- endunless -%}
                     </div>
                 </a>
-                {% endfor %}
+                {%- endunless -%}
+                {%- endfor -%}
             </div>
+            {%- endif -%}
+            {%- else -%}
+            {%- comment -%} Flat TOC (default, no part fields present) {%- endcomment -%}
+            <div class="list-group list-group-flush">
+                {%- for item in essays -%}
+                <a href="{{ item.url | relative_url }}" class="list-group-item list-group-item-action py-4 px-4">
+                    <div class="d-flex flex-column align-items-left text-left">
+                        {%- if item.chapter -%}<span class="chapter-num">{{ item.chapter }}</span>{%- endif -%}
+                        <h3 class="chapter-title mb-0">{{ item.title }}</h3>
+                        {%- unless item.byline == site.data.theme.essay[0].author -%}{%- if item.byline -%}
+                        <div class="chapter-byline">{{ item.byline }}</div>
+                        {%- endif -%}{%- endunless -%}
+                    </div>
+                </a>
+                {%- endfor -%}
+            </div>
+            {%- endif -%}
         </div>
     </div>
 </div>

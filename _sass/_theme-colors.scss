@@ -269,7 +269,7 @@ $_luminance-list: .0008 .001 .0011 .0013 .0015 .0017 .002 .0022 .0025 .0027 .003
     --bs-bg-opacity: 0.10 !important;
 }
 
-/* 
+/*
     each function to create all the buttons from the values passed by cb.scss
 */
 @each $color, $value in $theme-colors {
@@ -286,5 +286,63 @@ $_luminance-list: .0008 .001 .0011 .0013 .0015 .0017 .002 .0022 .0025 .0027 .003
         @include theme-text(".text-#{$color}", $value);
         /* bg classes */
         @include theme-bg(".bg-#{$color}", $value);
+    }
+}
+
+/*
+    Override Bootstrap CSS custom properties for primary color.
+    Bootstrap hardcodes #0d6efd in both :root vars and scoped component vars —
+    overriding --bs-primary alone does NOT cascade to component-level vars.
+    Each component that uses primary blue gets its own explicit override here.
+*/
+@if map.has-key($theme-colors, "primary") {
+    $primary: map.get($theme-colors, "primary");
+    @if meta.type-of($primary) == color {
+        $r: color.red($primary);
+        $g: color.green($primary);
+        $b: color.blue($primary);
+
+        :root {
+            --bs-primary:         #{$primary};
+            --bs-primary-rgb:     #{$r},#{$g},#{$b};
+            --bs-focus-ring-color: rgba(#{$r},#{$g},#{$b}, 0.25);
+        }
+        .btn-primary {
+            --bs-btn-bg:                #{$primary};
+            --bs-btn-border-color:      #{$primary};
+            --bs-btn-hover-bg:          #{shade-color($primary, 15%)};
+            --bs-btn-hover-border-color:#{shade-color($primary, 20%)};
+            --bs-btn-active-bg:         #{shade-color($primary, 20%)};
+            --bs-btn-active-border-color:#{shade-color($primary, 25%)};
+            --bs-btn-disabled-bg:       #{$primary};
+            --bs-btn-disabled-border-color:#{$primary};
+        }
+        .btn-outline-primary {
+            --bs-btn-color:               #{$primary};
+            --bs-btn-border-color:        #{$primary};
+            --bs-btn-hover-bg:            #{$primary};
+            --bs-btn-hover-border-color:  #{$primary};
+            --bs-btn-active-bg:           #{$primary};
+            --bs-btn-active-border-color: #{$primary};
+            --bs-btn-disabled-color:        #{$primary};
+            --bs-btn-disabled-border-color: #{$primary};
+        }
+        .dropdown-menu {
+            --bs-dropdown-link-active-bg: #{$primary};
+        }
+        .list-group {
+            --bs-list-group-active-bg:            #{$primary};
+            --bs-list-group-active-border-color:  #{$primary};
+        }
+        .nav-pills {
+            --bs-nav-pills-link-active-bg: #{$primary};
+        }
+        .pagination {
+            --bs-pagination-active-bg:            #{$primary};
+            --bs-pagination-active-border-color:  #{$primary};
+        }
+        .progress {
+            --bs-progress-bar-bg: #{$primary};
+        }
     }
 }
