@@ -1,0 +1,98 @@
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var asides = Array.from(document.querySelectorAll('.aside'));
+  var refs   = Array.from(document.querySelectorAll('.aside-ref'));
+
+  if (asides.length === 0) return;
+
+  // Number every marker and prepend the same number inside each aside (all screen sizes)
+  asides.forEach(function (aside, i) {
+    var n = i + 1;
+    aside.dataset.asideId = String(n);
+
+    var numEl = document.createElement('span');
+    numEl.className = 'aside-num';
+    numEl.setAttribute('aria-hidden', 'true');
+    numEl.textContent = n;
+    aside.prepend(numEl);
+
+    if (refs[i]) {
+      refs[i].textContent = n;
+      refs[i].dataset.asideId = String(n);
+      refs[i].setAttribute('aria-label', 'Note ' + n);
+    }
+  });
+
+  // Flag + modal system only on narrow viewports
+  if (window.innerWidth > 768) return;
+
+  // Build a Bootstrap modal shell once
+  var modalEl = document.createElement('div');
+  modalEl.className = 'modal fade';
+  modalEl.setAttribute('tabindex', '-1');
+  modalEl.setAttribute('aria-labelledby', 'asideModalNum');
+  modalEl.setAttribute('aria-hidden', 'true');
+  modalEl.innerHTML =
+    '<div class="modal-dialog modal-sm modal-dialog-centered modal-dialog-scrollable">' +
+      '<div class="modal-content border-0 shadow">' +
+        '<div class="modal-header border-0 pb-0 pt-3 px-3">' +
+          '<span class="aside-modal-num" id="asideModalNum"></span>' +
+          '<button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>' +
+        '</div>' +
+        '<div class="modal-body aside-modal-content pt-1 px-3 pb-3" id="asideModalBody"></div>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(modalEl);
+
+  var bsModal    = new bootstrap.Modal(modalEl);
+  var modalNum   = modalEl.querySelector('#asideModalNum');
+  var modalBody  = modalEl.querySelector('#asideModalBody');
+
+  // Hide asides from document flow (progressive enhancement — no-JS keeps inline block)
+  asides.forEach(function (aside) { aside.style.display = 'none'; });
+
+  // Build flags and wire up click handlers
+  var flags = asides.map(function (aside, i) {
+    var n    = i + 1;
+    var flag = document.createElement('button');
+    flag.className = 'aside-flag';
+    flag.textContent = n;
+    flag.setAttribute('aria-label', 'Open note ' + n);
+    flag.dataset.asideId = String(n);
+    document.body.appendChild(flag);
+
+    function open() { openModal(aside, n); }
+    flag.addEventListener('click', open);
+    if (refs[i]) refs[i].addEventListener('click', open);
+
+    return flag;
+  });
+
+  // Keep flags pinned to their ref marker's viewport position
+  function positionFlags() {
+    refs.forEach(function (ref, i) {
+      if (!ref || !flags[i]) return;
+      var rect   = ref.getBoundingClientRect();
+      var inView = rect.top >= -20 && rect.top <= window.innerHeight + 20;
+      flags[i].style.top        = rect.top + 'px';
+      flags[i].style.visibility = inView ? 'visible' : 'hidden';
+    });
+  }
+
+  window.addEventListener('scroll', positionFlags, { passive: true });
+  positionFlags();
+
+  function openModal(aside, n) {
+    // Clone content, strip the prepended .aside-num, clear the inline display:none
+    var clone = aside.cloneNode(true);
+    clone.style.removeProperty('display');
+    var numInClone = clone.querySelector('.aside-num');
+    if (numInClone) numInClone.remove();
+
+    modalNum.textContent = 'Note ' + n;
+    modalBody.innerHTML  = '';
+    modalBody.appendChild(clone);
+    bsModal.show();
+  }
+});
+</script>

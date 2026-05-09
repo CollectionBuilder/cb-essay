@@ -1,6 +1,7 @@
 ---
 title: Get Started with CB-Essay
 order: 20
+part: Documentation
 ---
 
 This guide walks you through creating your first CB-Essay project from scratch. You'll have a working essay site in about 10 minutes.
@@ -48,10 +49,7 @@ Work entirely in your browser - **no local installation needed**:
 5. Edit the `_config.yml` file and the `_data/theme.yml` file to change the site's title, theme, featured image, and typography
 6. Click **"Commit changes"**
 
-**That's it!** 
-
-{% include essay/feature/aside.html
-   text="**Bonus:** Use the **Project Gutenberg extractor** (Actions tab) to populate your `_essay/` folder with a complete book automatically!" %}
+**That's it!**{% include essay/feature/aside.html text="**Bonus:** Use the **Project Gutenberg extractor** (Actions tab) to populate your `_essay/` folder with a complete book automatically!" %}
 
 ## More Code-Based Options 
 
@@ -170,7 +168,9 @@ description: "Longer description for search engines (160 chars)"
 ### `_data/theme.yml` - Appearance
 
 ```yaml
-base-theme: essay  # or monograph for book-style
+show-contents-nav: false  # true: navbar shows "Contents" button + chapter panel
+show-homepage-toc: false  # true: homepage displays chapter table of contents
+show-section-nav: false   # true: floating H2 sidebar on essay pages (wide screens)
 
 # Homepage image
 image-style: full-image  # full-image, half-image, or no-image
@@ -194,10 +194,7 @@ _essay/
 └── 03-conclusion.md     (order: 3)
 ```
 
-Essays will appear in navigation based on their `order` value, **not** the filename.
-
-{% include essay/feature/aside.html
-   text="**Pro tip:** Use order values like 10, 20, 30 instead of 1, 2, 3. This makes it easy to insert essays later without renumbering everything." %}
+Essays will appear in navigation based on their `order` value, **not** the filename.{% include essay/feature/aside.html text="**Pro tip:** Use order values like 10, 20, 30 instead of 1, 2, 3. This makes it easy to insert essays later without renumbering everything." %}
 
 ## Step 6: Configure Print/PDF Output (Optional)
 
@@ -220,9 +217,7 @@ print:
 Once configured, access the **Print Hub** at `/print/` to:
 - Print individual essays in Letter, A4, or 6×9″ formats
 - Build custom PDF books by selecting specific essays
-- Generate print-ready PDFs directly from your browser
-
-{% include essay/feature/aside.html text="**Tip:** The Print Hub is automatically added to your site navigation via `_data/config-nav.csv`" %}
+- Generate print-ready PDFs directly from your browser{% include essay/feature/aside.html text="**Tip:** The Print Hub is automatically added to your site navigation via `_data/config-nav.csv`" %}
 
 ## Step 7: Deploy to GitHub Pages
 
@@ -250,9 +245,7 @@ After the GitHub Action completes (usually 2-3 minutes), visit:
 https://YOUR-USERNAME.github.io/YOUR-REPO-NAME/
 ```
 
-**Your essay is live!** 🎉
-
-{% include essay/feature/aside.html text="**Tip:** Watch the Actions tab to see the build progress. A green checkmark means your site deployed successfully!" %}
+**Your essay is live!** 🎉{% include essay/feature/aside.html text="**Tip:** Watch the Actions tab to see the build progress. A green checkmark means your site deployed successfully!" %}
 
 
 ## Next Steps

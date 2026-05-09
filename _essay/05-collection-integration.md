@@ -1,6 +1,7 @@
 ---
 title: Collection Integration
 order: 50
+part: Documentation
 ---
 
 CB-Essay's real power emerges when you integrate collection items with your narrative. This essay explains the **dual-collection model** and shows you how to weave digital objects seamlessly into your writing using real examples from this site's demo collection.
@@ -38,9 +39,7 @@ Your collection items are defined in a CSV file. This demo uses `demo-compoundob
 - Used in essay includes: `{% raw %}{% include essay/feature/aside.html objectid="demo_001" %}{% endraw %}`
 
 **`title`**
-- Item's name/description
-
-{% include essay/feature/aside.html text="**Learn more:** See the [CB-CSV Metadata Guide](https://collectionbuilder.github.io/cb-docs/docs/metadata/csv_metadata/) for complete field documentation." %}
+- Item's name/description{% include essay/feature/aside.html text="**Learn more:** See the [CB-CSV Metadata Guide](https://collectionbuilder.github.io/cb-docs/docs/metadata/csv_metadata/) for complete field documentation." %}
 
 ### Fields for Visualizations
 
@@ -295,11 +294,7 @@ The demo collection includes compound objects - parent items with multiple child
 
 ### Referencing Parent Items
 
-When you reference a parent objectid, CB automatically knows about its children:
-
-{% include essay/feature/aside.html
-   objectid="demo_009"
-   caption="This lookout tower has multiple associated media files" %}
+When you reference a parent objectid, CB automatically knows about its children:{% include essay/feature/aside.html objectid="demo_009" caption="This lookout tower has multiple associated media files" %}
 
 ```liquid
 {% raw %}{% include essay/feature/aside.html
@@ -423,9 +418,7 @@ Collection items render beautifully in print PDFs with some important considerat
 - Consider print layout when placing multiple asides on same page
 
 **Access your print output:**
-Visit the **[Print Hub](/print/)** to generate PDFs with all your integrated collection items.
-
-{% include essay/feature/aside.html text="**Print tip:** Collection item thumbnails in asides automatically scale for optimal print quality!" %}
+Visit the **[Print Hub](/print/)** to generate PDFs with all your integrated collection items.{% include essay/feature/aside.html text="**Print tip:** Collection item thumbnails in asides automatically scale for optimal print quality!" %}
 
 ---
 

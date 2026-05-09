@@ -1,6 +1,7 @@
 ---
 title: Writing Features
 order: 40
+part: Documentation
 ---
 
 CB-Essay provides specialized includes that extend Markdown for scholarly writing. This essay **demonstrates every feature** with working examples you can copy directly into your own work.
@@ -42,8 +43,9 @@ Styled quotations with optional attribution and source links.
 ### Large Centered Quote w/ No Border
 
 {% include essay/feature/blockquote.html
-   quote="The only way out is through"
+   quote="The best way out is always through"
    size="xl"
+   speaker="Robert Frost"
    align="center" 
    border=false %}
 
@@ -51,6 +53,7 @@ Styled quotations with optional attribution and source links.
 ```liquid
 {% raw %}{% include essay/feature/blockquote.html
    quote="Your dramatic quote"
+   speaker="Famous Person"
    size="xl"
    align="center"
    border=false  %}{% endraw %}
@@ -95,9 +98,6 @@ Collection items can appear in asides with thumbnails.{% include essay/feature/a
 
 Display multiple collection items as inline galleries.
 
- {% include feature/gallery.html heading="Items after 1900"  captions=false filter="item.format contains 'image'" %}
-
-
 {% include essay/feature/image-gallery.html
    objectid="demo_033;demo_031;demo_017" caption=false%}
 
@@ -108,6 +108,27 @@ Display multiple collection items as inline galleries.
 ```
 
 Separate multiple object IDs with semicolons. Items must exist in your metadata.
+
+## Filtered Collection  Galleries
+
+Below is another type of gallery, one that is filtered from the collection based on liquid logic (here it is `item.format contains 'image' and item.date > '1920'`) with an optional header.
+
+{% include feature/gallery.html 
+   heading="Items Dated after 1920"  
+   captions=false 
+   filter="item.date > '1920'" %}
+
+**Copy this:**
+```liquid
+{% raw %}{% include feature/gallery.html 
+   heading="Items Dated after 1920"  
+   captions=false 
+   filter="item.date > '1920'" %}{% endraw %}
+```
+
+
+
+
 
 ---
 
@@ -354,9 +375,7 @@ The print layout automatically:
 Visit the **[Print Hub](/print/)** to:
 - Print individual essays in Letter, A4, or 6×9″ formats
 - Build custom PDF books by selecting specific essays
-- Preview before printing
-
-{% include essay/feature/aside.html text="**Tip:** Test your print output early in the writing process to ensure your layout works well on the page!" %}
+- Preview before printing{% include essay/feature/aside.html text="**Tip:** Test your print output early in the writing process to ensure your layout works well on the page!" %}
 
 ---
 
