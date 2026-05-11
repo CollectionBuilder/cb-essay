@@ -74,7 +74,7 @@ font-cdn:                            # Optional: Add Google Fonts stylesheet URL
 #
 # Options: default, desert, ocean, forest, cyberpunk, custom
 #
-color-theme: ocean
+color-theme: default
 
 #### BUILT-IN THEMES — EARTHY / ACADEMIC
 # default   — warm cream surfaces, dark navy links; no themed navbar (original look)
