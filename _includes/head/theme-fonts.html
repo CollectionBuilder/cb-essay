@@ -1,0 +1,145 @@
+{%- comment -%}
+  THEME FONTS
+  -----------
+  Emits theme-specific font CDN links and CSS-variable overrides.
+
+  Activation:
+    Set in _data/theme.yml:
+      base-font-family: theme
+    (and optionally) display-font-family: theme
+
+  When `base-font-family: theme`, each color-theme's recommended body face
+  is loaded from Google Fonts and assigned to --cb-font-family-base.
+  When `display-font-family: theme`, the matching heading face is loaded
+  and assigned to --cb-font-family-display.
+
+  Users can override either independently:
+    base-font-family: "'Literata', Georgia, serif"
+    display-font-family: "'Playfair Display', Georgia, serif"
+    font-cdn: "https://fonts.googleapis.com/css2?family=Literata..."
+
+  When base-font-family is set to a value other than 'theme' (and is not
+  blank), the user's explicit font-cdn (if any) is loaded instead.
+
+  All theme fonts are free, openly licensed, and chosen for long-form
+  reading. Each has at minimum: regular, italic, and a 500-weight cut.
+{%- endcomment -%}
+
+{%- assign base_family = site.data.theme.base-font-family -%}
+{%- assign display_family = site.data.theme.display-font-family -%}
+{%- assign theme_name = site.data.theme.color-theme | default: 'default' -%}
+
+{%- comment -%} Should we resolve EITHER family from the theme? {%- endcomment -%}
+{%- assign use_theme_base = false -%}
+{%- assign use_theme_display = false -%}
+{%- if base_family == 'theme' -%}{%- assign use_theme_base = true -%}{%- endif -%}
+{%- if display_family == 'theme' -%}{%- assign use_theme_display = true -%}{%- endif -%}
+
+{%- if use_theme_base or use_theme_display -%}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+{%- comment -%}
+  Theme font pairings:
+    body  → recommended body face for sustained reading
+    display → companion face for headings (often the same family at 500)
+{%- endcomment -%}
+
+  {%- case theme_name -%}
+
+    {%- when 'idaho' -%}
+      {%- comment -%} Spectral — Production Type, designed for long-form screen reading {%- endcomment -%}
+      <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          {% if use_theme_base %}--cb-font-family-base: 'Spectral', Georgia, serif;{% endif %}
+          {% if use_theme_display %}--cb-font-family-display: 'Spectral', Georgia, serif;{% endif %}
+        }
+      </style>
+
+    {%- when 'lyre' -%}
+      {%- comment -%} EB Garamond — classical Garamond, generous italics, made for poetry {%- endcomment -%}
+      <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          {% if use_theme_base %}--cb-font-family-base: 'EB Garamond', Georgia, serif;{% endif %}
+          {% if use_theme_display %}--cb-font-family-display: 'EB Garamond', Georgia, serif;{% endif %}
+        }
+      </style>
+
+    {%- when 'nonesuch' -%}
+      {%- comment -%} Cardo body + EB Garamond display — Renaissance old-style with elegant titling {%- endcomment -%}
+      <link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&family=EB+Garamond:wght@500;600&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          {% if use_theme_base %}--cb-font-family-base: 'Cardo', Georgia, serif;{% endif %}
+          {% if use_theme_display %}--cb-font-family-display: 'EB Garamond', Georgia, serif;{% endif %}
+        }
+      </style>
+
+    {%- when 'aldine' -%}
+      {%- comment -%} Cormorant Garamond — italic-forward in the Aldine lineage {%- endcomment -%}
+      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          {% if use_theme_base %}--cb-font-family-base: 'Cormorant Garamond', Georgia, serif;{% endif %}
+          {% if use_theme_display %}--cb-font-family-display: 'Cormorant Garamond', Georgia, serif;{% endif %}
+        }
+      </style>
+
+    {%- when 'doves' -%}
+      {%- comment -%} Libre Caslon Text — the closest open-source kin to the Doves Type's English plainness {%- endcomment -%}
+      <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          {% if use_theme_base %}--cb-font-family-base: 'Libre Caslon Text', Georgia, serif;{% endif %}
+          {% if use_theme_display %}--cb-font-family-display: 'Libre Caslon Text', Georgia, serif;{% endif %}
+        }
+      </style>
+
+    {%- when 'kelmscott' -%}
+      {%- comment -%} Sorts Mill Goudy + UnifrakturMaguntia drop-caps — Jenson-derived roman with optional Gothic display {%- endcomment -%}
+      <link href="https://fonts.googleapis.com/css2?family=Sorts+Mill+Goudy:ital@0;1&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          {% if use_theme_base %}--cb-font-family-base: 'Sorts Mill Goudy', Georgia, serif;{% endif %}
+          {% if use_theme_display %}--cb-font-family-display: 'Sorts Mill Goudy', Georgia, serif;{% endif %}
+        }
+      </style>
+
+    {%- when 'gregynog' -%}
+      {%- comment -%} Cormorant Infant — Welsh-modernist feeling, clean and humanist {%- endcomment -%}
+      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          {% if use_theme_base %}--cb-font-family-base: 'Cormorant Infant', Georgia, serif;{% endif %}
+          {% if use_theme_display %}--cb-font-family-display: 'Cormorant Infant', Georgia, serif;{% endif %}
+        }
+      </style>
+
+    {%- when 'ashendene' -%}
+      {%- comment -%} Cardo body + IM Fell Double Pica display — 15c. half-Roman feeling, closest open-source to Subiaco {%- endcomment -%}
+      <link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&family=IM+Fell+Double+Pica:ital@0;1&display=swap" rel="stylesheet">
+      <style>
+        :root {
+          {% if use_theme_base %}--cb-font-family-base: 'Cardo', Georgia, serif;{% endif %}
+          {% if use_theme_display %}--cb-font-family-display: 'IM Fell Double Pica', Georgia, serif;{% endif %}
+        }
+      </style>
+
+    {%- else -%}
+      {%- comment -%} default theme — no font override, falls through to Georgia {%- endcomment -%}
+
+  {%- endcase -%}
+
+{%- elsif site.data.theme.font-cdn and site.data.theme.font-cdn != 'theme' -%}
+  {%- comment -%}
+    User has set an explicit base-font-family (not 'theme') and provided a
+    Google Fonts URL. Load it as in the prior implementation.
+  {%- endcomment -%}
+{% if site.data.theme.font-cdn contains "link" %}{{ site.data.theme.font-cdn }}{% else %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="{{ site.data.theme.font-cdn }}" rel="stylesheet">
+{%- endif -%}
+{%- endif -%}  

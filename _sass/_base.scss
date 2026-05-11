@@ -11,16 +11,22 @@ $text-color: "" !default;
 $link-color: "" !default;
 
 /* smooth scroll for back to top, unless user opt out */
+/* font-size on html so rem-based Bootstrap heading sizes scale with base-font-size */
 html {
     @media (prefers-reduced-motion: no-preference) {
       scroll-behavior: smooth;
     }
+    @if $base-font-size != "" { font-size: $base-font-size; }
 }
 
 /* set font base set in theme.yml */
+/* When an explicit font (not 'theme') is provided, propagate it into the CSS
+   variable so the cascade and --cb-font-family-display fallbacks work. */
+@if $base-font-family != "" and $base-font-family != theme {
+    :root { --cb-font-family-base: #{$base-font-family}; }
+}
 body {
-    @if $base-font-family != "" { font-family: $base-font-family; }
-    @if $base-font-size != "" { font-size: $base-font-size; }
+    font-family: var(--cb-font-family-base, Georgia, serif);
     @if $text-color != "" { color: $text-color; }
 }
 @if $link-color != "" {

@@ -41,49 +41,26 @@ show-contents-nav: true
 show-homepage-toc: true
 show-section-nav: true
 
-
-# TYPOGRAPHY & FONTS
-# Customize text appearance for optimal reading experience
-base-font-size: 1.25em                # Larger fonts work well for long-form reading (1.2em - 1.4em recommended)
-text-color: "#191919"                # Main text color
-link-color: "#003a55"                # Link color
-base-font-family: Georgia            # Default: Georgia (no CDN required, works everywhere)
-font-cdn:                            # Optional: Add Google Fonts stylesheet URL here or use the suggested fonts below via commenting/uncommenting
-
-
-#### SELECTED GOOGLE FONT OPTIONS
-# To use a Google Font: comment out base-font-family and font-cdn above 
-# (i.e. add a '# ' before the options),
-# then uncomment one option below (both lines together).
-#
-#### Option A — Literata: warm and approachable; designed for sustained screen reading
-# font-cdn: "https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap"
-# base-font-family: "'Literata', Georgia, serif"
-#
-#### Option B — Source Serif 4: clean and editorial; Adobe open source
-# font-cdn: https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap
-# base-font-family: "'Source Serif 4', Georgia, serif"
-#
-#### Option C — Vollkorn: bookish and sturdy; designed specifically for long-form reading
-# font-cdn: https://fonts.googleapis.com/css2?family=Vollkorn:ital,wght@0,400;0,600;1,400;1,600&display=swap
-# base-font-family: "'Vollkorn', Georgia, serif"
-
 # COLOR THEME
-# Choose a built-in theme to give the site a cohesive visual identity.
-# Each theme applies color to the navbar, sidebars, links, and print output.
+# ────────────────────────────────────────────────────────────────────────
+# Each theme draws its palette from a historical press,and ships with 
+# a recommended font pairing (used when base-font-family: theme).
 #
-# Options: default, desert, ocean, forest, cyberpunk, custom
-#
-color-theme: default
+# Options: default, idaho, lyre, nonesuch, aldine, doves, kelmscott,
+#          gregynog, ashendene, custom
+# ────────────────────────────────────────────────────────────────────────
 
-#### BUILT-IN THEMES — EARTHY / ACADEMIC
-# default   — warm cream surfaces, dark navy links; no themed navbar (original look)
-# desert    — terracotta and ochre surfaces; deep rust navbar with white text
-# ocean     — pale blue-white surfaces; deep navy navbar with white text
-# forest    — pale green-white surfaces; deep forest navbar with white text
+color-theme: aldine
 
-#### BUILT-IN THEMES — VIBRANT / PLAYFUL
-# cyberpunk — pale teal surfaces; near-black navbar; teal links + hot pink accents
+#### BUILT-IN THEMES (printing-history references)
+# idaho       — USDA, 1958 Douglas-fir cloth, gold stamp · dark green navbar · Spectral
+# lyre      — PF Collier, 1902, Faded indigo cloth, gilt spine · dark indigo navbar · EB Garamond
+# nonesuch  — Nonesuch Press, 1927 (The Temple) cream cloth ruled in red · light navbar · Cardo + EB Garamond
+# aldine    — Aldus Manutius, Venice 1495 · marine blue navbar · Cormorant Garamond
+# doves     — Doves Press 1900 · severe black-on-white · Libre Caslon Text
+# kelmscott — William Morris, holland-blue boards + rubric red · light navbar · Sorts Mill Goudy
+# gregynog  — Welsh private press, three-colour printing · slate-buckram navbar · Cormorant Infant
+# ashendene — C.H. St. John Hornby, Chelsea 1895 · faded brown calf · Cardo + IM Fell Double Pica
 
 #### CUSTOM COLOR
 # Set color-theme: custom, then provide a hex color.
@@ -92,11 +69,43 @@ color-theme: default
 #
 # color-theme: custom
 # custom-color: "#8B4513"
-# navbar-style: light   # light (default) | dark
+# navbar-style: dark    # dark (default) | light
 #
 # Want more themes? See _prompts/add-theme.md
 
+# TYPOGRAPHY & FONTS
+# ────────────────────────────────────────────────────────────────────────
+# Three ways to set fonts:
+#
+#   1. Use a built-in color-theme's recommended pairing (easiest):
+#        base-font-family: theme
+#        display-font-family: theme        # match headings to theme too
+#
+#   2. Use Georgia (no Google Fonts request, works offline):
+#        base-font-family: Georgia
+#        display-font-family: Georgia
+#
+#   3. Use a custom Google Font:
+#        base-font-family: "'Literata', Georgia, serif"
+#        display-font-family: "'Literata', Georgia, serif"
+#        font-cdn: "https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap"
+#
+# Mix and match: e.g. set base-font-family: theme and display-font-family
+# to a custom family if you want themed body text with your own headings.
+# ────────────────────────────────────────────────────────────────────────
 
+base-font-size: 1.2em            # 1.2em – 1.4em recommended for long-form reading
+
+base-font-family: theme           # 'theme' | 'Georgia' | "'YourFont', Georgia, serif"
+display-font-family: theme        # 'theme' | 'Georgia' | "'YourFont', Georgia, serif"
+
+font-cdn:                         # only set if base/display-font-family is custom
+
+# Legacy color overrides — uncomment to override the theme's colors.
+# In most cases, leave these commented out and let `color-theme:` below
+# drive these values via CSS variables.
+# text-color: "#191919"
+# link-color: "#003a55"
 
 
 ##########
@@ -112,6 +121,7 @@ print:
   show-individual: true    # true/false — show individual essay print cards
   show-book: true          # true/false — show book builder section
   aside-style: margin      # margin (float into page gutter) | inline (indented callout block)
+
 
 
 ##########

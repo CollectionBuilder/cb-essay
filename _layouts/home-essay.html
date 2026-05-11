@@ -107,6 +107,9 @@ Essays have both title and order in front matter
     .home-header-no-image h1 {
         font-size: 3.5rem;
         font-weight: normal;
+        display: inline-block;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--cb-hr-color);
     }
     .home-header-no-image .tagline {
         font-size: 1.25rem;
@@ -115,7 +118,6 @@ Essays have both title and order in front matter
 
     /* Monograph TOC Styles */
     .monograph-toc {
-        background-color: var(--cb-surface-100);
         position: relative;
         z-index: 10;
     }
@@ -159,6 +161,23 @@ Essays have both title and order in front matter
         border-bottom: 1px solid var(--cb-border-200);
     }
     
+    /* Read CTA — themed across all header modes
+       Uses navbar-bg/navbar-text as the guaranteed theme dark+text pairing.
+       Hover uses opacity shift so it never goes darker than the theme tone. */
+    .home-header-no-image .btn-dark,
+    .home-header-half .btn-dark {
+        --bs-btn-bg:                  var(--cb-navbar-bg);
+        --bs-btn-border-color:        var(--cb-navbar-bg);
+        --bs-btn-color:               var(--cb-navbar-text);
+        --bs-btn-hover-bg:            var(--cb-navbar-bg);
+        --bs-btn-hover-border-color:  var(--cb-navbar-bg);
+        --bs-btn-hover-color:         var(--cb-navbar-text);
+        --bs-btn-active-bg:           var(--cb-navbar-bg);
+        --bs-btn-active-border-color: var(--cb-navbar-bg);
+    }
+    .home-header-no-image .btn-dark:hover,
+    .home-header-half .btn-dark:hover { opacity: 0.82; }
+
     {%- if essay_count == 1 -%}
     /* Single essay mode styles */
     #single-essay-content {
@@ -297,7 +316,7 @@ Same logic as before for full-image, half-image, or no-image
 <div id="home-banner" class="container-fluid p-0">
 
     <div id="title-box" class="py-3 px-4 text-white bg-dark bg-opacity-75 rounded">
-        <h1 class="display-2">{{ site.title }}</h1>
+        <h1 class="display-2 mt-5">{{ site.title }}</h1>
         {% if page.author or site.author %}
         <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>
         {% elsif site.tagline %}

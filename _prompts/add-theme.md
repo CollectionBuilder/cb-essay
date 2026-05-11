@@ -132,6 +132,13 @@ Find the `--cb-print-accent` line (inside the `<style>` block, inside the `{% ca
 ```liquid
 {% when 'themename' %}oklch(XX% 0.XX HUE)
 ```
+### 4. `_includes/head/theme-fonts.html` (optional)
+
+If your theme has a recommended font pairing, add a {% when 'themename' %} clause
+to the case block. Choose Google Fonts that:
+  - Are free and openly licensed
+  - Include at minimum: regular, italic, and 500-weight
+  - Have a recognizable historical or aesthetic connection to the theme
 
 ---
 

@@ -3,6 +3,59 @@
     This allows you to override any CollectionBuilder or Bootstrap CSS without modifying the base theme files directly.
 */
 
+/* ============================================================
+   Bridge CB primary color token → Bootstrap btn CSS variables
+   Ensures btn-primary and btn-outline-primary (used on the
+   timeline year nav, cloud tag buttons, etc.) honor the active
+   CB color theme rather than Bootstrap's default blue.
+   Bootstrap 5.2+ supports per-selector --bs-btn-* overrides.
+   ============================================================ */
+.btn-primary {
+    --bs-btn-bg:                var(--cb-primary-color);
+    --bs-btn-border-color:      var(--cb-primary-color);
+    --bs-btn-hover-bg:          var(--cb-primary-color);
+    --bs-btn-hover-border-color: var(--cb-primary-color);
+    --bs-btn-active-bg:         var(--cb-primary-color);
+    --bs-btn-active-border-color: var(--cb-primary-color);
+    --bs-btn-disabled-bg:       var(--cb-primary-color);
+    --bs-btn-disabled-border-color: var(--cb-primary-color);
+    filter: none; // prevent token changes from compounding
+}
+
+.btn-outline-primary {
+    --bs-btn-color:             var(--cb-primary-color);
+    --bs-btn-border-color:      var(--cb-primary-color);
+    --bs-btn-hover-bg:          var(--cb-primary-color);
+    --bs-btn-hover-border-color: var(--cb-primary-color);
+    --bs-btn-active-bg:         var(--cb-primary-color);
+    --bs-btn-active-border-color: var(--cb-primary-color);
+}
+
+/* ============================================================
+   CB token overrides for upstream _pages.scss components
+   _pages.scss is kept unmodified for upstream CB-CSV merges.
+   ============================================================ */
+
+// Breadcrumb — was rgb(248,249,250)
+.breadcrumb {
+    background-color: var(--cb-surface-200);
+}
+
+// Browse page date range inputs — was #ced4da
+.date-input-group input {
+    border-color: var(--cb-border-200);
+}
+
+// Browse page date separator — was #6c757d
+.date-separator {
+    color: var(--cb-text-600);
+}
+
+// About page mobile TOC toggle — was #dedede
+#about-toc-title button {
+    background-color: var(--cb-surface-300);
+}
+
 /* Spotlight custom item-page button */
 .spl-item-page {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="%23fff" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg>');
@@ -52,7 +105,7 @@
   .print-hub-header {
     margin-bottom: 2.5rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--cb-border-200);
 
     h1 {
       font-family: system-ui, sans-serif;
@@ -60,13 +113,13 @@
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #555;
+      color: var(--cb-text-600);
       margin-bottom: 0.5rem;
     }
 
     p {
       font-size: 1rem;
-      color: #555;
+      color: var(--cb-text-600);
       max-width: 55ch;
       margin: 0;
     }
@@ -81,7 +134,7 @@
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #999;
+      color: var(--cb-text-500);
       margin-bottom: 1rem;
     }
   }
@@ -95,7 +148,7 @@
     .format-label {
       font-family: system-ui, sans-serif;
       font-size: 0.75rem;
-      color: #777;
+      color: var(--cb-text-600);
       margin-right: 0.4rem;
     }
 
@@ -103,19 +156,19 @@
       font-family: system-ui, sans-serif;
       font-size: 0.72rem;
       padding: 0.25rem 0.65rem;
-      border: 1px solid rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--cb-border-200);
       background: transparent;
-      color: #333;
+      color: var(--cb-text-800);
       cursor: pointer;
       letter-spacing: 0.03em;
       transition: all 120ms ease;
 
-      &:hover { background: rgba(0, 0, 0, 0.05); }
+      &:hover { background: var(--cb-surface-200); }
 
       &.active {
-        background: #333;
-        color: #fff;
-        border-color: #333;
+        background: var(--cb-navbar-bg);
+        color: var(--cb-navbar-text);
+        border-color: var(--cb-navbar-bg);
       }
     }
   }
@@ -124,13 +177,13 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1px;
-    background: rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: var(--cb-border-200);
+    border: 1px solid var(--cb-border-200);
     margin-bottom: 2rem;
   }
 
   .tributary-card {
-    background: #fafafa;
+    background: var(--cb-surface-100);
     padding: 1.1rem 1.25rem;
     display: flex;
     flex-direction: column;
@@ -139,7 +192,7 @@
     .card-title {
       font-size: 1.05rem;
       font-weight: 400;
-      color: #1a1a1a;
+      color: var(--cb-text-900);
       margin: 0;
     }
 
@@ -148,7 +201,7 @@
       font-size: 0.68rem;
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      color: #555;
+      color: var(--cb-text-600);
       text-decoration: none;
       margin-top: auto;
       padding-top: 0.5rem;
@@ -156,14 +209,14 @@
       align-items: center;
       gap: 0.3rem;
 
-      &:hover { color: #000; }
+      &:hover { color: var(--cb-text-950); }
       svg { opacity: 0.6; flex-shrink: 0; }
     }
   }
 
   .book-builder {
-    background: #fafafa;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: var(--cb-surface-100);
+    border: 1px solid var(--cb-border-200);
     padding: 1.25rem 1.5rem;
 
     .book-checklist {
@@ -180,13 +233,13 @@
         gap: 0.4rem;
         font-family: system-ui, sans-serif;
         font-size: 0.8rem;
-        color: #333;
+        color: var(--cb-text-800);
 
         input[type="checkbox"] {
           width: 13px;
           height: 13px;
           cursor: pointer;
-          accent-color: var(--bs-primary, #003a55);
+          accent-color: var(--cb-primary-color);
         }
       }
     }
@@ -195,8 +248,8 @@
       font-family: system-ui, sans-serif;
       font-size: 0.72rem;
       padding: 0.45rem 1.1rem;
-      background: #333;
-      color: #fff;
+      background: var(--cb-navbar-bg);
+      color: var(--cb-navbar-text);
       border: none;
       cursor: pointer;
       letter-spacing: 0.06em;
@@ -205,7 +258,7 @@
       align-items: center;
       transition: background 120ms ease;
 
-      &:hover { background: #1a1a1a; }
+      &:hover { background: var(--cb-footer-bg); }
     }
   }
 }

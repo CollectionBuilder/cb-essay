@@ -1,7 +1,7 @@
 ---
 title: CB-Essay in the Wild
 order: 20
-byline: Devin Becker
+byline: Various Authors
 part: Overview and Examples
 ---
 

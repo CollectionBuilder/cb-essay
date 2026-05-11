@@ -4,20 +4,30 @@
   Emits CSS custom properties used throughout the essay interface.
 
   Variables passed from assets/css/cb.scss via @forward … with (…):
-    $cb-theme:          'default' | 'desert' | 'ocean' | 'forest' | 'cyberpunk' | 'custom'
+    $cb-theme:          'default' | 'idaho' | 'lyre' | 'nonesuch' | 'aldine' |
+                        'doves' | 'kelmscott' | 'gregynog' | 'ashendene' | 'custom'
     $cb-custom-color:   hex string — used only when $cb-theme == 'custom'
     $cb-navbar-override: 'light' | 'dark' | null — overrides navbar style for custom theme
 
-  Named themes are hand-crafted OKLCH palettes — no dynamic hue extraction.
-  The 'custom' path extracts hue from $cb-custom-color and applies standard chromas.
+  All named themes are sampled from real book bindings and printing-history
+  references. Each ships with a recommended font pairing (emitted separately
+  via _includes/feature/theme-fonts.html when theme.yml has
+  `base-font-family: theme`).
 
   Tokens emitted:
     Surface/border palette  --cb-surface-100/200/300, --cb-border-100/200
     Text scale              --cb-text-500 through --cb-text-950, --cb-muted
-    Navigation              --cb-navbar-bg, --cb-navbar-text, --cb-navbar-border, --cb-navbar-hover-bg
+    Navigation              --cb-navbar-bg, --cb-navbar-text, --cb-navbar-border,
+                            --cb-navbar-hover-bg
+    Footer                  --cb-footer-bg
     Color accents           --cb-primary-color, --cb-accent-color, --cb-hr-color
     Print                   --cb-print-accent
     Legacy hue vars         --cb-hue, --cb-accent-hue, --cb-accent-chroma
+
+  Note: text-500..800 keep a low-chroma warm-paper hue (~88°) regardless of
+  theme color. This is intentional — body text on tinted surfaces reads as
+  "discolored paper" if it shares the binding hue. Only -900 and -950 take
+  on the theme hue, giving deep ink a subtle, period-appropriate cast.
 */
 
 @use 'sass:color';
@@ -29,139 +39,289 @@ $cb-navbar-override: null      !default;
 :root {
 
   // ────────────────────────────────────────────────────────────────────────
-  //  DESERT — terracotta and ochre; warm earthy presence
+  //  Idaho — Douglas-fir cloth binding; muted forest green on aged paper
+  //  (Sampled from West Coast Lumbermen's monograph, c.1957)
   // ────────────────────────────────────────────────────────────────────────
-  @if $cb-theme == 'desert' {
-    --cb-surface-100: oklch(97.5% 0.020 33);
-    --cb-surface-200: oklch(95.5% 0.022 33);
-    --cb-surface-300: oklch(93.5% 0.025 33);
-    --cb-border-100:  oklch(90.5% 0.022 33);
-    --cb-border-200:  oklch(85.5% 0.025 33);
-    --cb-muted:       oklch(72%   0.008 33);
-    --cb-text-500:    oklch(60%   0.003 33);
-    --cb-text-600:    oklch(50%   0.003 33);
-    --cb-text-700:    oklch(45%   0.004 33);
-    --cb-text-800:    oklch(35%   0.004 33);
-    --cb-text-900:    oklch(20%   0.005 33);
-    --cb-text-950:    oklch(13%   0.005 33);
+  @if $cb-theme == 'idaho' {
+    --cb-surface-100: oklch(97.0% 0.010 88);
+    --cb-surface-200: oklch(95.0% 0.012 88);
+    --cb-surface-300: oklch(93.0% 0.014 88);
+    --cb-border-100:  oklch(90.0% 0.014 88);
+    --cb-border-200:  oklch(85.0% 0.018 88);
+    --cb-muted:       oklch(72%   0.008 88);
+    --cb-text-500:    oklch(60%   0.005 88);
+    --cb-text-600:    oklch(50%   0.005 88);
+    --cb-text-700:    oklch(45%   0.006 88);
+    --cb-text-800:    oklch(35%   0.006 88);
+    --cb-text-900:    oklch(22%   0.012 150);
+    --cb-text-950:    oklch(14%   0.014 150);
 
-    --cb-hue:           33deg;
-    --cb-accent-hue:    72deg;
-    --cb-accent-chroma: 0.18;
+    --cb-hue:           150deg;
+    --cb-accent-hue:    85deg;
+    --cb-accent-chroma: 0.12;
 
-    --cb-navbar-bg:       oklch(39% 0.18 28.55);
-    --cb-navbar-text:     #ffffff;
+    --cb-navbar-bg:       oklch(34% 0.045 150);
+    --cb-navbar-text:     #f1ebd9;
     --cb-navbar-border:   transparent;
-    --cb-navbar-hover-bg: rgba(255, 255, 255, 0.12);
+    --cb-navbar-hover-bg: rgba(255, 245, 215, 0.10);
 
-    --cb-footer-bg:     oklch(30% 0.18 28);
+    --cb-footer-bg:       oklch(26% 0.040 150);
 
-    --cb-primary-color: oklch(46% 0.18 32);
-    --cb-accent-color:  oklch(68% 0.18 72);
-    --cb-hr-color:      oklch(75% 0.12 72);
-    --cb-print-accent:  oklch(38% 0.13 72);
+    --cb-primary-color:   oklch(42% 0.10 150);
+    --cb-accent-color:    oklch(48% 0.12 85);
+    --cb-hr-color:        oklch(72% 0.08 85);
+    --cb-print-accent:    oklch(38% 0.10 150);
+    --cb-btn-close-filter: invert(1) grayscale(100%) brightness(200%);
 
   // ────────────────────────────────────────────────────────────────────────
-  //  OCEAN — deep navy and teal; cool and academic
+  //  LYRE — faded indigo cloth with gilt spine
+  //  (Sampled from a 19c. selected verse of Thomas Hood)
   // ────────────────────────────────────────────────────────────────────────
-  } @else if $cb-theme == 'ocean' {
-    --cb-surface-100: oklch(97.5% 0.015 215);
-    --cb-surface-200: oklch(95.5% 0.017 215);
-    --cb-surface-300: oklch(93.5% 0.019 215);
-    --cb-border-100:  oklch(90.5% 0.017 215);
-    --cb-border-200:  oklch(85.5% 0.019 215);
-    --cb-muted:       oklch(72%   0.007 215);
-    --cb-text-500:    oklch(60%   0.003 215);
-    --cb-text-600:    oklch(50%   0.003 215);
-    --cb-text-700:    oklch(45%   0.004 215);
-    --cb-text-800:    oklch(35%   0.004 215);
-    --cb-text-900:    oklch(20%   0.005 215);
-    --cb-text-950:    oklch(13%   0.005 215);
+  } @else if $cb-theme == 'lyre' {
+    --cb-surface-100: oklch(97.0% 0.009 88);
+    --cb-surface-200: oklch(95.0% 0.011 88);
+    --cb-surface-300: oklch(93.0% 0.013 88);
+    --cb-border-100:  oklch(90.0% 0.013 88);
+    --cb-border-200:  oklch(85.0% 0.017 88);
+    --cb-muted:       oklch(72%   0.008 88);
+    --cb-text-500:    oklch(60%   0.005 88);
+    --cb-text-600:    oklch(50%   0.005 88);
+    --cb-text-700:    oklch(45%   0.006 88);
+    --cb-text-800:    oklch(35%   0.006 88);
+    --cb-text-900:    oklch(22%   0.014 262);
+    --cb-text-950:    oklch(14%   0.016 262);
 
-    --cb-hue:           215deg;
-    --cb-accent-hue:    215deg;
+    --cb-hue:           262deg;
+    --cb-accent-hue:    88deg;
     --cb-accent-chroma: 0.13;
 
-    --cb-navbar-bg:       oklch(38% 0.17 215);
-    --cb-navbar-text:     #ffffff;
+    --cb-navbar-bg:       oklch(32% 0.060 262);
+    --cb-navbar-text:     #f4eed8;
     --cb-navbar-border:   transparent;
-    --cb-navbar-hover-bg: rgba(255, 255, 255, 0.12);
+    --cb-navbar-hover-bg: rgba(255, 245, 215, 0.10);
 
-    --cb-footer-bg:     oklch(25% 0.11 215);
+    --cb-footer-bg:       oklch(24% 0.055 262);
 
-    --cb-primary-color: oklch(40% 0.14 215);
-    --cb-accent-color:  oklch(40% 0.14 215);
-    --cb-hr-color:      oklch(72% 0.07 215);
-    --cb-print-accent:  oklch(30% 0.09 218);
+    --cb-primary-color:   oklch(40% 0.11 262);
+    --cb-accent-color:    oklch(50% 0.13 88);
+    --cb-hr-color:        oklch(70% 0.09 88);
+    --cb-print-accent:    oklch(36% 0.10 262);
+    --cb-btn-close-filter: invert(1) grayscale(100%) brightness(200%);
 
   // ────────────────────────────────────────────────────────────────────────
-  //  FOREST — sage green; natural and approachable
+  //  NONESUCH — Chiswick Press cream cloth ruled in red
+  //  (After the 1927 Nonesuch Press edition of Herbert's The Temple)
   // ────────────────────────────────────────────────────────────────────────
-  } @else if $cb-theme == 'forest' {
-    --cb-surface-100: oklch(97.5% 0.018 143);
-    --cb-surface-200: oklch(95.5% 0.020 143);
-    --cb-surface-300: oklch(93.5% 0.022 143);
-    --cb-border-100:  oklch(90.5% 0.020 143);
-    --cb-border-200:  oklch(85.5% 0.022 143);
-    --cb-muted:       oklch(72%   0.008 143);
-    --cb-text-500:    oklch(60%   0.003 143);
-    --cb-text-600:    oklch(50%   0.003 143);
-    --cb-text-700:    oklch(45%   0.004 143);
-    --cb-text-800:    oklch(35%   0.004 143);
-    --cb-text-900:    oklch(20%   0.005 143);
-    --cb-text-950:    oklch(13%   0.005 143);
+  } @else if $cb-theme == 'nonesuch' {
+    --cb-surface-100: oklch(97.5% 0.012 80);
+    --cb-surface-200: oklch(96.0% 0.014 80);
+    --cb-surface-300: oklch(94.0% 0.016 80);
+    --cb-border-100:  oklch(90.5% 0.018 75);
+    --cb-border-200:  oklch(82.0% 0.060 30);
+    --cb-muted:       oklch(72%   0.012 80);
+    --cb-text-500:    oklch(60%   0.006 80);
+    --cb-text-600:    oklch(50%   0.006 80);
+    --cb-text-700:    oklch(45%   0.008 80);
+    --cb-text-800:    oklch(35%   0.010 75);
+    --cb-text-900:    oklch(20%   0.012 75);
+    --cb-text-950:    oklch(13%   0.014 75);
 
-    --cb-hue:           143deg;
-    --cb-accent-hue:    65deg;
+    --cb-hue:           28deg;
+    --cb-accent-hue:    28deg;
+    --cb-accent-chroma: 0.14;
+
+    /* Light navbar — cream ground, red text and red bottom rule */
+    --cb-navbar-bg:       oklch(96.5% 0.018 75);
+    --cb-navbar-text:     oklch(34% 0.13 28);
+    --cb-navbar-border:   oklch(58% 0.14 28);
+    --cb-navbar-hover-bg: rgba(140, 30, 30, 0.06);
+
+    --cb-footer-bg:       oklch(96.0% 0.020 75);
+
+    --cb-primary-color:   oklch(42% 0.16 28);
+    --cb-accent-color:    oklch(58% 0.14 28);
+    --cb-hr-color:        oklch(60% 0.13 28);
+    --cb-print-accent:    oklch(48% 0.16 28);
+    --cb-btn-close-filter: none;
+
+  // ────────────────────────────────────────────────────────────────────────
+  //  ALDINE — Aldus Manutius, Venice c.1495; Adriatic blue, italic ancestor
+  // ────────────────────────────────────────────────────────────────────────
+  } @else if $cb-theme == 'aldine' {
+    --cb-surface-100: oklch(97.0% 0.010 88);
+    --cb-surface-200: oklch(95.0% 0.012 88);
+    --cb-surface-300: oklch(93.0% 0.014 88);
+    --cb-border-100:  oklch(90.0% 0.014 88);
+    --cb-border-200:  oklch(85.0% 0.018 88);
+    --cb-muted:       oklch(72%   0.008 88);
+    --cb-text-500:    oklch(60%   0.005 88);
+    --cb-text-600:    oklch(50%   0.005 88);
+    --cb-text-700:    oklch(45%   0.006 88);
+    --cb-text-800:    oklch(35%   0.006 88);
+    --cb-text-900:    oklch(22%   0.014 230);
+    --cb-text-950:    oklch(14%   0.016 230);
+
+    --cb-hue:           230deg;
+    --cb-accent-hue:    80deg;
+    --cb-accent-chroma: 0.13;
+
+    --cb-navbar-bg:       oklch(30% 0.070 230);
+    --cb-navbar-text:     #ede5d2;
+    --cb-navbar-border:   transparent;
+    --cb-navbar-hover-bg: rgba(255, 240, 210, 0.10);
+
+    --cb-footer-bg:       oklch(22% 0.060 230);
+
+    --cb-primary-color:   oklch(38% 0.13 230);
+    --cb-accent-color:    oklch(50% 0.13 80);
+    --cb-hr-color:        oklch(70% 0.10 80);
+    --cb-print-accent:    oklch(34% 0.12 230);
+    --cb-btn-close-filter: invert(1) grayscale(100%) brightness(200%);
+
+  // ────────────────────────────────────────────────────────────────────────
+  //  DOVES — Doves Press 1900; severe black on white, single rubric red
+  // ────────────────────────────────────────────────────────────────────────
+  } @else if $cb-theme == 'doves' {
+    --cb-surface-100: oklch(98.5% 0.003 88);
+    --cb-surface-200: oklch(96.5% 0.004 88);
+    --cb-surface-300: oklch(94.5% 0.005 88);
+    --cb-border-100:  oklch(90.0% 0.005 88);
+    --cb-border-200:  oklch(82.0% 0.006 88);
+    --cb-muted:       oklch(70%   0.004 88);
+    --cb-text-500:    oklch(60%   0.003 88);
+    --cb-text-600:    oklch(48%   0.003 88);
+    --cb-text-700:    oklch(38%   0.003 88);
+    --cb-text-800:    oklch(28%   0.003 88);
+    --cb-text-900:    oklch(15%   0.003 88);
+    --cb-text-950:    oklch(8%    0.003 88);
+
+    --cb-hue:           88deg;
+    --cb-accent-hue:    28deg;
     --cb-accent-chroma: 0.16;
 
-    --cb-navbar-bg:       oklch(34% 0.11 146.77);
-    --cb-navbar-text:     #ffffff;
+    --cb-navbar-bg:       oklch(13% 0.003 88);
+    --cb-navbar-text:     #f6f3eb;
     --cb-navbar-border:   transparent;
-    --cb-navbar-hover-bg: rgba(255, 255, 255, 0.12);
+    --cb-navbar-hover-bg: rgba(246, 243, 235, 0.10);
 
-    --cb-footer-bg:     oklch(25% 0.14 143);
+    --cb-footer-bg:       oklch(8% 0.003 88);
 
-    --cb-primary-color: oklch(42% 0.16 145);
-    --cb-accent-color:  oklch(66% 0.16 65);
-    --cb-hr-color:      oklch(73% 0.10 65);
-    --cb-print-accent:  oklch(35% 0.12 65);
+    --cb-primary-color:   oklch(42% 0.16 28);
+    --cb-accent-color:    oklch(42% 0.16 28);
+    --cb-hr-color:        oklch(42% 0.16 28);
+    --cb-print-accent:    oklch(42% 0.16 28);
+    --cb-btn-close-filter: invert(1) grayscale(100%) brightness(200%);
 
   // ────────────────────────────────────────────────────────────────────────
-  //  CYBERPUNK — near-black teal navbar, hot pink accent, pale teal surfaces
+  //  KELMSCOTT — William Morris, 1891; holland-backed blue boards,
+  //              Jenson-derived Golden type, rubric red shoulder-titles
   // ────────────────────────────────────────────────────────────────────────
-  } @else if $cb-theme == 'cyberpunk' {
-    --cb-surface-100: oklch(97.5% 0.012 195);
-    --cb-surface-200: oklch(95.5% 0.014 195);
-    --cb-surface-300: oklch(93.5% 0.016 195);
-    --cb-border-100:  oklch(90.5% 0.014 195);
-    --cb-border-200:  oklch(85.5% 0.016 195);
-    --cb-muted:       oklch(72%   0.007 195);
-    --cb-text-500:    oklch(60%   0.003 195);
-    --cb-text-600:    oklch(50%   0.003 195);
-    --cb-text-700:    oklch(45%   0.004 195);
-    --cb-text-800:    oklch(35%   0.004 195);
-    --cb-text-900:    oklch(20%   0.005 195);
-    --cb-text-950:    oklch(13%   0.005 195);
+  } @else if $cb-theme == 'kelmscott' {
+    --cb-surface-100: oklch(96.5% 0.012 85);     /* Batchelor paper — warm */
+    --cb-surface-200: oklch(94.5% 0.014 85);
+    --cb-surface-300: oklch(92.5% 0.016 85);
+    --cb-border-100:  oklch(89.0% 0.016 85);
+    --cb-border-200:  oklch(82.0% 0.020 85);
+    --cb-muted:       oklch(72%   0.010 85);
+    --cb-text-500:    oklch(60%   0.005 85);
+    --cb-text-600:    oklch(50%   0.005 85);
+    --cb-text-700:    oklch(45%   0.006 85);
+    --cb-text-800:    oklch(35%   0.008 85);
+    --cb-text-900:    oklch(18%   0.012 85);     /* near-black ink */
+    --cb-text-950:    oklch(10%   0.014 85);
 
-    --cb-hue:           195deg;
-    --cb-accent-hue:    340deg;
-    --cb-accent-chroma: 0.22;
+    --cb-hue:           240deg;
+    --cb-accent-hue:    28deg;
+    --cb-accent-chroma: 0.15;
 
-    --cb-navbar-bg:       oklch(42% 0.25 195);
-    --cb-navbar-text:     #ffffff;
+    /* Light navbar — holland-linen pale blue with deep navy text */
+    --cb-navbar-bg:       oklch(86% 0.045 235);
+    --cb-navbar-text:     oklch(22% 0.080 240);
+    --cb-navbar-border:   oklch(60% 0.090 240);
+    --cb-navbar-hover-bg: rgba(20, 40, 90, 0.06);
+
+    --cb-footer-bg:       oklch(84% 0.045 235);
+
+    --cb-primary-color:   oklch(40% 0.15 28);    /* shoulder-title red */
+    --cb-accent-color:    oklch(32% 0.10 240);   /* deep holland blue */
+    --cb-hr-color:        oklch(60% 0.12 28);
+    --cb-print-accent:    oklch(42% 0.16 28);
+    --cb-btn-close-filter: none;
+
+  // ────────────────────────────────────────────────────────────────────────
+  //  GREGYNOG — Gwendoline & Margaret Davies, Newtown, 1922;
+  //             warm slate buckram with three-colour (red+blue+black) print
+  // ────────────────────────────────────────────────────────────────────────
+  } @else if $cb-theme == 'gregynog' {
+    --cb-surface-100: oklch(96.0% 0.006 250);    /* cool slate-tinted paper */
+    --cb-surface-200: oklch(94.0% 0.007 250);
+    --cb-surface-300: oklch(91.5% 0.008 250);
+    --cb-border-100:  oklch(88.0% 0.009 250);
+    --cb-border-200:  oklch(80.0% 0.012 250);
+    --cb-muted:       oklch(70%   0.008 250);
+    --cb-text-500:    oklch(60%   0.005 250);
+    --cb-text-600:    oklch(50%   0.005 250);
+    --cb-text-700:    oklch(45%   0.006 250);
+    --cb-text-800:    oklch(35%   0.008 250);
+    --cb-text-900:    oklch(20%   0.010 250);
+    --cb-text-950:    oklch(13%   0.012 250);
+
+    --cb-hue:           250deg;
+    --cb-accent-hue:    25deg;
+    --cb-accent-chroma: 0.14;
+
+    /* Dark navbar — slate-buckram grey-blue with cream text */
+    --cb-navbar-bg:       oklch(34% 0.025 250);
+    --cb-navbar-text:     #ece3d0;
     --cb-navbar-border:   transparent;
-    --cb-navbar-hover-bg: rgba(255, 255, 255, 0.12);
+    --cb-navbar-hover-bg: rgba(236, 227, 208, 0.10);
 
-    --cb-footer-bg:     oklch(18% 0.18 195);
+    --cb-footer-bg:       oklch(26% 0.020 250);
 
-    --cb-primary-color: oklch(68% 0.20 195);
-    --cb-accent-color:  oklch(65% 0.24 340);
-    --cb-hr-color:      oklch(68% 0.14 340);
-    --cb-print-accent:  oklch(50% 0.18 340);
+    --cb-primary-color:   oklch(42% 0.14 25);    /* the three-colour red */
+    --cb-accent-color:    oklch(38% 0.13 250);   /* the three-colour blue */
+    --cb-hr-color:        oklch(60% 0.12 25);
+    --cb-print-accent:    oklch(42% 0.14 25);
+    --cb-btn-close-filter: invert(1) grayscale(100%) brightness(200%);
 
   // ────────────────────────────────────────────────────────────────────────
-  //  CUSTOM — user-supplied hex color; hue extracted, standard chromas applied
+  //  ASHENDENE — C.H. St. John Hornby, Chelsea 1895; brown calf,
+  //              Subiaco type, red rubrication with blue initials
+  // ────────────────────────────────────────────────────────────────────────
+  } @else if $cb-theme == 'ashendene' {
+    --cb-surface-100: oklch(96.8% 0.014 70);     /* warm Batchelor paper */
+    --cb-surface-200: oklch(94.8% 0.016 70);
+    --cb-surface-300: oklch(92.5% 0.018 70);
+    --cb-border-100:  oklch(89.0% 0.020 70);
+    --cb-border-200:  oklch(80.0% 0.030 60);
+    --cb-muted:       oklch(70%   0.014 70);
+    --cb-text-500:    oklch(60%   0.008 70);
+    --cb-text-600:    oklch(50%   0.008 70);
+    --cb-text-700:    oklch(45%   0.010 70);
+    --cb-text-800:    oklch(35%   0.014 60);
+    --cb-text-900:    oklch(20%   0.020 55);
+    --cb-text-950:    oklch(13%   0.024 55);
+
+    --cb-hue:           50deg;
+    --cb-accent-hue:    28deg;
+    --cb-accent-chroma: 0.14;
+
+    /* Dark navbar — faded brown calf leather */
+    --cb-navbar-bg:       oklch(34% 0.060 55);
+    --cb-navbar-text:     #f0e3c8;
+    --cb-navbar-border:   transparent;
+    --cb-navbar-hover-bg: rgba(240, 227, 200, 0.10);
+
+    --cb-footer-bg:       oklch(26% 0.050 55);
+
+    --cb-primary-color:   oklch(42% 0.16 28);    /* Subiaco rubrication red */
+    --cb-accent-color:    oklch(40% 0.14 245);   /* Graily Hewitt initial blue */
+    --cb-hr-color:        oklch(65% 0.10 55);
+    --cb-print-accent:    oklch(42% 0.16 28);
+    --cb-btn-close-filter: invert(1) grayscale(100%) brightness(200%);
+
+  // ────────────────────────────────────────────────────────────────────────
+  //  CUSTOM — user-supplied hex color; hue extracted, standard chromas
   // ────────────────────────────────────────────────────────────────────────
   } @else if $cb-theme == 'custom' and $cb-custom-color != null {
     $hue: color.hue($cb-custom-color);
@@ -188,22 +348,24 @@ $cb-navbar-override: null      !default;
     --cb-hr-color:      oklch(72% 0.08 #{$hue});
     --cb-print-accent:  oklch(32% 0.09 #{$hue});
 
-    @if $cb-navbar-override == 'dark' {
+    @if $cb-navbar-override == 'light' {
+        --cb-navbar-bg:       oklch(97.5% 0.018 #{$hue});
+      --cb-navbar-text:     #191919;
+      --cb-navbar-border:   oklch(85.5% 0.022 #{$hue});
+      --cb-navbar-hover-bg: rgba(0, 0, 0, 0.08);
+      --cb-footer-bg:       oklch(20% 0.002 90);
+      --cb-btn-close-filter: none;
+    } @else {
       --cb-navbar-bg:       oklch(25% 0.09 #{$hue});
       --cb-navbar-text:     #ffffff;
       --cb-navbar-border:   transparent;
       --cb-navbar-hover-bg: rgba(255, 255, 255, 0.12);
       --cb-footer-bg:       oklch(18% 0.08 #{$hue});
-    } @else {
-      --cb-navbar-bg:       oklch(97.5% 0.018 #{$hue});
-      --cb-navbar-text:     #191919;
-      --cb-navbar-border:   oklch(85.5% 0.022 #{$hue});
-      --cb-navbar-hover-bg: rgba(0, 0, 0, 0.08);
-      --cb-footer-bg:       oklch(20% 0.002 90);
+      --cb-btn-close-filter: invert(1) grayscale(100%) brightness(200%);
     }
 
   // ────────────────────────────────────────────────────────────────────────
-  //  DEFAULT — warm cream neutral; identical to previous out-of-box behavior
+  //  DEFAULT — warm cream neutral; original out-of-box behavior
   // ────────────────────────────────────────────────────────────────────────
   } @else {
     --cb-surface-100: oklch(97.5% 0.003 90);
@@ -228,11 +390,12 @@ $cb-navbar-override: null      !default;
     --cb-navbar-border:   transparent;
     --cb-navbar-hover-bg: rgba(255, 255, 255, 0.12);
 
-    --cb-footer-bg:     oklch(0.3 0.01 261.11);
+    --cb-footer-bg:       oklch(0.3 0.01 261.11);
 
-    --cb-primary-color: oklch(0.45 0.06 211.88);
-    --cb-accent-color:  oklch(0.38 0.08 267.91);
-    --cb-hr-color:      oklch(0.72 0.06 267.91);
-    --cb-print-accent:  oklch(30% 0.08 267.91);
+    --cb-primary-color:   oklch(0.45 0.06 211.88);
+    --cb-accent-color:    oklch(0.38 0.08 267.91);
+    --cb-hr-color:        oklch(0.72 0.06 267.91);
+    --cb-print-accent:    oklch(30% 0.08 267.91);
+    --cb-btn-close-filter: invert(1) grayscale(100%) brightness(200%);
   }
 }

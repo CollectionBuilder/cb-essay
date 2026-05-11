@@ -26,7 +26,9 @@
 p{ margin-bottom: 1.3em; }
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
     margin-top: 1.7em;
-    margin-bottom: 1.3rem;}
+    margin-bottom: 1.3rem;
+    font-family: var(--cb-font-family-display, var(--cb-font-family-base, Georgia, serif));
+}
 
 a {
     text-decoration: underline;
@@ -324,7 +326,6 @@ video::cue {
     .essay-nav-btn {
         background: none;
         border: none;
-        font-family: system-ui, -apple-system, sans-serif;
         font-size: 0.72rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
@@ -366,10 +367,11 @@ video::cue {
     .offcanvas-header {
         border-bottom: 1px solid var(--cb-border-100);
         padding: 0.875rem 1.5rem;
+
     }
 
+
     .offcanvas-title {
-        font-family: system-ui, -apple-system, sans-serif;
         font-size: 0.72rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
@@ -461,7 +463,6 @@ video::cue {
     align-items: center;
     justify-content: space-between;
     gap: 0.4rem;
-    font-family: system-ui, -apple-system, sans-serif;
     font-size: 0.68rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -497,7 +498,6 @@ video::cue {
 .section-nav-link {
     display: block;
     padding: 8px 15px;
-    font-family: system-ui, -apple-system, sans-serif;
     font-size: 0.8rem;
     line-height: 1.4;
     color: var(--cb-text-700);
@@ -530,13 +530,17 @@ video::cue {
 
     small {
         color: var(--cb-navbar-text);
-        opacity: 0.6;
+        opacity: 0.8;
     }
 
+    .btn-close {
+        filter: var(--cb-btn-close-filter, none);
+        }
+        
     .nav-link {
         color: var(--cb-navbar-text);
-        opacity: 0.85;
-        padding-left: 0;
+        opacity: 0.95;
+        padding-left: 5px;
         border-radius: 4px;
         transition: opacity 0.15s ease, background 0.15s ease;
         &:hover {
