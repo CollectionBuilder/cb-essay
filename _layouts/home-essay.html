@@ -120,13 +120,9 @@ Essays have both title and order in front matter
         z-index: 10;
     }
     .monograph-toc .chapter-num {
-        font-family: var(--bs-body-font-family);
-        font-size: 0.8rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: oklch(50% 0.003 90);
-        display: block;
-        margin-bottom: 0.25rem;
+        font-size: inherit;
+        font-weight: normal;
+        color: oklch(35% 0.004 90);
     }
     .monograph-toc .chapter-title {
         font-size: 1.65rem;
@@ -275,10 +271,32 @@ Same logic as before for full-image, half-image, or no-image
 </div>
 
 {% else %}
-{%- comment -%} Full-width image banner (default) {%- endcomment -%}
+{%- comment -%} Full-width image banner — falls back to no-image layout when no featured-image is set {%- endcomment -%}
+{%- unless site.data.theme.featured-image -%}
+<div class="home-header-no-image container-fluid">
+    <div class="row justify-content-center align-items-center min-vh-50">
+        <div class="col-lg-8 col-md-10 text-center py-5">
+            <h1 class="display-2 mb-4">{{ site.title }}</h1>
+            {% if page.author or site.author %}
+            <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>
+            {% elsif site.tagline %}
+            <p class="tagline mb-4">{{ site.tagline }}</p>
+            {% endif %}
+            <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
+                {%- if essay_count > 1 -%}
+                <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read &raquo;</a>
+                {%- else -%}
+                <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="#single-essay-content">Read &raquo;</a>
+                <button class="btn btn-sm py-2 px-4 btn-outline-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">Menu</button>
+                {%- endif -%}
+            </div>
+        </div>
+    </div>
+</div>
+{%- else -%}
 <div id="home-banner" class="container-fluid p-0">
 
-    <div id="title-box" class="col-md-5 py-3 px-5 text-white bg-dark bg-opacity-75 rounded">
+    <div id="title-box" class="py-3 px-4 text-white bg-dark bg-opacity-75 rounded">
         <h1 class="display-2">{{ site.title }}</h1>
         {% if page.author or site.author %}
         <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>
@@ -325,6 +343,7 @@ Same logic as before for full-image, half-image, or no-image
     </div>
 </div>
 {% endif %}
+{%- endunless -%}
 {% endif %}
 
 {%- comment -%}
@@ -385,8 +404,7 @@ Only show if multiple essays exist
                     {%- if item.part == part -%}
                     <a href="{{ item.url | relative_url }}" class="list-group-item list-group-item-action py-4 px-4">
                         <div class="d-flex flex-column align-items-left text-left">
-                            {%- if item.chapter -%}<span class="chapter-num">{{ item.chapter }}</span>{%- endif -%}
-                            <h3 class="chapter-title mb-0">{{ item.title }}</h3>
+                            <h3 class="chapter-title mb-0">{%- if item.chapter -%}<span class="chapter-num">{{ item.chapter }}. </span>{%- endif -%}{{ item.title }}</h3>
                             {%- unless item.byline == site.data.theme.essay[0].author -%}{%- if item.byline -%}
                             <div class="chapter-byline">{{ item.byline }}</div>
                             {%- endif -%}{%- endunless -%}
