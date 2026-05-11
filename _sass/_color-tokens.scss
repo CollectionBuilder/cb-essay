@@ -4,62 +4,235 @@
   Emits CSS custom properties used throughout the essay interface.
 
   Variables passed from assets/css/cb.scss via @forward … with (…):
-    $cb-primary:        hex color — the primary brand color
-    $cb-accent:         hex color or null — optional second color
-    $cb-colorized:      boolean — true when primary: is set in theme.yml
-    $cb-surface-chroma: 0.005–0.02 — intensity of surface tinting (default 0.008)
+    $cb-theme:          'default' | 'desert' | 'ocean' | 'forest' | 'cyberpunk' | 'custom'
+    $cb-custom-color:   hex string — used only when $cb-theme == 'custom'
+    $cb-navbar-override: 'light' | 'dark' | null — overrides navbar style for custom theme
 
-  When $cb-colorized is false (default), surfaces use warm-neutral hue 90
-  (identical to the original hardcoded behavior). When true, the primary
-  color's hue tints all surfaces, borders, and text tokens.
+  Named themes are hand-crafted OKLCH palettes — no dynamic hue extraction.
+  The 'custom' path extracts hue from $cb-custom-color and applies standard chromas.
+
+  Tokens emitted:
+    Surface/border palette  --cb-surface-100/200/300, --cb-border-100/200
+    Text scale              --cb-text-500 through --cb-text-950, --cb-muted
+    Navigation              --cb-navbar-bg, --cb-navbar-text, --cb-navbar-border, --cb-navbar-hover-bg
+    Color accents           --cb-primary-color, --cb-accent-color, --cb-hr-color
+    Print                   --cb-print-accent
+    Legacy hue vars         --cb-hue, --cb-accent-hue, --cb-accent-chroma
 */
 
 @use 'sass:color';
 
-$cb-primary:        #003a55 !default;
-$cb-accent:         null    !default;
-$cb-colorized:      false   !default;
-$cb-surface-chroma: 0.008   !default;  // configurable via theme.yml chroma:
-
-// Neutral mode: hue 90 (warm cream paper), chroma 0.003 (barely-there warmth)
-// Colorized mode: primary hue, configurable chroma
-// Use @if not if() — SCSS if() eagerly evaluates both arms, breaking on null colors.
-$_hue:    90deg;
-$_chroma: 0.003;
-@if $cb-colorized {
-  $_hue:    color.hue($cb-primary);
-  $_chroma: $cb-surface-chroma;
-}
-
-// Accent hue: explicit accent, or falls back to primary hue (no random complementary)
-$_accent-hue: $_hue;
-@if $cb-accent != null {
-  $_accent-hue: color.hue($cb-accent);
-}
+$cb-theme:           'default' !default;
+$cb-custom-color:    null      !default;
+$cb-navbar-override: null      !default;
 
 :root {
-  --cb-hue:           #{$_hue};
-  --cb-accent-hue:    #{$_accent-hue};
-  // 0 when neutral (hr looks gray), 0.05 when colorized (hr shows the accent hue)
-  --cb-accent-chroma: #{if($cb-colorized, 0.05, 0)};
 
-  // Surface palette — tinted backgrounds for UI chrome
-  --cb-surface-100: oklch(97.5% #{$_chroma} #{$_hue});
-  --cb-surface-200: oklch(95%   #{$_chroma} #{$_hue});
-  --cb-surface-300: oklch(93%   #{$_chroma} #{$_hue});
+  // ────────────────────────────────────────────────────────────────────────
+  //  DESERT — terracotta and ochre; warm earthy presence
+  // ────────────────────────────────────────────────────────────────────────
+  @if $cb-theme == 'desert' {
+    --cb-surface-100: oklch(97.5% 0.020 33);
+    --cb-surface-200: oklch(95.5% 0.022 33);
+    --cb-surface-300: oklch(93.5% 0.025 33);
+    --cb-border-100:  oklch(90.5% 0.022 33);
+    --cb-border-200:  oklch(85.5% 0.025 33);
+    --cb-muted:       oklch(72%   0.008 33);
+    --cb-text-500:    oklch(60%   0.003 33);
+    --cb-text-600:    oklch(50%   0.003 33);
+    --cb-text-700:    oklch(45%   0.004 33);
+    --cb-text-800:    oklch(35%   0.004 33);
+    --cb-text-900:    oklch(20%   0.005 33);
+    --cb-text-950:    oklch(13%   0.005 33);
 
-  // Border palette
-  --cb-border-100:  oklch(91% #{$_chroma} #{$_hue});
-  --cb-border-200:  oklch(87% #{$_chroma} #{$_hue});
+    --cb-hue:           33deg;
+    --cb-accent-hue:    72deg;
+    --cb-accent-chroma: 0.18;
 
-  // Muted — scrollbar thumb, faded elements
-  --cb-muted:       oklch(75% 0.003 #{$_hue});
+    --cb-navbar-bg:       oklch(39% 0.18 28.55);
+    --cb-navbar-text:     #ffffff;
+    --cb-navbar-border:   transparent;
+    --cb-navbar-hover-bg: rgba(255, 255, 255, 0.12);
 
-  // Text palette — used for nav labels, meta text, body-adjacent text
-  --cb-text-500:    oklch(60% 0.003 #{$_hue});
-  --cb-text-600:    oklch(50% 0.003 #{$_hue});
-  --cb-text-700:    oklch(45% 0.003 #{$_hue});
-  --cb-text-800:    oklch(35% 0.004 #{$_hue});
-  --cb-text-900:    oklch(20% 0.004 #{$_hue});
-  --cb-text-950:    oklch(13% 0.004 #{$_hue});
+    --cb-footer-bg:     oklch(30% 0.18 28);
+
+    --cb-primary-color: oklch(46% 0.18 32);
+    --cb-accent-color:  oklch(68% 0.18 72);
+    --cb-hr-color:      oklch(75% 0.12 72);
+    --cb-print-accent:  oklch(38% 0.13 72);
+
+  // ────────────────────────────────────────────────────────────────────────
+  //  OCEAN — deep navy and teal; cool and academic
+  // ────────────────────────────────────────────────────────────────────────
+  } @else if $cb-theme == 'ocean' {
+    --cb-surface-100: oklch(97.5% 0.015 215);
+    --cb-surface-200: oklch(95.5% 0.017 215);
+    --cb-surface-300: oklch(93.5% 0.019 215);
+    --cb-border-100:  oklch(90.5% 0.017 215);
+    --cb-border-200:  oklch(85.5% 0.019 215);
+    --cb-muted:       oklch(72%   0.007 215);
+    --cb-text-500:    oklch(60%   0.003 215);
+    --cb-text-600:    oklch(50%   0.003 215);
+    --cb-text-700:    oklch(45%   0.004 215);
+    --cb-text-800:    oklch(35%   0.004 215);
+    --cb-text-900:    oklch(20%   0.005 215);
+    --cb-text-950:    oklch(13%   0.005 215);
+
+    --cb-hue:           215deg;
+    --cb-accent-hue:    215deg;
+    --cb-accent-chroma: 0.13;
+
+    --cb-navbar-bg:       oklch(38% 0.17 215);
+    --cb-navbar-text:     #ffffff;
+    --cb-navbar-border:   transparent;
+    --cb-navbar-hover-bg: rgba(255, 255, 255, 0.12);
+
+    --cb-footer-bg:     oklch(25% 0.11 215);
+
+    --cb-primary-color: oklch(40% 0.14 215);
+    --cb-accent-color:  oklch(40% 0.14 215);
+    --cb-hr-color:      oklch(72% 0.07 215);
+    --cb-print-accent:  oklch(30% 0.09 218);
+
+  // ────────────────────────────────────────────────────────────────────────
+  //  FOREST — sage green; natural and approachable
+  // ────────────────────────────────────────────────────────────────────────
+  } @else if $cb-theme == 'forest' {
+    --cb-surface-100: oklch(97.5% 0.018 143);
+    --cb-surface-200: oklch(95.5% 0.020 143);
+    --cb-surface-300: oklch(93.5% 0.022 143);
+    --cb-border-100:  oklch(90.5% 0.020 143);
+    --cb-border-200:  oklch(85.5% 0.022 143);
+    --cb-muted:       oklch(72%   0.008 143);
+    --cb-text-500:    oklch(60%   0.003 143);
+    --cb-text-600:    oklch(50%   0.003 143);
+    --cb-text-700:    oklch(45%   0.004 143);
+    --cb-text-800:    oklch(35%   0.004 143);
+    --cb-text-900:    oklch(20%   0.005 143);
+    --cb-text-950:    oklch(13%   0.005 143);
+
+    --cb-hue:           143deg;
+    --cb-accent-hue:    65deg;
+    --cb-accent-chroma: 0.16;
+
+    --cb-navbar-bg:       oklch(34% 0.11 146.77);
+    --cb-navbar-text:     #ffffff;
+    --cb-navbar-border:   transparent;
+    --cb-navbar-hover-bg: rgba(255, 255, 255, 0.12);
+
+    --cb-footer-bg:     oklch(25% 0.14 143);
+
+    --cb-primary-color: oklch(42% 0.16 145);
+    --cb-accent-color:  oklch(66% 0.16 65);
+    --cb-hr-color:      oklch(73% 0.10 65);
+    --cb-print-accent:  oklch(35% 0.12 65);
+
+  // ────────────────────────────────────────────────────────────────────────
+  //  CYBERPUNK — near-black teal navbar, hot pink accent, pale teal surfaces
+  // ────────────────────────────────────────────────────────────────────────
+  } @else if $cb-theme == 'cyberpunk' {
+    --cb-surface-100: oklch(97.5% 0.012 195);
+    --cb-surface-200: oklch(95.5% 0.014 195);
+    --cb-surface-300: oklch(93.5% 0.016 195);
+    --cb-border-100:  oklch(90.5% 0.014 195);
+    --cb-border-200:  oklch(85.5% 0.016 195);
+    --cb-muted:       oklch(72%   0.007 195);
+    --cb-text-500:    oklch(60%   0.003 195);
+    --cb-text-600:    oklch(50%   0.003 195);
+    --cb-text-700:    oklch(45%   0.004 195);
+    --cb-text-800:    oklch(35%   0.004 195);
+    --cb-text-900:    oklch(20%   0.005 195);
+    --cb-text-950:    oklch(13%   0.005 195);
+
+    --cb-hue:           195deg;
+    --cb-accent-hue:    340deg;
+    --cb-accent-chroma: 0.22;
+
+    --cb-navbar-bg:       oklch(42% 0.25 195);
+    --cb-navbar-text:     #ffffff;
+    --cb-navbar-border:   transparent;
+    --cb-navbar-hover-bg: rgba(255, 255, 255, 0.12);
+
+    --cb-footer-bg:     oklch(18% 0.18 195);
+
+    --cb-primary-color: oklch(68% 0.20 195);
+    --cb-accent-color:  oklch(65% 0.24 340);
+    --cb-hr-color:      oklch(68% 0.14 340);
+    --cb-print-accent:  oklch(50% 0.18 340);
+
+  // ────────────────────────────────────────────────────────────────────────
+  //  CUSTOM — user-supplied hex color; hue extracted, standard chromas applied
+  // ────────────────────────────────────────────────────────────────────────
+  } @else if $cb-theme == 'custom' and $cb-custom-color != null {
+    $hue: color.hue($cb-custom-color);
+
+    --cb-surface-100: oklch(97.5% 0.018 #{$hue});
+    --cb-surface-200: oklch(95.5% 0.020 #{$hue});
+    --cb-surface-300: oklch(93.5% 0.022 #{$hue});
+    --cb-border-100:  oklch(90.5% 0.020 #{$hue});
+    --cb-border-200:  oklch(85.5% 0.022 #{$hue});
+    --cb-muted:       oklch(72%   0.008 #{$hue});
+    --cb-text-500:    oklch(60%   0.003 #{$hue});
+    --cb-text-600:    oklch(50%   0.003 #{$hue});
+    --cb-text-700:    oklch(45%   0.004 #{$hue});
+    --cb-text-800:    oklch(35%   0.004 #{$hue});
+    --cb-text-900:    oklch(20%   0.005 #{$hue});
+    --cb-text-950:    oklch(13%   0.005 #{$hue});
+
+    --cb-hue:           #{$hue};
+    --cb-accent-hue:    #{$hue};
+    --cb-accent-chroma: 0.12;
+
+    --cb-primary-color: #{$cb-custom-color};
+    --cb-accent-color:  #{$cb-custom-color};
+    --cb-hr-color:      oklch(72% 0.08 #{$hue});
+    --cb-print-accent:  oklch(32% 0.09 #{$hue});
+
+    @if $cb-navbar-override == 'dark' {
+      --cb-navbar-bg:       oklch(25% 0.09 #{$hue});
+      --cb-navbar-text:     #ffffff;
+      --cb-navbar-border:   transparent;
+      --cb-navbar-hover-bg: rgba(255, 255, 255, 0.12);
+      --cb-footer-bg:       oklch(18% 0.08 #{$hue});
+    } @else {
+      --cb-navbar-bg:       oklch(97.5% 0.018 #{$hue});
+      --cb-navbar-text:     #191919;
+      --cb-navbar-border:   oklch(85.5% 0.022 #{$hue});
+      --cb-navbar-hover-bg: rgba(0, 0, 0, 0.08);
+      --cb-footer-bg:       oklch(20% 0.002 90);
+    }
+
+  // ────────────────────────────────────────────────────────────────────────
+  //  DEFAULT — warm cream neutral; identical to previous out-of-box behavior
+  // ────────────────────────────────────────────────────────────────────────
+  } @else {
+    --cb-surface-100: oklch(97.5% 0.003 90);
+    --cb-surface-200: oklch(95%   0.003 90);
+    --cb-surface-300: oklch(93%   0.003 90);
+    --cb-border-100:  oklch(91%   0.003 90);
+    --cb-border-200:  oklch(87%   0.003 90);
+    --cb-muted:       oklch(75%   0.003 90);
+    --cb-text-500:    oklch(60%   0.003 90);
+    --cb-text-600:    oklch(50%   0.003 90);
+    --cb-text-700:    oklch(45%   0.003 90);
+    --cb-text-800:    oklch(35%   0.004 90);
+    --cb-text-900:    oklch(20%   0.004 90);
+    --cb-text-950:    oklch(13%   0.004 90);
+
+    --cb-hue:           90deg;
+    --cb-accent-hue:    267deg;
+    --cb-accent-chroma: 0.08;
+
+    --cb-navbar-bg:       oklch(0.3 0.01 261.11);
+    --cb-navbar-text:     #ffffff;
+    --cb-navbar-border:   transparent;
+    --cb-navbar-hover-bg: rgba(255, 255, 255, 0.12);
+
+    --cb-footer-bg:     oklch(0.3 0.01 261.11);
+
+    --cb-primary-color: oklch(0.45 0.06 211.88);
+    --cb-accent-color:  oklch(0.38 0.08 267.91);
+    --cb-hr-color:      oklch(0.72 0.06 267.91);
+    --cb-print-accent:  oklch(30% 0.08 267.91);
+  }
 }

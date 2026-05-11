@@ -5,44 +5,44 @@
     </svg>
 </button>
 {% endunless %}
-<div class="offcanvas offcanvas-end bg-dark" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-            <div class="offcanvas-header text-white">
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel" data-bs-theme="light">
+            <div class="offcanvas-header">
                 <h2 class="offcanvas-title" id="offcanvasNavbarLabel">{{ site.title }}</h2>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
-            <div class="offcanvas-body text-white">
+            <div class="offcanvas-body">
                 <p><small>{{ site.description }}</small></p>
                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 side-nav">
                     <li class="nav-item">
-                        <a class="nav-link text-light{% if page.url == '/' %} active{% endif %}" href="{{ '/' | relative_url }}">Home</a>
+                        <a class="nav-link{% if page.url == '/' %} active{% endif %}" href="{{ '/' | relative_url }}">Home</a>
                     </li>
                     {%- assign actual_essays = site.essay | where_exp: "item", "item.title and item.order" -%}
                     {%- assign essay_count = actual_essays.size -%}
                     {% unless site.data.theme.show-contents-nav or essay_count == 1 %}
                     <li class="nav-item">
-                        <a class="nav-link text-light{% if page.url == site.essay[0].url %} active{% endif %}" href="{{ site.essay[0].url | relative_url }}">Read</a>
+                        <a class="nav-link{% if page.url == site.essay[0].url %} active{% endif %}" href="{{ site.essay[0].url | relative_url }}">Read</a>
                     </li>
-                    <li class="nav-item dropdown">  
+                    <li class="nav-item dropdown">
                         {%- assign essayStubs = site.essay | map: 'url' -%}
-                        <a class="nav-link text-light dropdown-toggle{% if essayStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Contents</a>
-                        <div class="dropdown-menu dropdown-menu-dark">
+                        <a class="nav-link dropdown-toggle{% if essayStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Contents</a>
+                        <div class="dropdown-menu">
                             {% for e in site.essay %}
                             <a class="dropdown-item {% if page.url == e.url %}active{% endif %}" href="{{ e.url | relative_url }}">{% if e.chapter %}{{ e.chapter }}. {% endif %}{{ e.title }}</a>
                             {% endfor %}
                         </div>
                     </li>
                     {% endunless %}
-                    {%- assign navItems = site.data.config-nav | where_exp: 'item', 'item.dropdown_parent == nil' -%} 
+                    {%- assign navItems = site.data.config-nav | where_exp: 'item', 'item.dropdown_parent == nil' -%}
                     {% for nav in navItems %}
                     {% if nav.stub %}
                     <li class="nav-item">
-                        <a class="nav-link text-light{% if page.url == nav.stub %} active{% endif %}" href="{{ nav.stub | relative_url }}">{{ nav.display_name }}</a>
+                        <a class="nav-link{% if page.url == nav.stub %} active{% endif %}" href="{{ nav.stub | relative_url }}">{{ nav.display_name }}</a>
                     </li>
                     {%- else -%}
                     <li class="nav-item dropdown">
                         {% assign navChildren = site.data.config-nav | where_exp: 'item', 'item.dropdown_parent == nav.display_name' %}
                         {%- assign childStubs = navChildren | map: 'stub' -%}
-                        <a class="nav-link text-light dropdown-toggle{% if childStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ nav.display_name }}</a>
+                        <a class="nav-link dropdown-toggle{% if childStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ nav.display_name }}</a>
                         <div class="dropdown-menu">
                             {% for c in navChildren %}
                             <a class="dropdown-item {% if page.url == c.stub %}active{% endif %}" href="{{ c.stub | relative_url }}">{{ c.display_name }}</a>

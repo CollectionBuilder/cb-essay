@@ -46,8 +46,8 @@ Essays have both title and order in front matter
 
     /* Half-width image styles */
     .home-header-half {
-        background: oklch(97.5% 0.003 90);
-        border-bottom: 1px solid oklch(87% 0.003 90);
+        background: var(--cb-surface-100);
+        border-bottom: 1px solid var(--cb-border-200);
     }
     .min-vh-50 {
         min-height: 50vh;
@@ -100,8 +100,8 @@ Essays have both title and order in front matter
 
     /* No-image styles */
     .home-header-no-image {
-        background: oklch(97.5% 0.003 90);
-        border-bottom: 1px solid oklch(87% 0.003 90);
+        background: var(--cb-surface-100);
+        border-bottom: 1px solid var(--cb-border-200);
         min-height: 50vh;
     }
     .home-header-no-image h1 {
@@ -110,37 +110,37 @@ Essays have both title and order in front matter
     }
     .home-header-no-image .tagline {
         font-size: 1.25rem;
-        color: oklch(42% 0.004 90);
+        color: var(--cb-text-600);
     }
 
     /* Monograph TOC Styles */
     .monograph-toc {
-        background-color: oklch(98% 0.002 90);
+        background-color: var(--cb-surface-100);
         position: relative;
         z-index: 10;
     }
     .monograph-toc .chapter-num {
         font-size: inherit;
         font-weight: normal;
-        color: oklch(35% 0.004 90);
+        color: var(--cb-text-700);
     }
     .monograph-toc .chapter-title {
         font-size: 1.65rem;
         font-weight: normal;
-        color: oklch(13% 0.004 90);
+        color: var(--cb-text-950);
     }
     .monograph-toc .chapter-byline {
         font-style: italic;
-        color: oklch(42% 0.004 90);
+        color: var(--cb-text-600);
         margin-top: 0.25rem;
     }
     .monograph-toc .list-group-item {
         background: transparent;
-        border-bottom: 1px solid oklch(87% 0.003 90);
+        border-bottom: 1px solid var(--cb-border-200);
         transition: background-color 0.2s ease;
     }
     .monograph-toc .list-group-item:hover {
-        background-color: oklch(95% 0.002 90);
+        background-color: var(--cb-surface-200);
     }
     .monograph-toc a {
         text-decoration: none;
@@ -153,10 +153,10 @@ Essays have both title and order in front matter
         font-weight: normal;
         letter-spacing: 0.15em;
         text-transform: uppercase;
-        color: oklch(50% 0.003 90);
+        color: var(--cb-text-600);
         margin-bottom: 0;
         padding-bottom: 0.5rem;
-        border-bottom: 1px solid oklch(87% 0.003 90);
+        border-bottom: 1px solid var(--cb-border-200);
     }
     
     {%- if essay_count == 1 -%}

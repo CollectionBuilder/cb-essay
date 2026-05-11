@@ -17,7 +17,7 @@
 # - External URL: https://example.com/image.jpg
 # - Collection objectid: demo_001
 #
-image-style: full-image              # full-image, half-image, or no-image
+image-style: full-image                # full-image, half-image, or no-image
 featured-image: /assets/img/writing-instruments.jpg
 featured-image-credit: "General Research Division, The New York Public Library. 'An illustration of writing brushes' The New York Public Library Digital Collections. 1908. [https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34](https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34)"
 featured-image-alt-text: "An illustration of writing brushes with Japanese labels" # Add alt text for accessibility
@@ -37,7 +37,7 @@ featured-image-alt-text: "An illustration of writing brushes with Japanese label
 #                      built automatically from H2 headings within each essay
 #                      false: no sidebar (default)
 #
-show-contents-nav: false
+show-contents-nav: true
 show-homepage-toc: true
 show-section-nav: true
 
@@ -68,23 +68,33 @@ font-cdn:                            # Optional: Add Google Fonts stylesheet URL
 # font-cdn: https://fonts.googleapis.com/css2?family=Vollkorn:ital,wght@0,400;0,600;1,400;1,600&display=swap
 # base-font-family: "'Vollkorn', Georgia, serif"
 
-# COLOR THEME [Optional]
-# Set 1–2 colors to give the site a cohesive hue across UI surfaces and links.
-# Leave blank (or remove) for neutral warm-gray appearance (the default).
-# Format: standard hex color string, e.g. "#2a5f8a"
+# COLOR THEME
+# Choose a built-in theme to give the site a cohesive visual identity.
+# Each theme applies color to the navbar, sidebars, links, and print output.
 #
-# When primary is set it:
-#   - tints all UI surfaces (navbar, sidebar, TOC, section nav) with the color's hue
-#   - overrides link-color for links, aside markers, and flag buttons
-#   - also update config-theme-colors.csv "primary" row to match for button coherence
+# Options: default, desert, ocean, forest, cyberpunk, custom
 #
-primary: "#0b1524"   # Primary color — tints surfaces + sets link/marker color
+color-theme: ocean
 
-# Surface color intensity. Only applies when primary is set.
-# 0.005 = barely-there whisper | 0.008 = default | 0.012 = noticeable | 0.02 = vivid
-chroma: 0.008
+#### BUILT-IN THEMES — EARTHY / ACADEMIC
+# default   — warm cream surfaces, dark navy links; no themed navbar (original look)
+# desert    — terracotta and ochre surfaces; deep rust navbar with white text
+# ocean     — pale blue-white surfaces; deep navy navbar with white text
+# forest    — pale green-white surfaces; deep forest navbar with white text
 
-# accent:            # Optional second color — shows on hr rules in essay body
+#### BUILT-IN THEMES — VIBRANT / PLAYFUL
+# cyberpunk — pale teal surfaces; near-black navbar; teal links + hot pink accents
+
+#### CUSTOM COLOR
+# Set color-theme: custom, then provide a hex color.
+# The system extracts the hue and generates a matching palette.
+# Set navbar-style: dark for a dark themed navbar (white text).
+#
+# color-theme: custom
+# custom-color: "#8B4513"
+# navbar-style: light   # light (default) | dark
+#
+# Want more themes? See _prompts/add-theme.md
 
 
 

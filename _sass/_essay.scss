@@ -10,6 +10,11 @@
 #scroll-to-top a {
     display: block;
     font-size: 30px;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+        opacity: 0.65;
+    }
 }
 
 /* essay navigation arrows - horizontal layout like keyboard arrows */
@@ -29,7 +34,7 @@ a {
     color: inherit;
 
     &:hover {
-        text-decoration-color: var(--bs-link-color);
+        text-decoration-color: var(--cb-primary-color);
     }
 }
 
@@ -84,7 +89,7 @@ a {
 .essay-main {
     max-width: 633px;
     width: 60%;
-    margin: 0 12.5% 0;
+    margin: 0 14% 0;
     @media (max-width: 768px) {
         width: 90%;
         margin: 0 2%;
@@ -123,7 +128,7 @@ aside, .aside {
     vertical-align: super;
     font-style: normal;
     font-family: inherit;
-    color: var(--bs-link-color);
+    color: var(--cb-primary-color);
     line-height: 1;
     cursor: default;
     user-select: none;
@@ -134,7 +139,7 @@ aside, .aside {
     font-size: 0.72em;
     vertical-align: super;
     font-style: normal;
-    color: var(--bs-link-color);
+    color: var(--cb-primary-color);
     margin-right: 0.2em;
     line-height: 1;
 }
@@ -143,24 +148,29 @@ aside, .aside {
 .aside-flag {
     position: fixed;
     right: 0;
-    width: 22px;
-    padding: 6px 3px;
-    background-color: var(--bs-link-color, #3d7b53);
+    width: 28px;
+    min-height: 44px;
+    padding: 10px 4px;
+    background-color: var(--cb-accent-color, #3d7b53);
     color: #fff;
     border: none;
     border-radius: 4px 0 0 4px;
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     font-style: normal;
     font-family: Georgia, serif;
-    line-height: 1.2;
+    line-height: 1.3;
     cursor: pointer;
     z-index: 100;
     text-align: center;
     transition: width 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
     &:hover,
     &:focus {
-        width: 28px;
+        width: 34px;
         outline: none;
     }
 }
@@ -170,7 +180,7 @@ aside, .aside {
     font-size: 0.65rem;
     font-style: normal;
     font-family: inherit;
-    color: var(--bs-link-color);
+    color: var(--cb-primary-color);
     letter-spacing: 0.04em;
 }
 
@@ -205,8 +215,15 @@ video::cue {
     }
 }
 
+:root {
+    --bs-link-hover-color: var(--cb-primary-color);
+}
+
 .btn-link {
-    color: var(--bs-link-color);
+    color: var(--cb-primary-color);
+    &:hover {
+        color: var(--cb-primary-color);
+    }
 }
 
 .mini {
@@ -287,8 +304,8 @@ video::cue {
    ============================================ */
 
 .essay-navbar {
-    background: var(--cb-surface-100);
-    border-bottom: 1px solid var(--cb-border-200);
+    background: var(--cb-navbar-bg);
+    border-bottom: 1px solid var(--cb-navbar-border);
     padding: 1rem;
 
     .navbar-brand {
@@ -297,11 +314,11 @@ video::cue {
         font-size: 1.6rem;
         letter-spacing: -0.01em;
         line-height: 1.2;
-        color: var(--cb-text-950);
+        color: var(--cb-navbar-text);
         text-decoration: none;
-        transition: color 0.2s ease;
+        transition: opacity 0.2s ease;
 
-        &:hover { color: var(--cb-text-700); }
+        &:hover { opacity: 0.8; }
     }
 
     .essay-nav-btn {
@@ -311,16 +328,21 @@ video::cue {
         font-size: 0.72rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: var(--cb-text-700);
+        color: var(--cb-navbar-text);
+        opacity: 0.85;
         cursor: pointer;
         padding: 0.5rem 0.75rem;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        transition: color 0.15s ease;
+        border-radius: 4px;
+        transition: opacity 0.15s ease, background 0.15s ease;
 
-        &:hover { color: var(--cb-text-950); }
+        &:hover {
+            opacity: 1;
+            background: var(--cb-navbar-hover-bg);
+        }
         svg { flex-shrink: 0; }
     }
 }
@@ -453,9 +475,6 @@ video::cue {
 .section-nav-title-text {
     flex: 1;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .section-nav-print {
@@ -497,16 +516,60 @@ video::cue {
     }
 }
 
+/* Navigation off-canvas menu — matches navbar color scheme */
+#offcanvasNavbar {
+    background: var(--cb-navbar-bg);
+    border-left: 1px solid var(--cb-navbar-border, var(--cb-border-200)) !important;
+
+    .offcanvas-title {
+        font-style: italic;
+        font-weight: normal;
+        font-size: 1.1rem;
+        color: var(--cb-navbar-text);
+    }
+
+    small {
+        color: var(--cb-navbar-text);
+        opacity: 0.6;
+    }
+
+    .nav-link {
+        color: var(--cb-navbar-text);
+        opacity: 0.85;
+        padding-left: 0;
+        border-radius: 4px;
+        transition: opacity 0.15s ease, background 0.15s ease;
+        &:hover {
+            opacity: 1;
+            background: var(--cb-navbar-hover-bg);
+        }
+        &.active { opacity: 1; font-style: italic; }
+    }
+
+    .dropdown-menu {
+        background: var(--cb-surface-200);
+        border-color: var(--cb-border-200);
+    }
+
+    .dropdown-item {
+        color: var(--cb-text-800);
+        &:hover, &:focus { background: var(--cb-surface-300); color: var(--cb-text-950); }
+        &.active { background: var(--cb-surface-300); color: var(--cb-text-950); }
+    }
+}
+
 /* Collection item card embeds within essays */
 .item-content .card {
     background-color: transparent;
     border: none;
 }
 
-/* Accent color applied to horizontal rules in essay body.
-   Uses --cb-accent-hue (explicit accent, or primary hue when no accent set)
-   and --cb-accent-chroma (0 = gray when no primary set, 0.05 = tinted when colorized). */
+/* HR rules in essay body use the theme's accent color */
 .essay-main hr {
-    border-top-color: oklch(78% var(--cb-accent-chroma) var(--cb-accent-hue));
+    border-top-color: var(--cb-hr-color);
     opacity: 1;
+}
+
+footer.bg-black {
+    background-color: var(--cb-navbar-bg) !important;
 }

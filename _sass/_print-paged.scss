@@ -204,6 +204,12 @@ h3 {
   break-after: avoid;
 }
 
+hr {
+  border: none;
+  border-top: 0.75pt solid var(--cb-print-accent, rgba(0, 0, 0, 0.15));
+  margin: 1.5rem 0;
+}
+
 p {
   margin-bottom: 0.75rem;
   orphans: 3;

@@ -59,6 +59,8 @@
       --print-font: {{ site.data.theme.base-font-family | default: 'Georgia, serif' }};
       --print-mono: 'Courier New', Courier, monospace;
       --print-text: {{ site.data.theme.text-color | default: '#191919' }};
+      {% assign cb_theme = site.data.theme.color-theme | default: 'default' %}
+      --cb-print-accent: {% case cb_theme %}{% when 'desert' %}oklch(38% 0.11 28){% when 'ocean' %}oklch(30% 0.09 218){% when 'forest' %}oklch(31% 0.09 143){% when 'cyberpunk' %}oklch(50% 0.18 340){% else %}rgba(0, 0, 0, 0.15){% endcase %};
     }
   </style>
 
