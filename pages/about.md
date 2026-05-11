@@ -10,7 +10,9 @@ credits: true
 
 **CB-Essay** combines long-form essay writing with digital collection features, enabling you to create multimodal scholarly narratives that seamlessly integrate primary sources, archival materials, and multimedia items directly into your writing.
 
-Built on [CollectionBuilder](https://collectionbuilder.github.io/), CB-Essay extends the CollectionBuilder-CSV framework to support essay and monograph publishing alongside traditional digital collection capabilities.
+Built on [CollectionBuilder](https://collectionbuilder.github.io/), CB-Essay extends the CollectionBuilder-CSV framework to support essay and monograph publishing alongside traditional digital collection capabilities. 
+
+{% include feature/alert.html color="info" text="Have a question? Check out our [docs](/docs.html)." %}
 
 ### What Makes CB-Essay Different?
 
@@ -48,6 +50,12 @@ Traditional digital publishing tools treat essays and collections as separate en
 - **Image galleries** - Inline image displays
 - **Maps** - Embedded mini-maps with custom coordinates
 - **Section transitions** - Scrollama-powered visual breaks
+
+**Customizable Design:**
+- **8 built-in color themes** inspired by historical printing, designed for accessibility
+- **Coordinated typography** - each theme includes recommended font pairings
+- **Custom color support** - generate accessible palettes from any hex color
+- **Print/PDF output** - generate publication-ready PDFs with Paged.js
 
 **Bonus Feature: Project Gutenberg Extractor**
 

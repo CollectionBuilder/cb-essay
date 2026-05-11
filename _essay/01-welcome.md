@@ -20,9 +20,10 @@ Traditional digital publishing tools treat essays and collections as separate en
 
 - **Reference collection items** using simple includes
 - Create **asides and margin notes** that link to primary sources {% include /essay/feature/aside.html text="Like this!" %}
-- **Publish your work for free** on GitHub 
-- Generate **well-designed print and pdf outputs** using PagedJS. 
-- Fashion the readers' experience through **scroll-based interactions and custom typography/fonts** {% include /essay/feature/aside.html text="Keep scrolling to see the next section magically appear!" %}
+- **Publish your work for free** on GitHub
+- Generate **well-designed print and pdf outputs** using PagedJS.
+- **Choose from 8 accessible color themes** or create your own custom palette
+- Fashion the readers' experience through **scroll-based interactions and coordinated typography** {% include /essay/feature/aside.html text="Keep scrolling to see the next section magically appear!" %}
 
 {% include essay/new-section.html %}
 

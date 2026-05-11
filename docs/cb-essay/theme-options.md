@@ -121,14 +121,107 @@ image-style: no-image
 
 ---
 
-## Customizing Colors and Typography
+## Color Themes
+
+CB-Essay includes 8 built-in color themes inspired by historical printing presses. Each theme is designed for accessibility and long-form reading, providing coordinated colors for the navbar, links, accents, and UI elements.
+
+Set in `_data/theme.yml`:
 
 ```yaml
-base-font-size: 1.3em
-text-color: "#191919"
-link-color: "#003a55"
-base-font-family: Georgia
+color-theme: aldine  # default, idaho, lyre, nonesuch, aldine, doves, kelmscott, gregynog, ashendene
 ```
+
+### Built-in Themes
+
+**`default`** - Warm cream neutral with purple accents
+
+**`idaho`** - Douglas-fir green on aged paper (dark navbar)
+
+**`lyre`** - Faded indigo cloth with gilt spine (dark navbar)
+
+**`nonesuch`** - Cream cloth with red rules (light navbar)
+
+**`aldine`** - Marine blue in the Venetian tradition (dark navbar)
+
+**`doves`** - Severe black-on-white minimalism (dark navbar)
+
+**`kelmscott`** - Holland blue boards with rubric red (light navbar)
+
+**`gregynog`** - Slate buckram with three-color printing (dark navbar)
+
+**`ashendene`** - Faded brown calf leather (dark navbar)
+
+Each theme automatically sets navbar style, text colors, link colors, accent colors, and print output styling.
+
+### Custom Color
+
+Generate an accessible color palette from any hex color:
+
+```yaml
+color-theme: custom
+custom-color: "#8B4513"
+navbar-style: dark  # dark (white text) or light (dark text)
+```
+
+The system extracts the hue and generates a complete, accessible palette with proper contrast ratios.
+
+---
+
+## Typography & Fonts
+
+CB-Essay offers three font systems that work independently or together:
+
+### 1. Theme Fonts (Recommended)
+
+Automatically pairs fonts with your color theme:
+
+```yaml
+base-font-family: theme       # Body text
+display-font-family: theme    # Headings
+```
+
+Each color theme ships with a carefully selected Google Font pairing chosen for long-form reading. Fonts are free, openly licensed, and include regular, italic, and medium weights.
+
+### 2. Georgia (Offline)
+
+Use system Georgia for offline-first sites with no CDN requests:
+
+```yaml
+base-font-family: Georgia
+display-font-family: Georgia
+```
+
+### 3. Custom Google Font
+
+Specify your own font with a Google Fonts CDN link:
+
+```yaml
+base-font-family: "'Literata', Georgia, serif"
+display-font-family: "'Literata', Georgia, serif"
+font-cdn: "https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap"
+```
+
+### Mix and Match
+
+Use theme fonts for body text with a custom display font for headings:
+
+```yaml
+base-font-family: theme
+display-font-family: "'Playfair Display', Georgia, serif"
+font-cdn: "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&display=swap"
+```
+
+### Font Size
+
+```yaml
+base-font-size: 1.2em  # 1.2em - 1.4em recommended for long-form reading
+```
+
+---
+
+## Creating Custom Themes
+
+Want to add a new color theme to the system? See `_prompts/add-theme.md` for detailed instructions on adding themes to `_sass/_color-tokens.scss`.
 
 ---
 

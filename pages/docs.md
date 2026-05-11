@@ -140,7 +140,9 @@ For detailed guidance, see [Essay Writing Guide](https://github.com/CollectionBu
 
 ## Essay Features {#essay-features}
 
-CB-Essay provides specialized includes for scholarly writing. **Copy the examples below directly into your essays.**
+**When to use this section:** After you've created your first essay and want to add blockquotes, margin notes, or other specialized features.
+
+CB-Essay provides specialized includes for scholarly writing. **Copy the examples below directly into your essays.** For complete examples and best practices, see the [Writing Features essay](/_essay/04-essay-features.html).
 
 ### Blockquotes
 
@@ -249,6 +251,10 @@ For all parameters and advanced usage, see:
 
 ## Collection Integration {#collection-integration}
 
+**When to use this section:** When you want to add images, PDFs, audio, or other collection items to your essays.
+
+This section covers the basics of referencing collection items in essays. For a complete tutorial with examples, see the [Collection Integration essay](/_essay/05-collection-integration.html).
+
 ### Using Collection Items
 
 Reference items from your metadata CSV using their `objectid`:
@@ -292,7 +298,33 @@ For complete CollectionBuilder documentation, see [CollectionBuilder Docs](https
 
 ## Theme Options {#theme-options}
 
-CB-Essay lets you mix and match navigation and homepage features independently in `_data/theme.yml`:
+**When to use this section:** To customize your site's colors, fonts, navigation, and homepage layout.
+
+Configure all theme options in `_data/theme.yml`:
+
+
+### Homepage Image Options
+
+**Full image:**
+```yaml
+image-style: full-image
+featured-image: /assets/img/banner.jpg
+home-banner-image-position: center
+```
+
+**Half image:**
+```yaml
+image-style: half-image
+featured-image: /assets/img/cover.jpg
+```
+
+**No image:**
+```yaml
+image-style: no-image
+```
+
+### Navigation and Homepage Layout Options
+
 
 ```yaml
 show-contents-nav: true    # "Contents" button in navbar opens chapter list panel
@@ -323,35 +355,114 @@ show-homepage-toc: false
 show-section-nav: true
 ```
 
-### Homepage Image Options
 
-**Full image:**
+### Color Themes
+
+CB-Essay includes 8 built-in color themes inspired by historical printing presses, each designed for accessibility and long-form reading:
+
 ```yaml
-image-style: full-image
-featured-image: /assets/img/banner.jpg
-home-banner-image-position: center
+color-theme: aldine  # default, idaho, lyre, nonesuch, aldine, doves, kelmscott, gregynog, ashendene
 ```
 
-**Half image:**
+**Built-in themes:**
+- `default` - Warm cream neutral
+- `idaho` - Douglas-fir green
+- `lyre` - Faded indigo
+- `nonesuch` - Cream with red accents (light navbar)
+- `aldine` - Marine blue
+- `doves` - Severe black-on-white
+- `kelmscott` - Holland blue with red (light navbar)
+- `gregynog` - Slate buckram grey-blue
+- `ashendene` - Faded brown
+
+Each theme provides coordinated colors for navbar, links, accents, and UI elements.
+
+**Custom color:**
 ```yaml
-image-style: half-image
-featured-image: /assets/img/cover.jpg
+color-theme: custom
+custom-color: "#8B4513"
+navbar-style: dark  # dark or light
 ```
 
-**No image:**
+The system automatically generates an accessible color palette from your hex color.
+
+### Typography & Fonts
+
+CB-Essay offers three font options:
+
+**1. Theme fonts (easiest)** - Automatically matched to your color theme:
 ```yaml
-image-style: no-image
+base-font-family: theme
+display-font-family: theme
 ```
 
-### Customization
-
-**Colors and typography:**
+**2. Georgia (no CDN)** - Works offline, no external requests:
 ```yaml
-base-font-size: 1.3em
-text-color: "#191919"
-link-color: "#0d6efd"
 base-font-family: Georgia
+display-font-family: Georgia
 ```
+
+**3. Custom Google Font:**
+```yaml
+base-font-family: "'Literata', Georgia, serif"
+display-font-family: "'Literata', Georgia, serif"
+font-cdn: "https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap"
+```
+
+You can mix options - for example, use theme fonts for body text with a custom display font for headings.
+
+**Font size:**
+```yaml
+base-font-size: 1.2em  # 1.2em - 1.4em recommended for long-form reading
+```
+
+### Creating Your Own Theme
+
+CB-Essay includes an AI prompt template at `_prompts/add-theme.md` that guides you through creating custom color themes with coordinated typography.
+
+**What it does:**
+- Interviews you about color preferences, navbar style, and aesthetic goals
+- Generates complete OKLCH color palettes with accessible contrast ratios
+- Creates theme definitions for `_sass/_color-tokens.scss`
+- Adds theme documentation to `_data/theme.yml`
+- Optionally suggests Google Font pairings
+
+**How to use with an LLM:**
+
+1. **With Claude Code (local):**
+   - Open `_prompts/add-theme.md` in your project
+   - Ask Claude Code to read the file and follow its instructions
+   - Claude will ask for your theme details and make the necessary edits
+
+2. **With Claude.ai (online):**
+   - Open `_prompts/add-theme.md` in your repository
+   - Copy the contents and paste into a new conversation at [claude.ai](https://claude.ai)
+   - Attach these files as context:
+     - `_sass/_color-tokens.scss`
+     - `_data/theme.yml`
+     - `_includes/head/theme-fonts.html` (if adding font pairing)
+   - Answer the prompts about your desired theme
+   - Claude will provide the code changes to copy into your files
+
+3. **With other LLMs:**
+   - The prompt is designed to work with any AI assistant
+   - Provide the prompt contents and the three files above
+   - Follow the generated instructions to add your theme
+
+**Example workflow:**
+```
+You: "I want to create a theme called 'forest' with deep evergreen colors"
+
+LLM: "What hue should the theme use? (0-360 degrees, or describe the color)"
+You: "Deep forest green, around 150 degrees"
+
+LLM: "Should the navbar be dark (white text) or light (dark text)?"
+You: "Dark navbar with cream text"
+
+[LLM generates complete theme code for _color-tokens.scss and theme.yml]
+```
+
+The prompt uses CB-Essay's OKLCH color system to ensure your custom theme has proper contrast ratios and coordinates navbar, link, accent, and UI colors automatically.
 
 For complete theme documentation, see [Theme Options Guide](https://github.com/CollectionBuilder/cb-essay/blob/main/docs/cb-essay/theme-options.md).
 
@@ -359,15 +470,14 @@ For complete theme documentation, see [Theme Options Guide](https://github.com/C
 
 ## Print & PDF Output {#print-pdf}
 
-CB-Essay includes sophisticated print and PDF generation powered by Paged.js, allowing you to create publication-ready PDFs directly from your browser.
+Generate publication-ready PDFs directly from your browser using Paged.js.
 
-### Accessing Print Features
+### Print Hub
 
-Visit the **Print Hub** at `/print/` to:
-- Print individual essays in Letter, A4, or 6×9″ formats
-- Build custom PDF books by selecting specific essays
+Visit `/print/` to:
+- Print individual essays or build custom books
+- Choose Letter, A4, or 6×9″ page formats
 - Preview paginated layout before printing
-- Generate accessible, tagged PDFs
 
 ### Configuration
 
@@ -375,163 +485,25 @@ Configure print output in `_data/theme.yml`:
 
 ```yaml
 print:
-  author: "Your Name"           # Author shown on cover and in PDF metadata
-  institution: "Your Org"        # Institution displayed on cover page
-  cover-subtitle: ""             # Optional subtitle for book cover
-  show-individual: true          # Show individual essay print cards
-  show-book: true                # Show book builder section
-  aside-style: margin            # margin or inline
+  author: "Your Name"     # Author on cover and in PDF metadata
+  institution: "Your Org" # Institution on cover
+  aside-style: margin     # margin (floats into gutter) or inline (callout blocks)
 ```
-
-### Aside Styles
-
-**Margin style:**
-```yaml
-aside-style: margin
-```
-- Margin notes float into page gutter (traditional scholarly format)
-- Requires wider right margin on pages
-- Best for print-heavy workflows
-
-**Inline style:**
-```yaml
-aside-style: inline
-```
-- Margin notes appear as indented callout blocks
-- Works within standard page margins
-- Best for general use
 
 ### What Works in Print
 
-✅ **Fully supported:**
-- Blockquotes with attribution
-- Asides (as margin notes or inline callouts)
-- Images with captions
-- Section breaks
-- Footnotes (formatted as endnotes)
-- Accordions (auto-expanded)
-- Running headers with page numbers
-- Table of contents (multi-essay books)
-- Professional cover pages
+✅ **Supported:** Blockquotes, asides, images, section breaks, footnotes (as endnotes), running headers, page numbers, table of contents
 
-❌ **Web-only features:**
-- Mini-maps (interactive Leaflet maps)
-- Timelines (interactive TimelineJS)
-- Videos (replaced with poster frame if available)
-- iframes and external embeds
+❌ **Web-only:** Mini-maps, timelines, videos, iframes
 
-### Page Formats
+### Optimization
 
-Select from three standard formats:
+- Use high-resolution images (1200px+ width)
+- Keep aside text concise
+- Test margin vs inline aside styles
+- Preview early and often
 
-**Letter (8.5" × 11")**
-- US standard page size
-- Default format
-
-**A4 (210mm × 297mm)**
-- International standard
-- Slightly taller than Letter
-
-**6" × 9"**
-- Book/monograph format
-- Compact, professional
-
-### Print Workflow
-
-1. **Configure** print settings in `_data/theme.yml`
-2. **Write** your essays with print-friendly features
-3. **Preview** at `/print/` using the Print Hub
-4. **Select** page format (Letter, A4, or 6×9″)
-5. **Generate** individual essay PDFs or custom book compilations
-6. **Print/Save** using browser's print dialog (Ctrl/Cmd+P or "Print / Save PDF" button)
-
-### Print Optimization Tips
-
-**For best results:**
-- Use high-resolution images (1200px+ width recommended)
-- Keep aside text concise (1-3 sentences)
-- Test both margin and inline aside styles to see which works better for your content
-- Place asides strategically to avoid layout conflicts
-- Include descriptive alt text for all images
-- Preview print output early and often during writing
-
-### Accessibility
-
-Print PDFs are generated with accessibility in mind:
-- **Tagged PDFs** - Chrome's PDF engine builds tagged PDFs from HTML accessibility tree
-- **ARIA roles** - Proper semantic structure (articles, sections, endnotes)
-- **Alt text** - All images require alt attributes for proper Figure tagging
-- **Navigation aids** - Table of contents with clickable links in multi-essay books
-- **Metadata** - Author, title, and description embedded in PDF
-
-### Technical Details
-
-- **Engine:** Paged.js polyfill for CSS Paged Media
-- **Browser:** Best results with Chrome/Chromium (for tagged PDF output)
-- **Layouts:** `_layouts/print.html` and `_layouts/print-hub.html`
-- **Styles:** `assets/css/print.scss` and `_sass/_print-paged.scss`
-- **URL Parameters:**
-  - `?format=letter|a4|69` - Select page format
-  - `?essays=slug1,slug2` - Filter to specific essays
-
----
-
-## Configuration {#configuration}
-
-### `_config.yml`
-
-**Homepage cover page settings:**
-```yaml
-title: Your Essay Title
-author: Your Name  # Displays as "by Your Name" on cover
-tagline: A brief tagline  # Only shows if author is empty
-description: Longer description for search engines
-```
-
-**Cover page display notes:**
-- `title` always displays prominently on the cover page
-- `author` appears as "by [Author Name]" beneath title
-  - If provided, replaces the tagline on cover page
-  - Use HTML for multi-line: `author: "Name<br>Edited by Editor"`
-- `tagline` only displays if `author` field is empty
-  - Can also use HTML for multi-line display
-
-**Essay collection (already configured):**
-```yaml
-collections:
-  essay:
-    sort_by: order
-    output: true
-```
-
-**Metadata source:**
-```yaml
-metadata: your-metadata-filename  # without .csv extension
-```
-
-### `_data/theme.yml`
-
-**Navigation & homepage:**
-```yaml
-show-contents-nav: true
-show-homepage-toc: true
-show-section-nav: false
-image-style: full-image
-featured-image: /assets/img/banner.jpg
-```
-
-**Typography:**
-```yaml
-base-font-size: 1.3em
-base-font-family: Georgia
-text-color: "#191919"
-```
-
-### `_data/config-nav.csv`
-
-Controls navigation menu structure. Edit this CSV to customize your site's top navigation.
-
-For standard CollectionBuilder configuration files (config-browse.csv, config-map.csv, etc.), see [CollectionBuilder Configuration Docs](https://collectionbuilder.github.io/cb-docs/docs/config/).
+For complete details on page formats, accessibility features, and technical specifications, visit the [Print Hub](/print/).
 
 ---
 
@@ -609,7 +581,9 @@ For complete deployment options, see [CollectionBuilder Deploy Docs](https://col
 
 ## CollectionBuilder Features {#collectionbuilder}
 
-CB-Essay includes all standard CollectionBuilder pages and features:
+**When to use this section:** Advanced features for working with your collection metadata - timelines, maps, data downloads, and metadata configuration.
+
+CB-Essay includes all standard CollectionBuilder pages and features. This section is for advanced users who want to customize CollectionBuilder visualizations and pages.
 
 ### Built-in Pages
 

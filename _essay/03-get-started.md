@@ -93,23 +93,9 @@ For local development with Git and Jekyll installed on your computer, follow the
 {% include feature/accordion.html title1="Option B: GitHub.dev (VS Code in Browser)" text1=option_b title2="Option C: GitHub Codespaces (Cloud Development)" text2=option_c title3="Option D: Local Development (Advanced)" text3=option_d %}
 
 
-## Step 3: Add Content (Two Options)
+## Step 3: Create Your First Essay
 
-Want to start with a complete book? Extract one from Project Gutenberg:
-
-1. Go to your repository's **Actions** tab
-2. Click **"Extract Gutenberg Book"** workflow
-3. Click **"Run workflow"**
-4. Enter a book ID (e.g., `84` for Frankenstein, `1342` for Pride and Prejudice)
-5. Click **"Run workflow"** button
-
-Wait a minute - your `_essay/` folder will be populated with chapter files automatically! And your config files (`_config.yml` and `_data/theme.yml`) will be updated with the title, author, and cover image from Project Gutenberg.
-
-**Find books:** Browse [gutenberg.org](https://www.gutenberg.org/) and get the ID from the URL.
-
-No matter which editing method you chose in Step 2, essays use the same format.
-
-Create a file in `_essay/` named `my-first-essay.md` with this content:
+Now that you've chosen your workflow, let's add your content. Create a file in `_essay/` named `my-first-essay.md` with this content:
 
 ```yaml
 ---
@@ -141,6 +127,16 @@ Notice the **front matter** (between `---` lines):
 - `title`: Your essay's title
 - `order`: Controls navigation sequence (1, 2, 3...)
 
+### Quick Option: Project Gutenberg
+
+Want to start with a complete book? Extract one from Project Gutenberg:
+
+1. Go to your repository's **Actions** tab
+2. Click **"Extract Gutenberg Book"** workflow
+3. Click **"Run workflow"** and enter a book ID (e.g., `84` for Frankenstein)
+
+Your `_essay/` folder will be populated with chapter files automatically. Find books at [gutenberg.org](https://www.gutenberg.org/).
+
 ## Step 4: Customize Configuration
 
 Edit two main configuration files:
@@ -168,6 +164,7 @@ description: "Longer description for search engines (160 chars)"
 ### `_data/theme.yml` - Appearance
 
 ```yaml
+# Navigation & Homepage
 show-contents-nav: false  # true: navbar shows "Contents" button + chapter panel
 show-homepage-toc: false  # true: homepage displays chapter table of contents
 show-section-nav: false   # true: floating H2 sidebar on essay pages (wide screens)
@@ -176,10 +173,18 @@ show-section-nav: false   # true: floating H2 sidebar on essay pages (wide scree
 image-style: full-image  # full-image, half-image, or no-image
 featured-image: /assets/img/your-image.jpg
 
+# Color theme
+color-theme: aldine  # default, idaho, lyre, nonesuch, aldine, doves, kelmscott, gregynog, ashendene
+
 # Typography
-base-font-size: 1.3em
-base-font-family: Georgia
+base-font-size: 1.2em
+base-font-family: theme       # theme (auto-matched) | Georgia | custom Google Font
+display-font-family: theme    # theme | Georgia | custom
 ```
+
+**Color themes:** Choose from 8 built-in accessible themes inspired by historical printing, or use `custom` with your own hex color.
+
+**Fonts:** Set to `theme` for automatic pairing with your color theme, `Georgia` for offline use, or provide a custom Google Font with `font-cdn`.
 
 You can edit these files directly on GitHub or in any of the editors mentioned in Step 2.
 
@@ -221,31 +226,19 @@ Once configured, access the **Print Hub** at `/print/` to:
 
 ## Step 7: Deploy to GitHub Pages
 
-When you're ready to publish your site, you have several options, as detailed here on our [CollectionBuilder's Deployment Documentation](https://collectionbuilder.github.io/cb-docs/docs/deploy/). You can build and publish these sites wherever you have access to a web server.
+When you're ready to publish, set up GitHub Pages:
 
-### Set Up GitHub Pages with Jekyll Action
+1. Go to your repository → **Settings** → **Pages**
+2. Under **Source**, select **GitHub Actions**
+3. Click **Configure** on the Jekyll workflow
+4. Change `ruby-version: '3.1'` to `'3.4'` (line 40)
+5. Click **Commit changes**
 
-The most common way to publish these sites is using GitHub Pages. CB-Essay requires a GitHub Action to build properly. Follow these steps to set up deployment:
+After 2-3 minutes, visit `https://YOUR-USERNAME.github.io/YOUR-REPO-NAME/`
 
-1. Go to your repository and click the **Settings** menu item at the end of the second row on the page
-2. Click on the **Pages** section on the left-hand side
-3. Under **Source**, select **GitHub Actions**
-4. GitHub will display a **Jekyll** workflow option - click **Configure** on that option
-5. In the workflow file that opens, find line 40 where it says `ruby-version: '3.1'`
-6. Change the version from `3.1` to `3.4`
-7. Click **Commit changes** to save the workflow file
+**Your essay is live!** 🎉
 
-That's it! Every time you commit changes from there on out, GitHub Actions will automatically build and deploy your site.
-
-### View Your Live Site
-
-After the GitHub Action completes (usually 2-3 minutes), visit:
-
-```
-https://YOUR-USERNAME.github.io/YOUR-REPO-NAME/
-```
-
-**Your essay is live!** 🎉{% include essay/feature/aside.html text="**Tip:** Watch the Actions tab to see the build progress. A green checkmark means your site deployed successfully!" %}
+For other deployment options, see [CollectionBuilder's Deployment Documentation](https://collectionbuilder.github.io/cb-docs/docs/deploy/).
 
 
 ## Next Steps

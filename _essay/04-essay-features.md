@@ -8,6 +8,63 @@ CB-Essay provides specialized includes that extend Markdown for scholarly writin
 
 **The copy-and-replace principle:** Find a feature you like, copy the code block, paste it into your essay, and replace the content with yours. That's it!
 
+## Basic Markdown
+
+Start with standard Markdown formatting:
+
+### Headings
+
+```markdown
+## Heading 2
+### Heading 3
+#### Heading 4
+```
+
+### Text Formatting
+
+**Bold text** with `**bold**`
+
+*Italic text* with `*italic*`
+
+***Bold italic*** with `***bold italic***`
+
+### Links
+
+[Link text](https://example.com) with `[text](url)`
+
+### Images
+
+```markdown
+![Alt text](/assets/img/image.jpg)
+```
+
+### Lists
+
+**Bulleted:**
+- Item one
+- Item two
+  - Nested item
+
+**Numbered:**
+1. First item
+2. Second item
+3. Third item
+
+### Code Blocks
+
+Use triple backticks for code:
+
+````markdown
+```yaml
+---
+title: Your Essay
+order: 1
+---
+```
+````
+
+---
+
 ## Blockquotes
 
 Styled quotations with optional attribution and source links.
@@ -249,133 +306,11 @@ The location provided the solitude Thoreau sought for his philosophical experime
 
 ---
 
-## Markdown Essentials
+## Print & PDF Output
 
-Don't forget standard Markdown features:
+Most features work in print PDFs. **Blockquotes, asides, images, and section breaks** all render beautifully. **Mini-maps and videos** are web-only and won't appear in print.
 
-### Headings
-
-```markdown
-## Heading 2
-### Heading 3
-#### Heading 4
-```
-
-### Text Formatting
-
-**Bold text** with `**bold**`
-
-*Italic text* with `*italic*`
-
-***Bold italic*** with `***bold italic***`
-
-### Links
-
-[Link text](https://example.com) with `[text](url)`
-
-### Images
-
-```markdown
-![Alt text](/assets/img/image.jpg)
-```
-
-### Lists
-
-**Bulleted:**
-- Item one
-- Item two
-  - Nested item
-
-**Numbered:**
-1. First item
-2. Second item
-3. Third item
-
-### Code Blocks
-
-Use triple backticks for code:
-
-```
-```yaml
----
-title: Your Essay
-order: 1
----
-` ` ` (remove spaces)
-```
-
----
-
-## Feature Parameters Reference
-
-### Blockquote
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `quote` | Yes | Quote text (Markdown supported) |
-| `speaker` | No | Person quoted |
-| `source` | No | Title of source work |
-| `source-link` | No | URL to source |
-| `size` | No | `sm`, `md`, `lg`, `xl`, `xxl` |
-| `align` | No | `left`, `center`, `right` |
-
-### Aside
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `text` | No* | Margin note text |
-| `objectid` | No* | Collection item ID |
-| `caption` | No | Override item title |
-| `height` | No | Max image height (e.g., `300px`) |
-| `gallery` | No | Use spotlight viewer (default: `true`) |
-
-*At least one of `text` or `objectid` required
-
-### Mini Map
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `latitude` | Yes | Decimal latitude |
-| `longitude` | Yes | Decimal longitude |
-| `zoom` | No | 1-18 (default: 10) |
-| `height` | No | CSS height value |
-
----
-
-## Print/PDF Considerations
-
-CB-Essay generates beautiful print PDFs using Paged.js. Most features work seamlessly in print, but some require special handling:
-
-### Features That Work in Print
-
-✅ **Blockquotes** - Render with proper typography and attribution
-✅ **Asides** - Display as margin notes (if `aside-style: margin`) or inline callouts
-✅ **Images** - High-quality rendering with captions
-✅ **Section breaks** - Create visual chapter divisions
-✅ **Footnotes** - Automatically formatted as endnotes
-✅ **Accordions** - Expand automatically to show all content
-
-### Features That Don't Print
-
-❌ **Mini-maps** - Interactive maps are hidden (web-only)
-❌ **Videos** - Replaced with poster frame if available
-❌ **iframes** - External embeds are hidden
-
-### Print-Specific Features
-
-The print layout automatically:
-- Adds running headers with site title and essay title
-- Inserts page numbers on every page
-- Generates a table of contents for multi-essay books
-- Creates a professional cover page with author/institution info
-- Builds accessible, tagged PDFs for screen readers
-
-### Access Print Output
-
-Visit the **[Print Hub](/print/)** to:
-- Print individual essays in Letter, A4, or 6×9″ formats
-- Build custom PDF books by selecting specific essays
-- Preview before printing{% include essay/feature/aside.html text="**Tip:** Test your print output early in the writing process to ensure your layout works well on the page!" %}
+Visit the **[Print Hub](/print/)** to generate PDFs in Letter, A4, or 6×9″ formats. See the [Print Guide](/docs.html#print-pdf) for complete details including margin note styles, page formats, and accessibility features.
 
 ---
 

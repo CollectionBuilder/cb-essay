@@ -3,6 +3,7 @@
 ##########
 ## CB-ESSAY THEME OPTIONS
 ##########
+
 ##########
 # HOMEPAGE FEATURED IMAGE
 #
@@ -24,22 +25,13 @@ featured-image-alt-text: "An illustration of writing brushes with Japanese label
 
 
 # NAVIGATION & HOMEPAGE LAYOUT
-#
-# Mix and match these to suit your project:
-#
-# show-contents-nav  - true: navbar shows a "Contents" button that opens the essay chapter list
-#                      false: navbar shows only the site title and menu toggle
-#
-# show-homepage-toc  - true: homepage displays a table of contents listing all essays
-#                      false: homepage shows only the banner image and "Read" button
-#
-# show-section-nav   - true: essay pages show a fixed floating sidebar (on wide screens)
-#                      built automatically from H2 headings within each essay
-#                      false: no sidebar (default)
-#
-show-contents-nav: true
-show-homepage-toc: true
-show-section-nav: true
+
+show-contents-nav: false # true == navbar shows a "Contents" button that opens the essay chapter list
+show-homepage-toc: true # true == homepage displays a table of contents listing all essays
+show-section-nav: true # true ==  essay pages show a fixed floating sidebar (on wide screens)
+
+
+
 
 # COLOR THEME
 # ────────────────────────────────────────────────────────────────────────
@@ -50,7 +42,7 @@ show-section-nav: true
 #          gregynog, ashendene, custom
 # ────────────────────────────────────────────────────────────────────────
 
-color-theme: aldine
+color-theme: default
 
 #### BUILT-IN THEMES (printing-history references)
 # idaho       — USDA, 1958 Douglas-fir cloth, gold stamp · dark green navbar · Spectral
