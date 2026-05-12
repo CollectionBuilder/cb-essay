@@ -5,7 +5,7 @@
 ##########
 
 ##########
-# HOMEPAGE FEATURED IMAGE
+# HOMEPAGE FEATURES
 #
 # Choose how your homepage image displays:
 #
@@ -18,17 +18,22 @@
 # - External URL: https://example.com/image.jpg
 # - Collection objectid: demo_001
 #
-image-style: full-image                # full-image, half-image, or no-image
+image-style: no-image                # full-image, half-image, or no-image
 featured-image: /assets/img/writing-instruments.jpg
 featured-image-credit: "General Research Division, The New York Public Library. 'An illustration of writing brushes' The New York Public Library Digital Collections. 1908. [https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34](https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34)"
 featured-image-alt-text: "An illustration of writing brushes with Japanese labels" # Add alt text for accessibility
 
 
-# NAVIGATION & HOMEPAGE LAYOUT
+# NAVIGATION FEATURES
 
-show-contents-nav: false # true == navbar shows a "Contents" button that opens the essay chapter list
-show-homepage-toc: true # true == homepage displays a table of contents listing all essays
-show-section-nav: true # true ==  essay pages show a fixed floating sidebar (on wide screens)
+# true/false options to turn on navigation features on navbar and homepage
+
+show-contents-nav: true 
+# true == navbar shows a "Contents" button that opens the essay chapter list
+show-homepage-toc: true 
+# true == homepage displays a table of contents listing all essays
+show-section-nav: true 
+# true ==  essay pages show a fixed floating sidebar (on wide screens)
 
 
 
@@ -45,7 +50,7 @@ show-section-nav: true # true ==  essay pages show a fixed floating sidebar (on 
 color-theme: default
 
 #### BUILT-IN THEMES (printing-history references)
-# idaho       — USDA, 1958 Douglas-fir cloth, gold stamp · dark green navbar · Spectral
+# idaho     — USDA, 1958 Douglas-fir cloth, gold stamp · dark green navbar · Spectral
 # lyre      — PF Collier, 1902, Faded indigo cloth, gilt spine · dark indigo navbar · EB Garamond
 # nonesuch  — Nonesuch Press, 1927 (The Temple) cream cloth ruled in red · light navbar · Cardo + EB Garamond
 # aldine    — Aldus Manutius, Venice 1495 · marine blue navbar · Cormorant Garamond
@@ -63,7 +68,7 @@ color-theme: default
 # custom-color: "#8B4513"
 # navbar-style: dark    # dark (default) | light
 #
-# Want more themes? See _prompts/add-theme.md
+# Want more themes? Use _prompts/add-theme.md and work with your favorite chatbot to create your own theme. 
 
 # TYPOGRAPHY & FONTS
 # ────────────────────────────────────────────────────────────────────────
@@ -125,10 +130,6 @@ print:
 # HOME PAGE
 #
 # featured image is defined above
-# optional: add extra padding around collection title for a larger image feature. 
-home-title-y-padding: 20em # the margin from the top your title portion will appear.
-# optional: change position of background image, center, top, bottom
-home-banner-image-position: center # Default is top
 
 
 
@@ -207,20 +208,6 @@ search-child-objects: true # true / false - if true, child objects will appear o
 ##########
 # ADVANCED OPTIONS
 #
-
-# NAVBAR COLORS [optional!]
-# navbar text color
-# Choose from "navbar-light" for use with light background colors, or "navbar-dark" for dark background colors
-navbar-color: navbar-light
-# navbar background color
-# Choose from bg-primary, bg-secondary, bg-success, bg-danger, bg-warning, bg-info, bg-light, bg-dark, bg-white
-navbar-background: bg-light
-
-# BOOTSWATCH THEMES [optional!]
-# You can replace the standard Bootstrap theme with a Bootswatch (https://github.com/thomaspark/bootswatch) option
-# Choose from: cerulean; cosmo; cyborg; darkly; flatly; journal; litera; lumen; lux; materia; minty; pulse; sandstone; simplex; sketchy; slate; solar; spacelab; superhero; united; yeti 
-bootswatch: # leave blank or comment out for plain bootstrap
-
 
 # THEME ICONS [optional!]
 # default icons can be overridden or new icons can be added using "icons" object
