@@ -55,10 +55,11 @@ jobs:
         run: |
           echo "Processing cover image from book.yml..."
           
-          pip install PyYAML
+          pip install ruamel.yaml
           
           cat << 'EOF' > process_cover.py
           import yaml
+          from ruamel.yaml import YAML
           
           book_id = "${{ inputs.book_id }}"
           gutenberg_url = f"https://www.gutenberg.org/ebooks/{book_id}"
@@ -90,9 +91,11 @@ jobs:
               print(f"Found cover image: {selected_cover}")
               
               theme_file = '_data/theme.yml'
+              ryaml = YAML()
+              ryaml.preserve_quotes = True
               try:
                   with open(theme_file, 'r') as f:
-                      theme_data = yaml.safe_load(f) or {}
+                      theme_data = ryaml.load(f) or {}
               except FileNotFoundError:
                   theme_data = {}
               
@@ -101,7 +104,7 @@ jobs:
               theme_data['featured-image-alt-text'] = f'Cover image of {title}'
               
               with open(theme_file, 'w') as f:
-                  yaml.dump(theme_data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+                  ryaml.dump(theme_data, f)
               
               print(f"Updated {theme_file} with cover image metadata")
           else:
@@ -116,6 +119,7 @@ jobs:
           
           cat << 'EOF' > update_config.py
           import yaml
+          from ruamel.yaml import YAML
           
           with open('_data/book.yml', 'r') as f:
               book_data = yaml.safe_load(f)
@@ -123,15 +127,17 @@ jobs:
           title = book_data.get('title', 'Unknown Title')
           author = book_data.get('author', 'Unknown Author')
           
+          ryaml = YAML()
+          ryaml.preserve_quotes = True
           with open('_config.yml', 'r') as f:
-              config = yaml.safe_load(f)
+              config = ryaml.load(f)
           
           config['title'] = title
           config['author'] = author
           config['description'] = f"A digital edition of {title} by {author}, extracted from Project Gutenberg"
           
           with open('_config.yml', 'w') as f:
-              yaml.dump(config, f, default_flow_style=False, sort_keys=False, allow_unicode=True, default_style='"')
+              ryaml.dump(config, f)
           
           print(f"Updated _config.yml:")
           print(f"  title: {title}")
