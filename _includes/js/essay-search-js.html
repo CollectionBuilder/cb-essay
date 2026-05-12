@@ -84,8 +84,12 @@
         html += "<ol class=\"list-group list-group-flush\" role=\"list\">";
         docs.forEach(function (doc) {
             var snippet = truncate(doc.content, 220);
+            // add query string to result link (not currently used)
+            //var urlParts = doc.url.split("#");
+            //var href = esc(urlParts[0]) + "?q=" + encodeURIComponent(q) + (urlParts[1] ? "#" + esc(urlParts[1]) : "");
+            var href = doc.url;
             html += "<li class=\"list-group-item px-0\">";
-            html += "<a class=\"fw-semibold\" href=\"" + esc(doc.url) + "?q=" + encodeURIComponent(q) + "\">" + esc(doc.title) + "</a>";
+            html += "<a class=\"fw-semibold\" href=\"" + href + "\">" + esc(doc.title) + "</a>";
             html += " <span class=\"text-muted small\">in " + esc(doc.page) + "</span>";
             if (snippet) {
                 html += "<p class=\"mb-0 mt-1 small\">" + esc(snippet) + "</p>";
