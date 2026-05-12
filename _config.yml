@@ -25,6 +25,7 @@ defaults:
     values:
       layout: "essay-content"                 # Layout template for essay pages
       permalink: /essay/:slug:output_ext      # URL pattern: /essay/filename.html
+      text_search: true  # opt in to text search
 
 ##########
 # collectionbuilder-csv

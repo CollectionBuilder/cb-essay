@@ -1,7 +1,8 @@
 display_name,stub,dropdown_parent
 About CB-Essay,/about.html,
+Search,/search/,
 Print & PDF,/print/,
-Collection
+Collection,
 Browse,/browse.html,Collection
 Subjects,/subjects.html,Collection
 Locations,/locations.html,Collection

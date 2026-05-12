@@ -1,7 +1,7 @@
 ---
-title: Site Search
-layout: search
+title: Search
+layout: essay-search
 permalink: /search/
 ---
 
-## Full metadata search:
+## Search Essay Text 

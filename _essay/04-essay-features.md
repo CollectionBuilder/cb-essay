@@ -166,7 +166,7 @@ Display multiple collection items as inline galleries.
 
 Separate multiple object IDs with semicolons. Items must exist in your metadata.
 
-## Filtered Collection  Galleries
+## Filtered Collection Galleries
 
 Below is another type of gallery, one that is filtered from the collection based on liquid logic (here it is `item.format contains 'image' and item.date > '1920'`) with an optional header.
 

@@ -51,11 +51,9 @@ Work entirely in your browser - **no local installation needed**:
 
 **That's it!**{% include essay/feature/aside.html text="**Bonus:** Use the **Project Gutenberg extractor** (Actions tab) to populate your `_essay/` folder with a complete book automatically!" %}
 
-## More Code-Based Options 
+### More Code-Based Options 
 
 {% capture option_b %}
-### Option B: GitHub.dev (VS Code in Browser)
-
 Get [a full VS Code editor](https://docs.github.com/en/codespaces/the-githubdev-web-based-editor) without leaving your browser:
 
 1. Go to your repository on GitHub
@@ -69,8 +67,6 @@ Get [a full VS Code editor](https://docs.github.com/en/codespaces/the-githubdev-
 
 {% endcapture %}
 {% capture option_c %}
-### Option C: GitHub Codespaces (Cloud Development)
-
 Get a complete development environment in the cloud:
 
 1. Click **Code** → **Codespaces** → **Create codespace**
@@ -83,14 +79,12 @@ Get a complete development environment in the cloud:
 
 {% endcapture %}
 {% capture option_d %}
-### Option D: Local Development (Advanced)
-
 For local development with Git and Jekyll installed on your computer, follow the [CollectionBuilder-CSV walkthrough](https://collectionbuilder.github.io/cb-docs/docs/walkthroughs/csv-walkthrough/). CB-Essay uses the same setup process.
 
 **Good for:** Offline work, full control, fastest preview cycle
 {% endcapture %}
 
-{% include feature/accordion.html title1="Option B: GitHub.dev (VS Code in Browser)" text1=option_b title2="Option C: GitHub Codespaces (Cloud Development)" text2=option_c title3="Option D: Local Development (Advanced)" text3=option_d %}
+{% include feature/accordion.html  title1="Option B: GitHub.dev (VS Code in Browser)" text1=option_b title2="Option C: GitHub Codespaces (Cloud Development)" text2=option_c title3="Option D: Local Development (Advanced)" text3=option_d %}
 
 
 ## Step 3: Create Your First Essay

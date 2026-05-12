@@ -1,0 +1,54 @@
+---
+# generate json page text data, 
+# with content chunked based on the headings
+layout: null
+permalink: /assets/js/site-search.json
+---
+{
+{%- assign i = 0 -%}
+{%- assign search_pages = site.essay | concat: site.html_pages | where_exp: 'p', 'p.title and p.text_search == true' -%}
+{%- assign heading_level = site.search_heading_level | default: 3 -%}
+{%- for p in search_pages -%}
+    {%- assign page_content = p.content -%}
+    {%- assign page_title = p.title -%}
+    {%- for l in (1..heading_level) -%}
+        {% capture tag %}<h{{ l }}{% endcapture %}{% capture tag_replace %}|$|<h{{ l }}{% endcapture %}
+        {% capture closing_tag %}</h{{ l }}{% endcapture %}{% capture closing_tag_replace %}|#|</h{{ l }}{% endcapture %}
+        {%- assign page_content = page_content | replace: tag, tag_replace | replace: closing_tag, closing_tag_replace -%}
+    {%- endfor -%}
+    {%- assign sections = page_content | split: '|$|' -%}
+    {% assign all_headings = "" %}
+    {% for c in sections %}
+        {% if c contains '|#|' %}
+        {% capture heading %}{{ c | split: '|#|' | first | strip_html | strip }}{% unless forloop.last %}, {% endunless %}{% endcapture %}
+        {% assign all_headings = all_headings | append: heading %}
+        {% endif %}
+    {%- endfor -%}
+    {%- assign i = i | plus: 1 -%}
+    {%- for s in sections -%}
+        {% if s contains '|#|' %}
+            {% assign s_parts = s | split: '|#|' %}
+            {% capture s_title %}{{ s_parts[0] | strip_html | normalize_whitespace | strip }}{% endcapture %}
+            {% capture s_content %}{{ s_parts[1] | strip_html | normalize_whitespace | strip }}{% endcapture %}
+            {% capture s_id %}{% assign h_parts = s_parts[0] | split: 'id="' %}{{ h_parts[1] | split: '"' | first }}{% endcapture %}
+        {% else %}
+            {% capture s_title %}{{ page_title }}{% endcapture %}
+            {% capture s_content %}{{ s | strip_html | normalize_whitespace | strip }}{% endcapture %}
+        {% endif %}
+    {%- capture s_title -%}{% if s contains '|#|' %}{{ s | split: '|#|' | first | strip_html | strip }}{% else %}{{ page_title }}{% endif %}{%- endcapture -%}
+    "{{ i }}": {
+        "url": "{{ p.url | relative_url }}#{{ s_id }}",
+        "title": {{ s_title | jsonify }},
+        "page": {{ page_title | jsonify }},
+        "content": {{ s_content | jsonify }}
+    },
+    {%- assign i = i | plus: 1 -%}
+    {%- endfor -%}
+    "{{ i }}": {
+        "url": "{{ p.url | relative_url }}",
+        "title": {{ page_title | jsonify }},
+        "page": null,
+        "content": {{ p.description | default: all_headings | normalize_whitespace | jsonify }}
+    }{% unless forloop.last %},{% endunless %} 
+{%- endfor -%}
+}

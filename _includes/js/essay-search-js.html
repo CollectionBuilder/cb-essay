@@ -1,0 +1,140 @@
+<!-- add flexsearch library -->
+<script src="{{ '/assets/lib/flexsearch.bundle.min.js' | relative_url }}"></script>
+<script>
+(function () {
+    "use strict";
+
+    var searchIndex = null;
+
+    /* Build a FlexSearch Document index from the site-search.json data.
+       Only section-level entries are indexed (records where page !== null).
+       Page-summary entries (page === null) contain heading lists, not prose. */
+    function buildIndex(data) {
+        searchIndex = new FlexSearch.Document({
+            tokenize: "forward",
+            document: {
+                id: "id",
+                index: ["title", "content"],
+                store: true
+            }
+        });
+        Object.keys(data).forEach(function (id) {
+            var doc = data[id];
+            if (doc.page !== null) {
+                searchIndex.add({
+                    id: id,
+                    url: doc.url,
+                    title: doc.title,
+                    page: doc.page,
+                    content: doc.content
+                });
+            }
+        });
+    }
+
+    /* Truncate text to max characters at a word boundary. */
+    function truncate(text, max) {
+        if (!text || text.length <= max) return text || "";
+        return text.slice(0, max).replace(/\s\S*$/, "") + "\u2026";
+    }
+
+    /* Minimal HTML escaping to prevent XSS when building innerHTML strings. */
+    function esc(str) {
+        return (str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    /* Collect unique result documents across all matched fields. */
+    function collectDocs(raw) {
+        var seen = {};
+        var docs = [];
+        raw.forEach(function (field) {
+            field.result.forEach(function (r) {
+                if (!seen[r.id]) {
+                    seen[r.id] = true;
+                    docs.push(r.doc);
+                }
+            });
+        });
+        return docs;
+    }
+
+    /* Render search results into #essaySearchResults. */
+    function renderResults(query, docs) {
+        var el = document.getElementById("essaySearchResults");
+        var q = (query || "").trim();
+
+        if (!q) {
+            el.innerHTML = "";
+            return;
+        }
+        if (docs.length === 0) {
+            el.innerHTML = "<p>No results found for <strong>" + esc(q) + "</strong>.</p>";
+            return;
+        }
+
+        var count = docs.length;
+        var html = "<p class=\"text-muted mb-3\">" +
+            count + " result" + (count !== 1 ? "s" : "") +
+            " for <strong>" + esc(q) + "</strong></p>";
+
+        html += "<ol class=\"list-group list-group-flush\" role=\"list\">";
+        docs.forEach(function (doc) {
+            var snippet = truncate(doc.content, 220);
+            html += "<li class=\"list-group-item px-0\">";
+            html += "<a class=\"fw-semibold\" href=\"" + esc(doc.url) + "?q=" + encodeURIComponent(q) + "\">" + esc(doc.title) + "</a>";
+            html += " <span class=\"text-muted small\">in " + esc(doc.page) + "</span>";
+            if (snippet) {
+                html += "<p class=\"mb-0 mt-1 small\">" + esc(snippet) + "</p>";
+            }
+            html += "</li>";
+        });
+        html += "</ol>";
+
+        el.innerHTML = html;
+    }
+
+    /* Run a search query, update results, and update the browser URL. */
+    function doSearch(query) {
+        var q = (query || "").trim();
+        if (!searchIndex) return;
+        if (!q) {
+            renderResults("", []);
+            return;
+        }
+        var raw = searchIndex.search(q, { enrich: true, limit: 50 });
+        renderResults(q, collectDocs(raw));
+    }
+
+    /* Load the JSON index, then handle any ?q= param from nav search or direct link. */
+    fetch("{{ '/assets/js/site-search.json' | relative_url }}")
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            buildIndex(data);
+            var q = new URLSearchParams(window.location.search).get("q") || "";
+            if (q) {
+                document.getElementById("essaySearchInput").value = q;
+                doSearch(q);
+            }
+        });
+
+    /* Form submission — update URL param so the search is bookmarkable/shareable. */
+    document.getElementById("essaySearchForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var q = document.getElementById("essaySearchInput").value;
+        var url = new URL(window.location.href);
+        url.searchParams.set("q", q);
+        history.replaceState(null, "", url.toString());
+        doSearch(q);
+    });
+
+    /* Live search as the user types. */
+    document.getElementById("essaySearchInput").addEventListener("input", function () {
+        doSearch(this.value);
+    });
+
+}());
+</script>
