@@ -54,7 +54,7 @@
 {% elsif include.image-heading %}
 {% include feature/jumbotron.html objectid=include.image-heading %}
 {% elsif include.heading %}
-<h2>{{ include.heading }}</h2>{% endif %}
+<h2 id="{{ include.heading | slugify }}">{{ include.heading }}</h2>{% endif %}
 <div class="row my-3 py-3 {{ include.container-styles }}">
     {% if include.context %}<p> {{include.context}} </p>{% endif %}
     {% for item in gallery-items limit:gallery-limit %}
