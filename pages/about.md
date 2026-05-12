@@ -12,7 +12,7 @@ credits: true
 
 Built on [CollectionBuilder](https://collectionbuilder.github.io/), CB-Essay extends the CollectionBuilder-CSV framework to support essay and monograph publishing alongside traditional digital collection capabilities. 
 
-{% include feature/alert.html color="info" text="Have a question? Check out our [docs](/docs.html)." %}
+{% include feature/alert.html color="info" text="Have a question? Check out our [docs](https://collectionbuilder.github.io/cb-essay/docs.html)." %}
 
 ### What Makes CB-Essay Different?
 
