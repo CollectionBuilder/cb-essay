@@ -4,7 +4,7 @@
 layout: null
 permalink: /assets/js/site-search.json
 ---
-
+{
 {%- assign i = 0 -%}
 {%- assign search_pages = site.essay | concat: site.html_pages | where_exp: 'p', 'p.title and p.text_search == true' -%}
 {%- assign heading_level = site.search_heading_level | default: 3 -%}
