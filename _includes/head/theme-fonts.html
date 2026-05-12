@@ -142,4 +142,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="{{ site.data.theme.font-cdn }}" rel="stylesheet">
 {%- endif -%}
-{%- endif -%}  
+{%- endif -%}
+
+{%- comment -%}
+  If display-font-family is set to an explicit value (not 'theme' and not blank),
+  emit the CSS variable directly. The theme-based branches above only fire when
+  display-font-family == 'theme', so this handles all other explicit values.
+{%- endcomment -%}
+{%- if display_family and display_family != '' and display_family != 'theme' -%}
+<style>
+  :root { --cb-font-family-display: {{ display_family }}; }
+</style>
+{%- endif -%}
