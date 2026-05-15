@@ -1,16 +1,16 @@
 name: Extract Gutenberg Book
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
     inputs:
       book_id:
         description: 'Project Gutenberg Book ID (e.g., 84 for Frankenstein, 64317 for Great Gatsby)'
         required: true
         type: string
       clear_existing:
-        description:  'Clear existing _essay content before extraction'
+        description: 'Clear existing _essay content before extraction'
         required: false
-        default:  false
+        default: false
         type: boolean
 
 jobs:
@@ -21,14 +21,19 @@ jobs:
       pages: write
       actions: write
 
-    steps: 
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version:  '3.11'
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyYAML ruamel.yaml
 
       - name: Clear existing essay content (if requested)
         if: ${{ inputs.clear_existing }}
@@ -40,7 +45,7 @@ jobs:
       - name: Extract book from Project Gutenberg
         run: |
           echo "Extracting book #${{ inputs.book_id }} from Project Gutenberg..."
-          python gutenberg-extraction.py ${{ inputs.book_id }} --cb-essay --project-root . 
+          python gutenberg-extraction.py ${{ inputs.book_id }} --cb-essay --project-root .
           echo "Extraction complete!"
 
       - name: List extracted files
@@ -54,42 +59,40 @@ jobs:
       - name: Process cover image and update theme.yml
         run: |
           echo "Processing cover image from book.yml..."
-          
-          pip install ruamel.yaml
-          
+
           cat << 'EOF' > process_cover.py
           import yaml
           from ruamel.yaml import YAML
-          
+
           book_id = "${{ inputs.book_id }}"
           gutenberg_url = f"https://www.gutenberg.org/ebooks/{book_id}"
-          
+
           with open('_data/book.yml', 'r') as f:
               book_data = yaml.safe_load(f)
-          
+
           title = book_data.get('title', 'Unknown Title')
           author = book_data.get('author', 'Unknown Author')
           cover_urls = book_data.get('cover_urls', [])
-          
+
           if not cover_urls:
               print("No cover images found in book.yml")
               exit(0)
-          
+
           selected_cover = None
           for priority in ['large', 'medium', 'small']:
               for url in cover_urls:
                   if priority in url.lower():
                       selected_cover = url
                       break
-              if selected_cover: 
+              if selected_cover:
                   break
-          
+
           if not selected_cover and cover_urls:
               selected_cover = cover_urls[0]
-          
-          if selected_cover: 
+
+          if selected_cover:
               print(f"Found cover image: {selected_cover}")
-              
+
               theme_file = '_data/theme.yml'
               ryaml = YAML()
               ryaml.preserve_quotes = True
@@ -98,57 +101,58 @@ jobs:
                       theme_data = ryaml.load(f) or {}
               except FileNotFoundError:
                   theme_data = {}
-              
+
               theme_data['featured-image'] = selected_cover
               theme_data['featured-image-credit'] = f'This is a cover of the {title} by {author} as extracted from Project Gutenberg; it can be found here: {gutenberg_url}'
               theme_data['featured-image-alt-text'] = f'Cover image of {title}'
-              
+
               with open(theme_file, 'w') as f:
                   ryaml.dump(theme_data, f)
-              
+
               print(f"Updated {theme_file} with cover image metadata")
           else:
               print("No suitable cover image found")
           EOF
-          
+
           python process_cover.py
 
       - name: Update _config.yml with book metadata
         run: |
           echo "Updating _config.yml with book metadata..."
-          
+
           cat << 'EOF' > update_config.py
           import yaml
           from ruamel.yaml import YAML
-          
+
           with open('_data/book.yml', 'r') as f:
               book_data = yaml.safe_load(f)
-          
+
           title = book_data.get('title', 'Unknown Title')
           author = book_data.get('author', 'Unknown Author')
-          
+
           ryaml = YAML()
           ryaml.preserve_quotes = True
           with open('_config.yml', 'r') as f:
               config = ryaml.load(f)
-          
+
           config['title'] = title
           config['author'] = author
           config['description'] = f"A digital edition of {title} by {author}, extracted from Project Gutenberg"
-          
+
           with open('_config.yml', 'w') as f:
               ryaml.dump(config, f)
-          
+
           print(f"Updated _config.yml:")
           print(f"  title: {title}")
           print(f"  author: {author}")
           print(f"  description: {config['description']}")
           EOF
-          
+
           python update_config.py
 
       - name: Commit and push changes
-        run:  |
+        id: commit
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
@@ -167,7 +171,6 @@ jobs:
             echo "Changes committed and pushed!"
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
-        id: commit
 
   deploy-pages:
     needs: extract
@@ -176,7 +179,7 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    concurrency: 
+    concurrency:
       group: "pages"
       cancel-in-progress: false
     environment:
@@ -184,7 +187,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name:  Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
@@ -194,7 +197,7 @@ jobs:
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
-        with: 
+        with:
           ruby-version: '3.4'
           bundler-cache: true
 
@@ -208,7 +211,7 @@ jobs:
           JEKYLL_ENV: production
 
       - name: Upload artifact
-        uses:  actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v3
         with:
           path: "_site/"
 
