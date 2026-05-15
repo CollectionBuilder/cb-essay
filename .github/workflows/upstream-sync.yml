@@ -238,6 +238,7 @@ jobs:
       - name: Create pull request
         if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false'
         id: prcreate
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -245,18 +246,47 @@ jobs:
           if [ "${{ steps.merge.outputs.conflicts }}" = "true" ]; then
             DRAFT_FLAG="--draft"
           fi
-          PR_URL=$(gh pr create \
+
+          set +e
+          PR_RESULT=$(gh pr create \
             --base main \
             --head "${{ steps.branch.outputs.branch }}" \
             --title "Upstream sync from collectionbuilder-csv (${{ steps.branch.outputs.upstream_sha }})" \
             --body-file /tmp/pr-body.md \
-            $DRAFT_FLAG)
-          echo "pr_url=${PR_URL}" >> "$GITHUB_OUTPUT"
-          echo "PR opened: ${PR_URL}"
+            $DRAFT_FLAG 2>&1)
+          PR_RC=$?
+          set -e
 
-      # ---------- apply labels (best-effort, won't fail workflow) ----------
+          if [ "$PR_RC" -eq 0 ]; then
+            echo "pr_url=${PR_RESULT}" >> "$GITHUB_OUTPUT"
+            echo "pr_create_failed=false" >> "$GITHUB_OUTPUT"
+            echo "PR opened: ${PR_RESULT}"
+          else
+            echo "pr_url=" >> "$GITHUB_OUTPUT"
+            echo "pr_create_failed=true" >> "$GITHUB_OUTPUT"
+            {
+              echo "### Automated PR creation failed"
+              echo ""
+              echo "The sync branch was pushed successfully, but this workflow could not open a pull request."
+              echo ""
+              echo "- Branch: \`${{ steps.branch.outputs.branch }}\`"
+              echo "- Base: \`main\`"
+              echo "- Upstream SHA: \`${{ steps.branch.outputs.upstream_sha }}\`"
+              echo ""
+              echo "#### Error"
+              echo '```'
+              echo "$PR_RESULT"
+              echo '```'
+              echo ""
+              echo "#### Open the PR manually"
+              echo "https://github.com/${{ github.repository }}/compare/main...${{ steps.branch.outputs.branch }}?expand=1"
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "PR creation failed; branch was still pushed."
+          fi
+
+      # ---------- apply labels (best-effort, only if a PR exists) ----------
       - name: Apply labels (best effort)
-        if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false'
+        if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false' && steps.prcreate.outputs.pr_url != ''
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -275,3 +305,11 @@ jobs:
         run: |
           echo "Sync branch ${{ steps.branch.outputs.branch }} already exists on origin."
           echo "Not overwriting. Delete the existing branch and re-run if you want a fresh attempt."
+
+      - name: Summary — branch pushed but PR not opened
+        if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false' && steps.prcreate.outputs.pr_create_failed == 'true'
+        run: |
+          echo "Sync branch was pushed: ${{ steps.branch.outputs.branch }}"
+          echo "GitHub Actions could not create the pull request automatically."
+          echo "Open it manually at:"
+          echo "https://github.com/${{ github.repository }}/compare/main...${{ steps.branch.outputs.branch }}?expand=1"
