@@ -2,7 +2,7 @@ name: Upstream Sync from CollectionBuilder-CSV
 
 on:
   schedule:
-    # Mondays at 14:00 UTC (07:00 Pacific). Weekly is plenty.
+    # Mondays at 14:00 UTC (07:00 Pacific). Weekly cadence.
     - cron: '0 14 * * 1'
   workflow_dispatch:
     inputs:
@@ -10,6 +10,15 @@ on:
         description: 'Upstream ref to sync from (default: main)'
         required: false
         default: 'main'
+      conflict_strategy:
+        description: 'How to handle conflicts: ours (keep cb-essay), theirs (take upstream), or manual (leave markers)'
+        required: false
+        default: 'ours'
+        type: choice
+        options:
+          - ours
+          - theirs
+          - manual
 
 permissions:
   contents: write
@@ -18,40 +27,55 @@ permissions:
 env:
   UPSTREAM_REPO: https://github.com/CollectionBuilder/collectionbuilder-csv.git
   UPSTREAM_BRANCH: ${{ github.event.inputs.base_ref || 'main' }}
+  CONFLICT_STRATEGY: ${{ github.event.inputs.conflict_strategy || 'ours' }}
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout cb-essay
-        uses: actions/checkout@v4
+      # ---------- safety: never run on main ----------
+      - name: Safety check — refuse to operate on main directly
+        run: |
+          if [ "${GITHUB_REF}" = "refs/heads/main" ] && [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            echo "Refusing to run on direct push to main."
+            exit 1
+          fi
+
+      # ---------- checkout ----------
+      - name: Checkout cb-essay (full history)
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Configure git
+      - name: Configure git identity
         run: |
           git config user.name "cb-upstream-sync[bot]"
           git config user.email "cb-upstream-sync@users.noreply.github.com"
 
+      # ---------- fetch upstream ----------
       - name: Add upstream remote and fetch
         run: |
           git remote add upstream "$UPSTREAM_REPO"
           git fetch upstream "$UPSTREAM_BRANCH"
 
+      # ---------- decide branch name ----------
       - name: Determine sync branch name
         id: branch
         run: |
           DATE=$(date +%Y-%m-%d)
           UPSTREAM_SHA=$(git rev-parse --short upstream/${UPSTREAM_BRANCH})
           BRANCH="upstream-sync/${DATE}-${UPSTREAM_SHA}"
-          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
+          echo "branch=${BRANCH}"          >> "$GITHUB_OUTPUT"
           echo "upstream_sha=${UPSTREAM_SHA}" >> "$GITHUB_OUTPUT"
+          echo "date=${DATE}"               >> "$GITHUB_OUTPUT"
 
-      - name: Check if there is anything new upstream
+      # ---------- check if upstream has anything new on tracked paths ----------
+      - name: Check for upstream changes on tracked paths
         id: diffcheck
         run: |
-          # Compare upstream to our main; if no new commits touch tracked paths, exit clean.
+          set +e
           CHANGED=$(git diff --name-only HEAD..upstream/${UPSTREAM_BRANCH} -- \
             ':(glob)_includes/**' \
             ':(glob)_layouts/**' \
@@ -64,37 +88,73 @@ jobs:
             ':(exclude)_includes/essay/**' \
             ':(exclude)_includes/cb-essay/**' \
           )
+          set -e
           if [ -z "$CHANGED" ]; then
             echo "No tracked-path changes upstream. Nothing to sync."
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           else
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
-            # Save the file list for the PR body
             echo "$CHANGED" > /tmp/changed-files.txt
+            echo "Changed files:"
+            cat /tmp/changed-files.txt
           fi
 
-      - name: Create sync branch and merge upstream
+      # ---------- check whether the sync branch already exists remotely ----------
+      - name: Check if sync branch already exists on origin
         if: steps.diffcheck.outputs.has_changes == 'true'
+        id: existing
+        run: |
+          if git ls-remote --exit-code --heads origin "${{ steps.branch.outputs.branch }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Branch ${{ steps.branch.outputs.branch }} already exists on origin. Will not overwrite."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ---------- create the sync branch and attempt merge ----------
+      - name: Create sync branch and merge upstream
+        if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false'
         id: merge
         run: |
           git checkout -b "${{ steps.branch.outputs.branch }}"
-          # Attempt merge but don't fail the job on conflicts — we want the PR either way.
-          if git merge --no-edit --no-ff --allow-unrelated-histories upstream/${UPSTREAM_BRANCH} -m "Upstream sync from collectionbuilder-csv@${{ steps.branch.outputs.upstream_sha }}"; then
+
+          # Build the merge command based on conflict strategy.
+          # - "ours" / "theirs" use the ort strategy with a directional preference,
+          #   which auto-resolves conflicts by preferring one side. This is what
+          #   makes future runs much cleaner.
+          # - "manual" leaves conflict markers in the files for human resolution.
+          STRATEGY_ARGS=""
+          case "$CONFLICT_STRATEGY" in
+            ours)    STRATEGY_ARGS="--strategy=ort --strategy-option=ours" ;;
+            theirs)  STRATEGY_ARGS="--strategy=ort --strategy-option=theirs" ;;
+            manual)  STRATEGY_ARGS="" ;;
+          esac
+
+          set +e
+          git merge --no-edit --no-ff --allow-unrelated-histories $STRATEGY_ARGS \
+            upstream/${UPSTREAM_BRANCH} \
+            -m "Upstream sync from collectionbuilder-csv@${{ steps.branch.outputs.upstream_sha }} (strategy: $CONFLICT_STRATEGY)"
+          MERGE_RC=$?
+          set -e
+
+          if [ "$MERGE_RC" = "0" ]; then
             echo "conflicts=false" >> "$GITHUB_OUTPUT"
+            echo "Merge succeeded (strategy: $CONFLICT_STRATEGY)."
           else
             echo "conflicts=true" >> "$GITHUB_OUTPUT"
-            # Capture conflicted files for the PR body, then commit the conflict markers
-            # so the PR is openable and a human can resolve.
+            echo "Merge had unresolved conflicts (strategy: $CONFLICT_STRATEGY)."
             git diff --name-only --diff-filter=U > /tmp/conflicted-files.txt || true
+            # Commit conflict markers so the branch is pushable and a human can resolve in the PR.
             git add -A
-            git commit -m "Upstream sync from collectionbuilder-csv@${{ steps.branch.outputs.upstream_sha }} (CONFLICTS — needs manual resolution)" || true
+            git commit -m "Upstream sync from collectionbuilder-csv@${{ steps.branch.outputs.upstream_sha }} (CONFLICTS — manual resolution required)" || true
           fi
 
-      - name: Restore essay-specific paths from main
-        if: steps.diffcheck.outputs.has_changes == 'true'
+      # ---------- restore protected paths from main ----------
+      - name: Restore protected cb-essay paths from main
+        if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false'
         run: |
-          # Even if the merge touched these paths, we never want upstream to overwrite them.
-          # If they were touched, restore from main (HEAD~1 of the sync branch = our pre-merge state).
+          # Anything in this list will be restored to whatever main has, even if upstream
+          # tried to overwrite it. Expand as cb-essay's customizations grow.
           PROTECTED_PATHS=(
             "_includes/essay"
             "_includes/cb-essay"
@@ -106,35 +166,38 @@ jobs:
             ".github/workflows"
           )
           for p in "${PROTECTED_PATHS[@]}"; do
-            if [ -e "$p" ] || git show HEAD~1:"$p" >/dev/null 2>&1; then
-              # Restore from the pre-merge commit (our main)
-              git checkout HEAD~1 -- "$p" 2>/dev/null || true
+            # Restore the path from origin/main (which is the pre-merge state on this branch)
+            if git cat-file -e "origin/main:$p" 2>/dev/null; then
+              git checkout origin/main -- "$p"
             fi
           done
-          # Commit any restorations
           if ! git diff --cached --quiet || ! git diff --quiet; then
             git add -A
             git commit -m "Preserve cb-essay-specific paths from main" || true
+          else
+            echo "No protected paths needed restoration."
           fi
 
+      # ---------- push the sync branch ----------
       - name: Push sync branch
-        if: steps.diffcheck.outputs.has_changes == 'true'
+        if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false'
         run: |
-          git push origin "${{ steps.branch.outputs.branch }}" --force-with-lease
+          git push origin "${{ steps.branch.outputs.branch }}"
 
+      # ---------- build the PR body ----------
       - name: Build PR body
-        if: steps.diffcheck.outputs.has_changes == 'true'
-        id: prbody
+        if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false'
         run: |
           {
             echo "## Automated upstream sync"
             echo ""
-            echo "Pulling changes from \`CollectionBuilder/collectionbuilder-csv@${{ steps.branch.outputs.upstream_sha }}\`."
+            echo "Syncing changes from \`CollectionBuilder/collectionbuilder-csv@${{ steps.branch.outputs.upstream_sha }}\`."
+            echo "**Conflict strategy:** \`${CONFLICT_STRATEGY}\`"
             echo ""
             if [ "${{ steps.merge.outputs.conflicts }}" = "true" ]; then
-              echo "### ⚠️ Merge conflicts detected"
+              echo "### ⚠️ Unresolved conflicts"
               echo ""
-              echo "The following files have conflict markers and need manual resolution before merging:"
+              echo "These files still have conflict markers and need human resolution:"
               echo ""
               echo '```'
               cat /tmp/conflicted-files.txt 2>/dev/null || echo "(see git status)"
@@ -142,6 +205,12 @@ jobs:
               echo ""
             else
               echo "### ✅ Clean merge"
+              echo ""
+              if [ "${CONFLICT_STRATEGY}" = "ours" ]; then
+                echo "Conflicts were auto-resolved by keeping cb-essay's version (\`-Xours\`). Review carefully — upstream changes to conflicted files were *discarded*."
+              elif [ "${CONFLICT_STRATEGY}" = "theirs" ]; then
+                echo "Conflicts were auto-resolved by taking upstream's version (\`-Xtheirs\`). Review carefully — cb-essay's customizations on conflicted files were *overwritten*."
+              fi
               echo ""
             fi
             echo "### Files changed upstream (tracked paths only)"
@@ -152,32 +221,48 @@ jobs:
             echo ""
             echo "### Review checklist"
             echo ""
-            echo "- [ ] Did upstream touch anything that conflicts with our theming work in \`_sass/\` or \`_includes/\`?"
-            echo "- [ ] Did the gem versions / \`Gemfile.lock\` change?"
-            echo "- [ ] Are there changes to \`_config.yml\` that need to be reconciled against our essay config?"
-            echo "- [ ] Did anything in \`_data/config-metadata.csv\` or \`_data/theme.yml\` change in ways that affect existing essays?"
-            echo "- [ ] Build site locally and confirm essays render correctly before merging."
+            echo "- [ ] Check the diff for any unintended changes to themed components (\`_sass/\`, \`_layouts/\`)"
+            echo "- [ ] Confirm \`_config.yml\` and \`_data/\` changes are compatible with existing essays"
+            echo "- [ ] Confirm \`_includes/essay/\` was not touched"
+            echo "- [ ] Build site locally (\`bundle exec jekyll serve\`) and confirm essays render"
+            echo "- [ ] If conflicts were auto-resolved, spot-check the chosen side is right"
+            echo ""
+            echo "### How to handle this PR"
+            echo ""
+            echo "- **Merge it** if the changes look good."
+            echo "- **Close without merging** if you want to skip this batch of upstream changes."
+            echo "- **Cherry-pick locally** if you only want a subset: \`git checkout main && git cherry-pick <commit>\`."
             echo ""
             echo "---"
-            echo "*This PR was opened by the upstream-sync workflow. Close it without merging if the changes shouldn't propagate.*"
+            echo "_Opened by \`.github/workflows/upstream-sync.yml\`._"
           } > /tmp/pr-body.md
-          # Pass file path to next step
-          echo "body_file=/tmp/pr-body.md" >> "$GITHUB_OUTPUT"
 
-      - name: Create or update pull request
-        if: steps.diffcheck.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.branch.outputs.branch }}
-          base: main
-          title: "Upstream sync from collectionbuilder-csv (${{ steps.branch.outputs.upstream_sha }})"
-          body-path: /tmp/pr-body.md
-          labels: |
-            upstream-sync
-            needs-review
-          draft: ${{ steps.merge.outputs.conflicts == 'true' }}
+      # ---------- create the PR with gh CLI ----------
+      - name: Create pull request
+        if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DRAFT_FLAG=""
+          if [ "${{ steps.merge.outputs.conflicts }}" = "true" ]; then
+            DRAFT_FLAG="--draft"
+          fi
+          gh pr create \
+            --base main \
+            --head "${{ steps.branch.outputs.branch }}" \
+            --title "Upstream sync from collectionbuilder-csv (${{ steps.branch.outputs.upstream_sha }})" \
+            --body-file /tmp/pr-body.md \
+            --label "upstream-sync" \
+            --label "needs-review" \
+            $DRAFT_FLAG
 
-      - name: Summary
+      # ---------- final summaries ----------
+      - name: Summary — nothing to do
         if: steps.diffcheck.outputs.has_changes != 'true'
-        run: echo "No upstream changes to sync. Exiting clean."
+        run: echo "No tracked-path changes upstream. Exiting clean."
+
+      - name: Summary — branch already existed
+        if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'true'
+        run: |
+          echo "Sync branch ${{ steps.branch.outputs.branch }} already exists on origin."
+          echo "Not overwriting. Delete the existing branch and re-run if you want a fresh attempt."
