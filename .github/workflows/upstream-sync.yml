@@ -79,7 +79,7 @@ jobs:
         run: |
           git checkout -b "${{ steps.branch.outputs.branch }}"
           # Attempt merge but don't fail the job on conflicts — we want the PR either way.
-          if git merge --no-edit --no-ff upstream/${UPSTREAM_BRANCH} -m "Upstream sync from collectionbuilder-csv@${{ steps.branch.outputs.upstream_sha }}"; then
+          if git merge --no-edit --no-ff --allow-unrelated-histories upstream/${UPSTREAM_BRANCH} -m "Upstream sync from collectionbuilder-csv@${{ steps.branch.outputs.upstream_sha }}"; then
             echo "conflicts=false" >> "$GITHUB_OUTPUT"
           else
             echo "conflicts=true" >> "$GITHUB_OUTPUT"
