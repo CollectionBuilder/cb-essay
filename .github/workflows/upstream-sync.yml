@@ -237,6 +237,29 @@ jobs:
             echo "_Opened by \`.github/workflows/upstream-sync.yml\`._"
           } > /tmp/pr-body.md
 
+- name: Diagnose token permissions
+        if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "=== Token auth status ==="
+          gh auth status || true
+          echo ""
+          echo "=== Can we read the repo? ==="
+          gh api repos/${{ github.repository }} --jq '.permissions' || true
+          echo ""
+          echo "=== Can we list PRs (read) ==="
+          gh pr list --limit 1 || true
+          echo ""
+          echo "=== Try creating a PR via REST (more informative error) ==="
+          gh api --method POST repos/${{ github.repository }}/pulls \
+            -f title="diagnostic test" \
+            -f head="${{ steps.branch.outputs.branch }}" \
+            -f base="main" \
+            -f body="diagnostic" \
+            -f draft=true \
+            || echo "REST call also failed (expected if there's a perm issue)"
+
       # ---------- create the PR with gh CLI ----------
       - name: Create pull request
         if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false'
