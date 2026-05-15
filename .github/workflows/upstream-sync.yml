@@ -243,6 +243,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Ensure labels exist before applying them (no-op if they already do).
+          gh label create "upstream-sync" --color "0E8A16" --description "Automated sync from upstream CollectionBuilder repo" 2>/dev/null || true
+          gh label create "needs-review"  --color "FBCA04" --description "Awaiting human review" 2>/dev/null || true
+
           DRAFT_FLAG=""
           if [ "${{ steps.merge.outputs.conflicts }}" = "true" ]; then
             DRAFT_FLAG="--draft"
