@@ -240,25 +240,34 @@ jobs:
       # ---------- create the PR with gh CLI ----------
       - name: Create pull request
         if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false'
+        id: prcreate
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Ensure labels exist before applying them (no-op if they already do).
-          gh label create "upstream-sync" --color "0E8A16" --description "Automated sync from upstream CollectionBuilder repo" 2>/dev/null || true
-          gh label create "needs-review"  --color "FBCA04" --description "Awaiting human review" 2>/dev/null || true
-
           DRAFT_FLAG=""
           if [ "${{ steps.merge.outputs.conflicts }}" = "true" ]; then
             DRAFT_FLAG="--draft"
           fi
-          gh pr create \
+          PR_URL=$(gh pr create \
             --base main \
             --head "${{ steps.branch.outputs.branch }}" \
             --title "Upstream sync from collectionbuilder-csv (${{ steps.branch.outputs.upstream_sha }})" \
             --body-file /tmp/pr-body.md \
-            --label "upstream-sync" \
-            --label "needs-review" \
-            $DRAFT_FLAG
+            $DRAFT_FLAG)
+          echo "pr_url=${PR_URL}" >> "$GITHUB_OUTPUT"
+          echo "PR opened: ${PR_URL}"
+
+      - name: Apply labels (best effort, won't fail the workflow)
+        if: steps.diffcheck.outputs.has_changes == 'true' && steps.existing.outputs.exists == 'false'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Create labels if missing — ignore errors.
+          gh label create "upstream-sync" --color "0E8A16" --description "Automated sync from upstream CollectionBuilder repo" 2>/dev/null || echo "label upstream-sync exists or could not be created"
+          gh label create "needs-review"  --color "FBCA04" --description "Awaiting human review" 2>/dev/null || echo "label needs-review exists or could not be created"
+          # Apply them, also best-effort.
+          gh pr edit "${{ steps.prcreate.outputs.pr_url }}" --add-label "upstream-sync" --add-label "needs-review" || echo "Could not apply labels"
 
       # ---------- final summaries ----------
       - name: Summary — nothing to do
