@@ -378,7 +378,7 @@ video::cue {
 
 /* Higher specificity than .essay-navbar .navbar-brand so clamp() wins */
 .essay-navbar .essay-navbar__fluid-title {
-    font-size: clamp(1rem, 3vw, 1.4rem);
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
     white-space: normal;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -405,10 +405,10 @@ video::cue {
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
-.home-title--no-image { font-size: clamp(1.5rem, 4vw, 2.75rem); }
-.home-title--half     { font-size: clamp(1.25rem, 2.5vw, 2.25rem); }
-.home-title--hero     { font-size: clamp(1.25rem, 3.5vw, 2.75rem); }
-.home-title--overlay  { font-size: clamp(1.25rem, 3.5vw, 2rem); font-weight: 700; }
+.home-title--no-image { font-size: clamp(2rem, 5vw, 2.75rem); }
+.home-title--half     { font-size: clamp(1.75rem, 2.5vw, 2.25rem); }
+.home-title--hero     { font-size: clamp(2rem, 4.5vw, 2.75rem); }
+.home-title--overlay  { font-size: clamp(2rem, 4.5vw, 2.5rem); font-weight: 700; }
 
 /* Contents off-canvas (slides from left) */
 #offcanvasContents {

@@ -88,15 +88,15 @@ Essays have both title and order in front matter
         z-index: -1;
     }
     .home-header-overlay h1 {
-        font-size: 2rem;
+        font-size: clamp(2rem, 5vw, 2.5rem);
         font-weight: 700;
         text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         margin: 0;
-        line-height: 1.2;
+        line-height: 1.15;
         word-wrap: break-word;
     }
     .home-header-overlay .tagline {
-        font-size: 1rem;
+        font-size: 0.9rem;
         text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
 
@@ -112,7 +112,7 @@ Essays have both title and order in front matter
         border-bottom: 1px solid var(--cb-hr-color);
     }
     .home-header-no-image .tagline {
-        font-size: 1.25rem;
+        font-size: 1rem;
         color: var(--cb-text-600);
     }
 
@@ -340,14 +340,14 @@ Same logic as before for full-image, half-image, or no-image
 
     <div id="action-box">
         {%- if essay_count > 1 -%}
-        <a class="btn btn-lg py-3 px-5 display-6 fs-2 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read &raquo;</a>
+        <a class="btn btn-lg py-3 px-5 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read &raquo;</a>
 
         {% if site.data.theme.show-homepage-toc %}
-        <a class="btn btn-sm py-2 px-4 fs-5 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="#table-of-contents">Table of Contents &darr;</a>
+        <a class="btn btn-sm py-2 px-4 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="#table-of-contents"><span class="d-none d-sm-inline">Table of </span>Contents &darr;</a>
         {% endif %}
         {%- else -%}
-        <a class="btn btn-lg py-3 px-5 display-6 fs-2 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="#single-essay-content">Read &raquo;</a>
-        <button class="btn btn-sm py-2 px-4 fs-5 text-white bg-dark bg-opacity-75 rounded" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">Menu</button>
+        <a class="btn btn-lg py-3 px-5 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="#single-essay-content">Read &raquo;</a>
+        <button class="btn btn-sm py-2 px-4 text-white bg-dark bg-opacity-75 rounded" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">Menu</button>
         {%- endif -%}
     </div>
 
