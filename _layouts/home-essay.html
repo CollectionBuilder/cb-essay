@@ -31,7 +31,7 @@ Essays have both title and order in front matter
         position: absolute;
         top: 15%;
         left: 5%;
-        max-width: 70%;
+        max-width: min(85%, 680px);
         max-height: 50vh;
     }
     #action-box {
@@ -93,6 +93,7 @@ Essays have both title and order in front matter
         text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         margin: 0;
         line-height: 1.2;
+        word-wrap: break-word;
     }
     .home-header-overlay .tagline {
         font-size: 1rem;
@@ -106,8 +107,6 @@ Essays have both title and order in front matter
         min-height: 50vh;
     }
     .home-header-no-image h1 {
-        font-size: 3.5rem;
-        font-weight: normal;
         display: inline-block;
         padding-bottom: 0.5rem;
         border-bottom: 1px solid var(--cb-hr-color);
@@ -199,7 +198,7 @@ Same logic as before for full-image, half-image, or no-image
             <!-- Text column - shows on desktop, hidden on mobile -->
             <div class="col-md-6 order-md-1 d-none d-md-block">
                 <div class="px-5 py-5">
-                    <h1 class="display-3 mb-3 mt-0">{{ site.title }}</h1>
+                    <h1 class="home-title home-title--half mb-3 mt-0">{{ site.title }}</h1>
                     {% if page.author or site.author %}
                     <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>
                     {% elsif site.tagline %}
@@ -229,7 +228,7 @@ Same logic as before for full-image, half-image, or no-image
 
                     <!-- Overlay title for mobile -->
                     <div class="home-header-overlay d-md-none text-white">
-                        <h1>{{ site.title }}</h1>
+                        <h1 class="home-title home-title--overlay">{{ site.title }}</h1>
                         {% if page.author or site.author %}
                         <p class="tagline mb-3">by {{ page.author | default: site.author }}</p>
                         {% elsif site.tagline %}
@@ -271,7 +270,7 @@ Same logic as before for full-image, half-image, or no-image
 <div class="home-header-no-image container-fluid">
     <div class="row justify-content-center align-items-center min-vh-50">
         <div class="col-lg-8 col-md-10 text-center py-5">
-            <h1 class="display-2 mb-4">{{ site.title }}</h1>
+            <h1 class="home-title home-title--no-image mb-4">{{ site.title }}</h1>
             {% if page.author or site.author %}
             <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>
             {% elsif site.tagline %}
@@ -296,7 +295,7 @@ Same logic as before for full-image, half-image, or no-image
 <div class="home-header-no-image container-fluid">
     <div class="row justify-content-center align-items-center min-vh-50">
         <div class="col-lg-8 col-md-10 text-center py-5">
-            <h1 class="display-2 mb-4">{{ site.title }}</h1>
+            <h1 class="home-title home-title--no-image mb-4">{{ site.title }}</h1>
             {% if page.author or site.author %}
             <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>
             {% elsif site.tagline %}
@@ -317,7 +316,7 @@ Same logic as before for full-image, half-image, or no-image
 <div id="home-banner" class="container-fluid p-0">
 
     <div id="title-box" class="py-3 px-4 text-white bg-dark bg-opacity-75 rounded">
-        <h1 class="display-2 mt-5">{{ site.title }}</h1>
+        <h1 class="home-title home-title--hero mt-5">{{ site.title }}</h1>
         {% if page.author or site.author %}
         <p class="tagline mb-4">by {{ page.author | default: site.author }}</p>
         {% elsif site.tagline %}

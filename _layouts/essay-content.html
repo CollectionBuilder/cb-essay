@@ -45,7 +45,7 @@ custom-foot: essay/js/spotlight-media-handler.html
 {% include essay/js/essay-scroll-js.html %}
 {% endunless %}
 
-{% if site.data.theme.show-section-nav %}
+{% if site.data.theme.show-section-nav and page.show-section-nav != false %}
 {% include essay/js/section-nav.html %}
 {% endif %}
 

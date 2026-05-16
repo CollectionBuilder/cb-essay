@@ -1,13 +1,13 @@
 <nav class="essay-navbar" role="navigation" aria-label="Site navigation">
-    <div class="container-fluid">
-        <div class="d-flex align-items-center justify-content-between w-100">
-            <div class="flex-grow-1 essay-navbar__title-wrap">
-                <a class="navbar-brand h1 essay-navbar__fluid-title d-block text-break"
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col essay-navbar__title-wrap">
+                <a class="navbar-brand essay-navbar__fluid-title"
                    href="{{ '/' | relative_url }}">
                     {{ site.title }}
                 </a>
             </div>
-            <div class="ms-2 flex-shrink-0">
+            <div class="col-auto">
                 {% include essay/off-canvas-menu.html %}
             </div>
         </div>
