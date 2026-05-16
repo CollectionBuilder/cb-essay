@@ -161,22 +161,36 @@ Essays have both title and order in front matter
         border-bottom: 1px solid var(--cb-border-200);
     }
     
-    /* Read CTA — themed across all header modes
-       Uses navbar-bg/navbar-text as the guaranteed theme dark+text pairing.
-       Hover uses opacity shift so it never goes darker than the theme tone. */
+    /* Read CTA — themed across all header modes.
+       Uses --cb-cta-bg/text which guarantees contrast on the page surface:
+       dark-navbar themes use the navbar palette; light-navbar themes (nonesuch,
+       kelmscott) use the inverted pair so the button is always readable. */
     .home-header-no-image .btn-dark,
     .home-header-half .btn-dark {
-        --bs-btn-bg:                  var(--cb-navbar-bg);
-        --bs-btn-border-color:        var(--cb-navbar-bg);
-        --bs-btn-color:               var(--cb-navbar-text);
-        --bs-btn-hover-bg:            var(--cb-navbar-bg);
-        --bs-btn-hover-border-color:  var(--cb-navbar-bg);
-        --bs-btn-hover-color:         var(--cb-navbar-text);
-        --bs-btn-active-bg:           var(--cb-navbar-bg);
-        --bs-btn-active-border-color: var(--cb-navbar-bg);
+        --bs-btn-bg:                  var(--cb-cta-bg);
+        --bs-btn-border-color:        var(--cb-cta-bg);
+        --bs-btn-color:               var(--cb-cta-text);
+        --bs-btn-hover-bg:            var(--cb-cta-bg);
+        --bs-btn-hover-border-color:  var(--cb-cta-bg);
+        --bs-btn-hover-color:         var(--cb-cta-text);
+        --bs-btn-active-bg:           var(--cb-cta-bg);
+        --bs-btn-active-border-color: var(--cb-cta-bg);
     }
     .home-header-no-image .btn-dark:hover,
     .home-header-half .btn-dark:hover { opacity: 0.82; }
+
+    /* Contents outline button — matches CTA color for visual consistency */
+    .home-header-no-image .btn-outline-dark,
+    .home-header-half .btn-outline-dark {
+        --bs-btn-color:               var(--cb-cta-bg);
+        --bs-btn-border-color:        var(--cb-cta-bg);
+        --bs-btn-hover-bg:            var(--cb-cta-bg);
+        --bs-btn-hover-border-color:  var(--cb-cta-bg);
+        --bs-btn-hover-color:         var(--cb-cta-text);
+        --bs-btn-active-bg:           var(--cb-cta-bg);
+        --bs-btn-active-border-color: var(--cb-cta-bg);
+        --bs-btn-active-color:        var(--cb-cta-text);
+    }
 
     {%- if essay_count == 1 -%}
     /* Single essay mode styles */
@@ -238,7 +252,7 @@ Same logic as before for full-image, half-image, or no-image
                         {%- if essay_count > 1 -%}
                         <a class="btn btn-light btn-lg text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
                         {% if site.data.theme.show-homepage-toc %}<br>
-                        <a class="btn btn-outline-light mt-2 text-decoration-none w-25" href="#table-of-contents">Contents &darr;</a>
+                        <a class="btn btn-sm btn-outline-light mt-2 text-decoration-none" href="#table-of-contents">Contents &darr;</a>
                         {% endif %}
                         {%- else -%}
                         <a class="btn btn-light btn-lg text-decoration-none" href="#single-essay-content">Read &raquo;</a><br>

@@ -399,3 +399,20 @@ $cb-navbar-override: null      !default;
     --cb-btn-close-filter: invert(1) grayscale(100%) brightness(200%);
   }
 }
+
+/* CTA button tokens — always high-contrast on the page surface.
+   Dark-navbar themes inherit the navbar palette directly.
+   Light-navbar themes (nonesuch, kelmscott) invert it: the navbar text
+   color is already dark/readable and makes a strong CTA background. */
+:root {
+    --cb-cta-bg:   var(--cb-navbar-bg);
+    --cb-cta-text: var(--cb-navbar-text);
+
+    @if $cb-theme == 'nonesuch' or $cb-theme == 'kelmscott' {
+        --cb-cta-bg:   var(--cb-navbar-text);
+        --cb-cta-text: var(--cb-navbar-bg);
+    } @else if $cb-theme == 'custom' and $cb-navbar-override == 'light' {
+        --cb-cta-bg:   var(--cb-navbar-text);
+        --cb-cta-text: var(--cb-navbar-bg);
+    }
+}
