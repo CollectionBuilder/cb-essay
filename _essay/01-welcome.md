@@ -4,17 +4,19 @@ order: 1
 part: Overview and Examples
 ---
 
+CB-Essay is a free, open source publishing framework that lets you ***write with, on, and for*** the web while keeping complete control over how your work appears online and in print.
+
 We've been encouraging users of CollectionBuilder to write *with* their collections since we first started promoting the framework in 2019, mostly through contextual pages like the About page.
 
-More recently, we worked with several [Center for Digital Inquiry and Learning (CDIL)](https://cdil.lib.uidaho.edu/) Graduate Student Fellows who wanted to flip the setup around — featuring their essays on top, with CollectionBuilder living underneath.{% include essay/feature/aside.html text="See [Sedimentation](https://cdil.lib.uidaho.edu/sedimentation/), [Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/), and [Fire Lines](https://cdil.lib.uidaho.edu/fire-lines/)." %} The results were strong enough that we wanted to open up the framework we built from those projects to more users.
+More recently, we worked with several [(CDIL) Grad Student Fellows](https://cdil.lib.uidaho.edu/) who wanted to flip the setup around — featuring their essays on top, with CollectionBuilder living underneath.{% include essay/feature/aside.html text="See [Sedimentation](https://cdil.lib.uidaho.edu/sedimentation/), [Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/), and [Fire Lines](https://cdil.lib.uidaho.edu/fire-lines/)." %} We liked the results, and we thought we'd open up the framework we built from those projects to more users.
 
-CB-Essay is a publishing framework that lets you ***write with, on, and for*** the web while keeping complete control over how your work appears online and in print.
+
 
 The mini-essays below will walk you through the system and get you started.
 
 ## So What Is It?
 
-***CB-Essay*** is a Jekyll-based framework that combines **long-form essay writing** with **digital collection features**. Built on [CollectionBuilder](https://collectionbuilder.github.io/), it enables you to create multimodal scholarly narratives, written in Markdown, that integrate primary sources, archival materials, and multimedia items directly into your texts.
+***CB-Essay*** is a Jekyll-based framework that combines **long-form essay writing** with **digital collection features**. ***Built on*** [CollectionBuilder](https://collectionbuilder.github.io/), it enables you to create multimodal scholarly narratives, written in Markdown, that integrate primary sources, archival materials, and multimedia items directly into your texts.
 
 Traditional digital publishing tools treat essays and collections as separate entities. CB-Essay connects them, allowing you to:
 
@@ -22,7 +24,7 @@ Traditional digital publishing tools treat essays and collections as separate en
 - Create **asides and margin notes** that link to primary sources {% include /essay/feature/aside.html text="Like this!" %}
 - **Publish your work for free** on GitHub
 - Generate **well-designed print and pdf outputs** using PagedJS.
-- **Choose from 8 accessible color themes** or create your own custom palette
+- **Choose from 8 accessible color/font themes** or create your own custom theme
 - Fashion the readers' experience through **scroll-based interactions and coordinated typography** {% include /essay/feature/aside.html text="Keep scrolling to see the next section magically appear!" %}
 
 {% include essay/new-section.html %}
@@ -41,9 +43,9 @@ Just follow the plan, as detailed in the below image.{% include essay/feature/as
 {% include feature/image.html objectid="/assets/img/writing-plan.jpg" caption="The tool is no more complicated than following this gentleman's instructions!" alt="Group working on a farm plan writing project with man pointing at a complex plan written on a large sheet of paper at the front"%}
 
 
-
-
 ## Who Should Use CB-Essay?
+
+If you're reading this, it's probably you! (Just make a copy of this repostory and drop your own content inside.) But yeah, it's meant for: 
 
 - **Digital humanists** creating annotated editions or critical apparatus
 - **Historians** presenting narrative alongside primary sources
@@ -55,7 +57,8 @@ Just follow the plan, as detailed in the below image.{% include essay/feature/as
 
 ### Bonus: Project Gutenberg Extractor
 
-Want to publish a public domain book? Use our [**GitHub Action**](https://dcnb.github.io/frankenstein/action.mp4) to extract any of **60,000+ books** from Project Gutenberg directly into your `_essay/` folder - pre-formatted for the site. 
+Want to publish a public domain book? Use our [**GitHub Action**](https://www.lib.uidaho.edu/collectionbuilder/cb-essay/frankenstein.mp4) to extract any of **60,000+ books** from Project Gutenberg directly into your `_essay/` folder - pre-formatted for the site. 
+
 
 
 ## Next Steps
