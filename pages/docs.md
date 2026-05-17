@@ -513,7 +513,8 @@ CB-Essay includes a GitHub Action to import **60,000+ public domain books** from
 
 ### How to Use
 
-1. Go to **Actions** tab in your GitHub repository
+1. First, [Setup GitHub Pages](#2-enable-github-pages) using the instructions above in the Quickstart. (5 minutes)
+2. Once that's done, go to the **Actions** tab in your GitHub repository
 2. Click **"Extract Gutenberg Book"** workflow
 3. Click **"Run workflow"**
 4. Enter a book ID (e.g., `84` for Frankenstein, `1342` for Pride and Prejudice)

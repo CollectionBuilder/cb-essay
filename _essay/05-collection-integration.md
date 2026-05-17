@@ -26,7 +26,7 @@ Collection items are stored in a CSV file in `_data/`. Each item needs at minimu
 - `title` - Item name
 - `format` - File type (image/jpeg, application/pdf, etc.)
 
-For complete metadata requirements, see [Collection Integration docs](/docs.html#collection-integration).
+For complete metadata requirements, see [Collection Integration docs]({{ '/docs.html#collection-integration' | relative_url }}).
 
 ---
 
@@ -71,7 +71,7 @@ You can also use asides with:
 - **Custom captions** - Override item titles
 - **Height control** - Adjust image display size
 
-See the [Essay Features docs](/docs.html#essay-features) for complete aside options and other CollectionBuilder features like item cards, image galleries, timelines, maps, and subject clouds.
+See the [Essay Features docs]({{ '/docs.html#essay-features' | relative_url }}) for complete aside options and other CollectionBuilder features like item cards, image galleries, timelines, maps, and subject clouds.
 
 ---
 
@@ -113,7 +113,7 @@ To add collection items to your essays:
 2. **Reference in essays:** Use objectids in asides or other includes
 3. **Preview:** Check that objectids resolve correctly
 
-For detailed metadata setup, see the [Get Started guide](03-get-started.html) and [Collection Integration docs](/docs.html#collection-integration).
+For detailed metadata setup, see the [Get Started guide](03-get-started.html) and [Collection Integration docs]({{ '/docs.html#collection-integration' | relative_url }}).
 
 ---
 
@@ -131,7 +131,7 @@ For detailed metadata setup, see the [Get Started guide](03-get-started.html) an
 
 Collection items work beautifully in print PDFs. Asides with images display as margin notes (if using `aside-style: margin`) or inline callouts.
 
-See the [Print Guide](/docs.html#print-pdf) for full details on print output.
+See the [Print Guide]({{ '/docs.html#print-pdf' | relative_url }}) for full details on print output.
 
 ---
 
@@ -141,7 +141,7 @@ You now understand the basics of integrating collection items with CB-Essay!
 
 ### Keep Learning
 
-- **[CB-Essay Documentation](/docs.html)** - Complete reference including advanced collection features
+- **[CB-Essay Documentation]({{ '/docs.html' | relative_url }})** - Complete reference including advanced collection features
 - **[CB-CSV Documentation](https://collectionbuilder.github.io/cb-docs/)** - CollectionBuilder reference for metadata and visualizations
 - **[Metadata Guide](https://collectionbuilder.github.io/cb-docs/docs/metadata/csv_metadata/)** - Detailed field specifications
 

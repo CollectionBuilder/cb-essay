@@ -310,7 +310,7 @@ The location provided the solitude Thoreau sought for his philosophical experime
 
 Most features work in print PDFs. **Blockquotes, asides, images, and section breaks** all render beautifully. **Mini-maps and videos** are web-only and won't appear in print.
 
-Visit the **[Print Hub](/print/)** to generate PDFs in Letter, A4, or 6×9″ formats. See the [Print Guide](/docs.html#print-pdf) for complete details including margin note styles, page formats, and accessibility features.
+Visit the **[Print Hub](/print/)** to generate PDFs in Letter, A4, or 6×9″ formats. See the [Print Guide]({{ '/docs.html#print-pdf' | relative_url }}) for complete details including margin note styles, page formats, and accessibility features.
 
 ---
 

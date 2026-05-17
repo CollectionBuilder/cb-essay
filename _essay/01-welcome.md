@@ -8,7 +8,7 @@ CB-Essay is a free, open source publishing framework that lets you ***write with
 
 We've been encouraging users of CollectionBuilder to write *with* their collections since we first started promoting the framework in 2019, mostly through contextual pages like the About page.
 
-More recently, we worked with several [(CDIL) Grad Student Fellows](https://cdil.lib.uidaho.edu/) who wanted to flip the setup around — featuring their essays on top, with CollectionBuilder living underneath.{% include essay/feature/aside.html text="See [Sedimentation](https://cdil.lib.uidaho.edu/sedimentation/), [Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/), and [Fire Lines](https://cdil.lib.uidaho.edu/fire-lines/)." %} We liked the results, and we thought we'd open up the framework we built from those projects to more users.
+More recently, we worked with several [(CDIL) Grad Student Fellows](https://cdil.lib.uidaho.edu/) who wanted to flip the setup around — featuring their essays on top, with CollectionBuilder living underneath.{% include essay/feature/aside.html text="See Sedimentation, Tender Spaces, and Fire Lines on our [CB-Essay Examples page]({{ '02-examples.html' | relative_url }})." %} We liked the results, and we thought we'd open up the framework we built from those projects to more users.
 
 
 
@@ -59,6 +59,7 @@ If you're reading this, it's probably you! (Just make a copy of this repostory a
 
 Want to publish a public domain book? Use our [**GitHub Action**](https://www.lib.uidaho.edu/collectionbuilder/cb-essay/frankenstein.mp4) to extract any of **60,000+ books** from Project Gutenberg directly into your `_essay/` folder - pre-formatted for the site. 
 
+See our [docs]({{ 'docs.html#gutenberg' | relative_url }}) for step by step instructions!
 
 
 ## Next Steps

@@ -49,9 +49,7 @@ Work entirely in your browser - **no local installation needed**:
 5. Edit the `_config.yml` file and the `_data/theme.yml` file to change the site's title, theme, featured image, and typography
 6. Click **"Commit changes"**
 
-**That's it!**{% include essay/feature/aside.html text="**Bonus:** Use the **Project Gutenberg extractor** (Actions tab) to populate your `_essay/` folder with a complete book automatically!" %}
-
-### More Code-Based Options 
+### More Development Options 
 
 {% capture option_b %}
 Get [a full VS Code editor](https://docs.github.com/en/codespaces/the-githubdev-web-based-editor) without leaving your browser:
@@ -125,6 +123,7 @@ Notice the **front matter** (between `---` lines):
 
 Want to start with a complete book? Extract one from Project Gutenberg:
 
+1. Enable [GitHub Pages]({{ 'docs.html#2-enable-github-pages | relative_url }})
 1. Go to your repository's **Actions** tab
 2. Click **"Extract Gutenberg Book"** workflow
 3. Click **"Run workflow"** and enter a book ID (e.g., `84` for Frankenstein)
