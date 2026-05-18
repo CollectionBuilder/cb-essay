@@ -106,7 +106,12 @@ a {
 .essay-main {
     max-width: 633px;
     width: 60%;
-    margin: 0 14% 0;
+    margin: 0 16% 0;
+    @media (max-width: 1199px) {
+    
+    margin: 0 10% 0;
+
+    }
     @media (max-width: 768px) {
         width: 90%;
         margin: 0 2%;

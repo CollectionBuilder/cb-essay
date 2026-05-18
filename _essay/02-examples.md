@@ -33,7 +33,7 @@ This extensively customized multimodal and multilinqual essay explores artist Ga
 
 {% include feature/image.html objectid="/assets/img/sedimentation.png" alt="Archival photograph from Glen Canyon, from the Sedimentation project" link="https://cdil.lib.uidaho.edu/sedimentation/"%}
 
-A multimedia exploration of Glen Canyon's entangled human and natural histories, traced through the sedimentary archive. Created by Hannah Green as her English M.A. thesis at the University of Idaho, *Sedimentation* interweaves five thematic essay "tributaries" — Atmosphere, Water, Biota, Humans, and Land — with archival photographs of the canyon before it was drowned beneath Lake Powell in 1963. The project also features **Eddies**, a choose-your-own-adventure mode that lets readers navigate through interlinked story fragments in any order, building their own nonlinear path through the canyon's histories. 
+A multimedia exploration of Glen Canyon's entangled human and natural histories, traced through the sedimentary archive. Created by Hannah Green as her English M.A. thesis at the University of Idaho, *Sedimentation* interweaves five thematic essay "tributaries" — Atmosphere, Water, Biota, Humans, and Land — with archival photographs of the canyon before it was drowned beneath Lake Powell in 1963. The project also features [**Eddies**](https://cdil.lib.uidaho.edu/sedimentation/eddies/), a choose-your-own-adventure mode that lets readers navigate through interlinked story fragments in any order, building their own nonlinear path through the canyon's histories. 
 
 **View:** [cdil.lib.uidaho.edu/sedimentation](https://cdil.lib.uidaho.edu/sedimentation/)
 
@@ -47,7 +47,7 @@ We set these sites up as demonstrations of the various themes and effects of the
 
 A digital edition of Mary Shelley's classic novel demonstrating the **monograph theme**. Features chapter-by-chapter navigation, integrated scholarly apparatus, and historical context from Project Gutenberg.
 
-You can watch me build the Frankenstein site in the video below! (Make sure to turn on GitHub Pages first before you do this!)
+You can watch me build the Frankenstein site in the video below! (***Make sure to turn on GitHub Pages first before you do this!***)
 
 {% include feature/video.html objectid="https://www.lib.uidaho.edu/collectionbuilder/cb-essay/frankenstein.mp4" caption="I go through a few simple steps to build out this site, after having made a copy of the repository" %}
 
