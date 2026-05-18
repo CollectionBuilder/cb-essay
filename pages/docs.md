@@ -440,7 +440,7 @@ CB-Essay includes an AI prompt template at `_prompts/add-theme.md` that guides y
    - Attach these files as context:
      - `_sass/_color-tokens.scss`
      - `_data/theme.yml`
-     - `_includes/head/theme-fonts.html` (if adding font pairing)
+     - `_includes/essay/head/theme-fonts.html` (if adding font pairing)
    - Answer the prompts about your desired theme
    - Claude will provide the code changes to copy into your files
 
