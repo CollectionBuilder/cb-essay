@@ -4,15 +4,12 @@ order: 1
 part: Overview and Examples
 ---
 
+
 CB-Essay is a free, open source publishing framework that lets you ***write with, on, and for*** the web while keeping complete control over how your work appears online and in print.
 
-We've been encouraging users of CollectionBuilder to write *with* their collections since we first started promoting the framework in 2019, mostly through contextual pages like the About page.
+CB-Essay came out of our working with graduate students the past couple of years. We've encouraged users of CollectionBuilder to write *with* their collections since we first started promoting the framework in 2019, but more recently, several of our [(CDIL) Fellows](https://cdil.lib.uidaho.edu/) asked to flip our setup around — featuring their essays on top, with CollectionBuilder living underneath.{% include essay/feature/aside.html text="See [Sedimentation](https://cdil.lib.uidaho.edu/sedimentation/), [Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/), and [Fire Lines](https://cdil.lib.uidaho.edu/fire-lines/)." %} 
 
-More recently, we worked with several [(CDIL) Grad Student Fellows](https://cdil.lib.uidaho.edu/) who wanted to flip the setup around — featuring their essays on top, with CollectionBuilder living underneath.{% include essay/feature/aside.html text="See Sedimentation, Tender Spaces, and Fire Lines on our [CB-Essay Examples page]({{ '02-examples.html' | relative_url }})." %} We liked the results, and we thought we'd open up the framework we built from those projects to more users.
-
-
-
-The mini-essays below will walk you through the system and get you started.
+We liked the results and decided to try to make them more available through this new template. The mini-essays below will walk you through the system and get you started.
 
 ## So What Is It?
 
