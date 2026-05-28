@@ -14,11 +14,11 @@ We set these sites up as demonstrations of the various themes and effects of the
 
 {% include feature/image.html objectid="/assets/img/frankenstein.png" alt="A still from the film Frankenstein (1910), showing Charles Stanton Ogle as the monster." link="https://dcnb.github.io/frankenstein/"%}
 
-A digital edition of Mary Shelley's classic novel demonstrating the **monograph theme**. Features chapter-by-chapter navigation, integrated scholarly apparatus, and historical context from Project Gutenberg.
+A digital edition of Mary Shelley's classic novel demoing our Gutenberg Extractor. Features chapter-by-chapter navigation, integrated scholarly apparatus, and historical context from Project Gutenberg.
 
 You can watch me build the Frankenstein site in the video below! (***Make sure to turn on GitHub Pages first before you do this!***)
 
-{% include feature/video.html objectid="https://www.lib.uidaho.edu/collectionbuilder/cb-essay/frankenstein.mp4" caption="I go through a few simple steps to build out this site, after having made a copy of the repository" %}
+{% include feature/video.html objectid="https://www.lib.uidaho.edu/collectionbuilder/cb-essay/frankenstein.mp4" caption="I go through a few simple steps to build out this site, after having made a copy of the repository and turing on GH Pages." %}
 
 **View:** [dcnb.github.io/frankenstein](https://dcnb.github.io/frankenstein) 
 
