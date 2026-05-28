@@ -19,7 +19,7 @@ Essays have both title and order in front matter
 <style>
     /* Full image banner styles */
     #home-banner {
-        background-image: url('{{ site.data.theme.featured-image | relative_url }}');
+        {% if site.data.theme.featured-image %}background-image: url('{{ site.data.theme.featured-image | relative_url }}');{% endif %}
         background-size: cover;
         background-repeat: no-repeat;
         background-position: {{ site.data.theme.home-banner-image-position | default: "center" }};
@@ -220,7 +220,7 @@ Same logic as before for full-image, half-image, or no-image
                     {% endif %}
                     
                     {%- if essay_count > 1 -%}
-                    <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read &raquo;</a>
+                    <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ actual_essays[0].url | relative_url }}">Read &raquo;</a>
                     {% if site.data.theme.show-homepage-toc %}<br>
                     <a class="btn btn-outline-dark mt-3 text-decoration-none ms-3" href="#table-of-contents">Contents &darr;</a>
                     {% endif %}
@@ -250,7 +250,7 @@ Same logic as before for full-image, half-image, or no-image
                         {% endif %}
                         
                         {%- if essay_count > 1 -%}
-                        <a class="btn btn-light btn-lg text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read the Essay &raquo;</a>
+                        <a class="btn btn-light btn-lg text-decoration-none" href="{{ actual_essays[0].url | relative_url }}">Read the Essay &raquo;</a>
                         {% if site.data.theme.show-homepage-toc %}<br>
                         <a class="btn btn-sm btn-outline-light mt-2 text-decoration-none" href="#table-of-contents">Contents &darr;</a>
                         {% endif %}
@@ -293,7 +293,7 @@ Same logic as before for full-image, half-image, or no-image
             
             <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
                 {%- if essay_count > 1 -%}
-                <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read &raquo;</a>
+                <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ actual_essays[0].url | relative_url }}">Read &raquo;</a>
                 {%- else -%}
                 <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="#single-essay-content">Read &raquo;</a>
                 <button class="btn btn-sm py-2 px-4 btn-outline-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">Menu</button>
@@ -317,7 +317,7 @@ Same logic as before for full-image, half-image, or no-image
             {% endif %}
             <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
                 {%- if essay_count > 1 -%}
-                <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read &raquo;</a>
+                <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="{{ actual_essays[0].url | relative_url }}">Read &raquo;</a>
                 {%- else -%}
                 <a class="btn btn-lg py-3 px-5 btn-dark text-decoration-none" href="#single-essay-content">Read &raquo;</a>
                 <button class="btn btn-sm py-2 px-4 btn-outline-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">Menu</button>
@@ -340,7 +340,7 @@ Same logic as before for full-image, half-image, or no-image
 
     <div id="action-box">
         {%- if essay_count > 1 -%}
-        <a class="btn btn-lg py-3 px-5 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="{{ site.essay[0].url | relative_url }}">Read &raquo;</a>
+        <a class="btn btn-lg py-3 px-5 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="{{ actual_essays[0].url | relative_url }}">Read &raquo;</a>
 
         {% if site.data.theme.show-homepage-toc %}
         <a class="btn btn-sm py-2 px-4 text-white bg-dark bg-opacity-75 rounded text-decoration-none" href="#table-of-contents"><span class="d-none d-sm-inline">Table of </span>Contents &darr;</a>

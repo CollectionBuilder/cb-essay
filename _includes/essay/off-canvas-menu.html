@@ -11,7 +11,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body">
-                <p><small>{% if site.tagline %}{{ site.tagline }}{% endif %}</small></p>
+                {% if site.tagline %}<p><small>{{ site.tagline }}</small></p>{% endif %}
                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 side-nav">
                     <li class="nav-item">
                         <a class="nav-link{% if page.url == '/' %} active{% endif %}" href="{{ '/' | relative_url }}">Home</a>
@@ -20,7 +20,7 @@
                     {%- assign essay_count = actual_essays.size -%}
                     {% unless site.data.theme.show-contents-nav or essay_count == 1 %}
                     <li class="nav-item">
-                        <a class="nav-link{% if page.url == site.essay[0].url %} active{% endif %}" href="{{ site.essay[0].url | relative_url }}">Read</a>
+                        <a class="nav-link{% if page.url == actual_essays[0].url %} active{% endif %}" href="{{ actual_essays[0].url | relative_url }}">Read</a>
                     </li>
                     <li class="nav-item dropdown">
                         {%- assign essayStubs = site.essay | map: 'url' -%}
