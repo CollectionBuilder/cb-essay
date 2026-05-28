@@ -8,23 +8,6 @@ permalink: /docs.html
 
 **CB-Essay** is a Jekyll-based framework that extends [CollectionBuilder-CSV](https://collectionbuilder.github.io/cb-docs/) to combine long-form essay writing with digital collection features. Write in Markdown, integrate primary sources, and publish multimodal scholarly work on the web for free.
 
-### What Makes CB-Essay Different?
-
-Traditional digital publishing treats essays and collections separately. CB-Essay unifies them through a **dual-collection model**:
-
-1. **Essay Collection** (`_essay/` directory) - Your narrative content as Markdown files with sequential navigation
-2. **Object Collection** (CSV metadata) - Digital items you can reference within essays using simple includes
-
-This allows you to **write with, on, and for the web** - integrating archival materials, images, maps, and multimedia directly into your scholarly narratives.
-
-### Perfect For
-
-- Digital humanists creating annotated editions
-- Historians presenting narratives alongside primary sources
-- Educators building interactive course readers
-- Archivists providing context around collections
-- Writers publishing long-form digital scholarship
-
 ---
 
 ## Quick Start {#quick-start}
