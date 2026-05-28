@@ -36,6 +36,14 @@ Gerard Manley Hopkins's poem presented in the **essay theme** with scrolling tra
 CB-Essay powers a variety of digital humanities projects:
 
 
+### Sedimentation: An Archive of Glen Canyon
+
+{% include feature/image.html objectid="/assets/img/sedimentation.png" alt="Archival photograph from Glen Canyon, from the Sedimentation project" link="https://cdil.lib.uidaho.edu/sedimentation/"%}
+
+A multimedia exploration of Glen Canyon's entangled human and natural histories, traced through the sedimentary archive. Created by Hannah Green as her English M.A. thesis at the University of Idaho, *Sedimentation* interweaves five thematic essay "tributaries" — Atmosphere, Water, Biota, Humans, and Land — with archival photographs of the canyon before it was drowned beneath Lake Powell in 1963. The project also features [**Eddies**](https://cdil.lib.uidaho.edu/sedimentation/eddies/), a choose-your-own-adventure mode that lets readers navigate through interlinked story fragments in any order, building their own nonlinear path through the canyon's histories. 
+
+**View:** [cdil.lib.uidaho.edu/sedimentation](https://cdil.lib.uidaho.edu/sedimentation/)
+
 
 ### Fire Lines: The First CB-Essay Project
 
@@ -53,13 +61,6 @@ This extensively customized multimodal and multilinqual essay explores artist Ga
 
 **View:** [cdil.lib.uidaho.edu/tender-spaces](https://cdil.lib.uidaho.edu/tender-spaces/)
 
-### Sedimentation: An Archive of Glen Canyon
-
-{% include feature/image.html objectid="/assets/img/sedimentation.png" alt="Archival photograph from Glen Canyon, from the Sedimentation project" link="https://cdil.lib.uidaho.edu/sedimentation/"%}
-
-A multimedia exploration of Glen Canyon's entangled human and natural histories, traced through the sedimentary archive. Created by Hannah Green as her English M.A. thesis at the University of Idaho, *Sedimentation* interweaves five thematic essay "tributaries" — Atmosphere, Water, Biota, Humans, and Land — with archival photographs of the canyon before it was drowned beneath Lake Powell in 1963. The project also features [**Eddies**](https://cdil.lib.uidaho.edu/sedimentation/eddies/), a choose-your-own-adventure mode that lets readers navigate through interlinked story fragments in any order, building their own nonlinear path through the canyon's histories. 
-
-**View:** [cdil.lib.uidaho.edu/sedimentation](https://cdil.lib.uidaho.edu/sedimentation/)
 
 
 ## Next Steps
