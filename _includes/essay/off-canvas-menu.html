@@ -5,7 +5,7 @@
     </svg>
 </button>
 {% endunless %}
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel" data-bs-theme="light">
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
             <div class="offcanvas-header">
                 <h2 class="offcanvas-title text-wrap" id="offcanvasNavbarLabel">{{ site.title }}</h2>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -56,7 +56,7 @@
                 {% if site.organization-logo-nav %}
                 <div class="mt-5">
                     <a href="{{ site.organization-link }}" target="_blank" rel="noopener">
-                        <img id="footer-logo" class="img-fluid sidebar-nav-imag" src="{{ site.organization-logo-nav | relative_url }}" alt="{{ site.organization-name | escape }} home">
+                        <img id="footer-logo" class="img-fluid sidebar-nav-image" src="{{ site.organization-logo-nav | relative_url }}" alt="{{ site.organization-name | escape }} home">
                     </a>
                 </div>
                 {% endif %}

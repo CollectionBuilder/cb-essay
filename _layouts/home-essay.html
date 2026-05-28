@@ -272,7 +272,7 @@ Same logic as before for full-image, half-image, or no-image
         <div class="col-md-6 order-md-1">
             <!-- Empty space for desktop alignment -->
         </div>
-        <div class="col-md-6 order-md-2 text-muted text-end mb-0 small" style="font-size:12px;">
+        <div class="col-md-6 order-md-2 text-muted text-end mb-0 small">
             {{ site.data.theme.featured-image-credit | markdownify }}
         </div>
     </div>
@@ -420,8 +420,8 @@ Only show if multiple essays exist
 <div id="table-of-contents" class="container-fluid py-5 monograph-toc">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
-            <div class="text-left mb-5">
-                <h2 class="display-4 mb-2" style="font-style: italic;">Contents</h2>
+            <div class="text-start mb-5">
+                <h2 class="display-4 mb-2 fst-italic">Contents</h2>
             </div>
             
             {%- assign essays = site.essay | sort: 'order' -%}
@@ -436,7 +436,7 @@ Only show if multiple essays exist
                     {%- for item in essays -%}
                     {%- if item.part == part -%}
                     <a href="{{ item.url | relative_url }}" class="list-group-item list-group-item-action py-4 px-4">
-                        <div class="d-flex flex-column align-items-left text-left">
+                        <div class="d-flex flex-column align-items-start text-start">
                             <h3 class="chapter-title mb-0">{%- if item.chapter -%}<span class="chapter-num">{{ item.chapter }}. </span>{%- endif -%}{{ item.title }}</h3>
                             {%- unless item.byline == site.data.theme.essay[0].author -%}{%- if item.byline -%}
                             <div class="chapter-byline">{{ item.byline }}</div>
@@ -456,7 +456,7 @@ Only show if multiple essays exist
                 {%- for item in essays -%}
                 {%- unless item.part -%}
                 <a href="{{ item.url | relative_url }}" class="list-group-item list-group-item-action py-4 px-4">
-                    <div class="d-flex flex-column align-items-left text-left">
+                    <div class="d-flex flex-column align-items-start text-start">
                         {%- if item.chapter -%}<span class="chapter-num">{{ item.chapter }}</span>{%- endif -%}
                         <h3 class="chapter-title mb-0">{{ item.title }}</h3>
                         {%- unless item.byline == site.data.theme.essay[0].author -%}{%- if item.byline -%}
@@ -473,7 +473,7 @@ Only show if multiple essays exist
             <div class="list-group list-group-flush">
                 {%- for item in essays -%}
                 <a href="{{ item.url | relative_url }}" class="list-group-item list-group-item-action py-4 px-4">
-                    <div class="d-flex flex-column align-items-left text-left">
+                    <div class="d-flex flex-column align-items-start text-start">
                         {%- if item.chapter -%}<span class="chapter-num">{{ item.chapter }}</span>{%- endif -%}
                         <h3 class="chapter-title mb-0">{{ item.title }}</h3>
                         {%- unless item.byline == site.data.theme.essay[0].author -%}{%- if item.byline -%}

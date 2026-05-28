@@ -55,7 +55,6 @@ a {
 	border-bottom:1px solid white;
 	border-bottom-right-radius:8px;
 	background:#BF1722;
-	-webkit-transition: top 1s ease-out;
     transition: top 1s ease-out;
     z-index: 100;
 }
@@ -64,7 +63,6 @@ a {
 	left:0px;
 	top:0px;
 	outline-color:transparent;	
-	-webkit-transition: top .1s ease-in;
     transition: top .1s ease-in;
 }
 
