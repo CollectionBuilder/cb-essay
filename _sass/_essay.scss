@@ -125,7 +125,7 @@ aside, .aside {
     position: relative;
     width: 20vw;
     margin-right: -26vw;
-    font-size: 0.82em;
+    font-size: 0.82em !important;
     font-style: italic;
     line-height: 1.55;
     color: var(--cb-text-800);

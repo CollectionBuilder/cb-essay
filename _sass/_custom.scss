@@ -62,33 +62,67 @@
     background-size: 21px;
 }
 
-/* Spotlight footer title and button layout */
+/* Spotlight footer: grid layout — title+description stack left, button anchored right */
+#spotlight .spl-footer {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    align-items: start;
+    column-gap: 20px;
+}
+
 #spotlight .spl-footer .spl-title {
-    display: inline-block;
-    margin: 6px 0px;
+    grid-column: 1;
+    grid-row: 1;
+    margin: 6px 0 4px;
     font-size: 25px;
 }
 
-#spotlight .spl-footer .spl-button {
-    display: inline-block;
-    vertical-align: middle;
-    text-align: right;
-    float: right;
-    margin-top: 0;
-    margin-bottom: 12px;
+#spotlight .spl-footer .spl-description {
+    grid-column: 1;
+    grid-row: 2;
+    display: block;
+    font-size: 12px;
+    opacity: 0.7;
+    margin: 0 0 16px;
+    line-height: 1.4;
 }
 
-/* Responsive: stack on mobile */
+/* Button sits in the right column, spanning both title and description rows */
+#spotlight .spl-footer .spl-button {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: start;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    margin-top: 6px;
+    margin-bottom: 12px;
+    width: auto;
+}
+
+/* Responsive: revert to block flow on mobile */
 @media (max-width: 768px) {
+    #spotlight .spl-footer {
+        display: block;
+    }
+
     #spotlight .spl-footer .spl-title {
         width: 100%;
-        margin-bottom: 15px;
+        margin-bottom: 6px;
+    }
+
+    #spotlight .spl-footer .spl-description {
+        width: 100%;
+        margin-bottom: 10px;
     }
 
     #spotlight .spl-footer .spl-button {
-
+        align-items: flex-start;
         text-align: left;
-        float: none;
+        width: auto;
+        margin-top: 0;
     }
 }
 

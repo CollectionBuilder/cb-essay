@@ -247,51 +247,57 @@
     let galleryItemsMap = {};
 
     function buildGallery() {
-        // Find all spotlight gallery items with objectid
-        const spotlightElements = document.querySelectorAll('.spotlight[data-objectid]');
-        const objectids = [];
+        // Find ALL spotlight gallery items in DOM order (objectid and non-objectid)
+        const spotlightElements = Array.from(document.querySelectorAll('.spotlight.gallery-img'));
+        galleryItems = [];
+        galleryItemsMap = {};
 
-        spotlightElements.forEach(el => {
+        spotlightElements.forEach((el) => {
             const objectid = el.getAttribute('data-objectid');
-            if (objectid && !objectids.includes(objectid)) {
-                objectids.push(objectid);
-                galleryItemsMap[objectid] = objectids.length - 1;
+            if (objectid) {
+                const item = getItemByObjectId(objectid);
+                if (item) {
+                    const mediaConfig = createMediaViewer(item);
+                    const idx = galleryItems.length;
+                    galleryItems.push(Object.assign({}, mediaConfig, {
+                        download: true,
+                        button: 'View Item Page',
+                        buttonHref: item.reference_url,
+                        objectid: objectid,
+                        reference_url: item.reference_url
+                    }));
+                    galleryItemsMap[objectid] = idx;
+                }
+            } else {
+                // External/relative image without objectid — read from element attributes
+                const buttonHref = el.getAttribute('data-button-href') || '';
+                const galleryItem = {
+                    src: el.getAttribute('href'),
+                    title: el.getAttribute('title') || '',
+                    download: el.getAttribute('data-download') === 'true'
+                };
+                if (el.getAttribute('data-description')) {
+                    galleryItem.description = el.getAttribute('data-description');
+                }
+                if (buttonHref) {
+                    galleryItem.button = 'View Item Page';
+                    galleryItem.buttonHref = buttonHref;
+                    galleryItem.reference_url = buttonHref;
+                }
+                galleryItems.push(galleryItem);
             }
+            // Tag element with its gallery index for lookup on click
+            el.setAttribute('data-gallery-index', galleryItems.length - 1);
         });
-
-        // Build gallery configurations for all items
-        galleryItems = objectids.map(objectid => {
-            const item = getItemByObjectId(objectid);
-            if (!item) return null;
-
-            const mediaConfig = createMediaViewer(item);
-            return Object.assign({}, mediaConfig, {
-                download: true,
-                button: 'View Item Page',
-                buttonHref: item.reference_url,
-                objectid: objectid,
-                reference_url: item.reference_url
-            });
-        }).filter(item => item !== null);
 
         console.log('Built gallery with', galleryItems.length, 'items');
     }
 
-    // Enhanced click handler for spotlight gallery items
+    // Enhanced click handler for all spotlight gallery items
     function handleSpotlightClick(event) {
         // Use capture phase to intercept before Spotlight
-        const target = event.target.closest('.spotlight');
+        const target = event.target.closest('.spotlight.gallery-img');
         if (!target) return;
-
-        // Check if this is a gallery item with objectid
-        const objectid = target.getAttribute('data-objectid');
-        if (!objectid) {
-            // No objectid - let spotlight handle it normally
-            console.log('No objectid, using default spotlight behavior');
-            return;
-        }
-
-        console.log('Intercepting click for objectid:', objectid);
 
         event.preventDefault();
         event.stopPropagation();
@@ -303,20 +309,27 @@
                 buildGallery();
             }
 
-            // Find the index of the clicked item
-            const startIndex = galleryItemsMap[objectid] || 0;
+            // Determine start index — prefer objectid map, fall back to data-gallery-index
+            const objectid = target.getAttribute('data-objectid');
+            let startIndex = 0;
+            if (objectid && galleryItemsMap[objectid] !== undefined) {
+                startIndex = galleryItemsMap[objectid];
+            } else {
+                const galleryIndex = target.getAttribute('data-gallery-index');
+                if (galleryIndex !== null) startIndex = parseInt(galleryIndex);
+            }
+
             console.log('Opening gallery at index:', startIndex + 1);
 
             // Set initial current URL
-            currentItemUrl = galleryItems[startIndex].reference_url;
+            currentItemUrl = galleryItems[startIndex] ? (galleryItems[startIndex].reference_url || null) : null;
 
             // Show in Spotlight with full gallery
             Spotlight.show(galleryItems, {
                 index: startIndex + 1, // Spotlight uses 1-based indexing
                 onshow: function(index) {
                     console.log('Spotlight opened at index:', index);
-                    // Update current URL based on index
-                    currentItemUrl = galleryItems[index - 1].reference_url;
+                    currentItemUrl = galleryItems[index - 1] ? (galleryItems[index - 1].reference_url || null) : null;
 
                     // Add custom "View Item Page" icon button in header
                     itemPageButton = Spotlight.addControl('item-page', itemPageHandler);
@@ -325,8 +338,7 @@
                 },
                 onchange: function(index) {
                     console.log('Changed to index:', index);
-                    // Update current URL when user navigates
-                    currentItemUrl = galleryItems[index - 1].reference_url;
+                    currentItemUrl = galleryItems[index - 1] ? (galleryItems[index - 1].reference_url || null) : null;
 
                     // Update the button href
                     const footerButton = document.querySelector('.spl-button');

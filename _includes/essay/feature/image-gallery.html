@@ -16,6 +16,9 @@
         IMPORTANT: Options 2 and 3 require an "alt" option for accessibility
     - "alt" = alternative text describing the image(s). Required for external URLs or relative links (options 2 and 3). For collection items, automatically uses image_alt_text, description, or title from metadata. For multiple images, separate with semicolons (optional for collection items, required for external/relative images)
     - "caption" = custom caption text. For collection items (option 1), defaults to item title from metadata; set to false ('caption=false' - no quotes) to remove caption. For external/relative images (options 2 and 3), only displays if explicitly set. For multiple images, separate with semicolons (optional)
+    - "title" = title displayed in the Spotlight full-screen viewer. For external/relative images, only shown if explicitly set (falls back to caption). For collection items, defaults to item title from metadata. For multiple images, separate with semicolons (optional)
+    - "source" = source attribution text displayed in the Spotlight viewer. For collection items, automatically uses source field from metadata. For multiple images, separate with semicolons (optional)
+    - "sourcelink" = URL for the source attribution link in the Spotlight viewer. For multiple images, separate with semicolons (optional)
     - "link" = custom URL for image links. For collection items, defaults to item page. For external/relative images, defaults to the image file itself. For multiple images, separate with semicolons (optional)
     - "width" = responsive width on desktop as percentage: "25", "50", "75", or "100" (will be 100% on mobile) (optional)
 
@@ -25,6 +28,9 @@
 {%- assign captions = include.caption | split: ";" %}
 {%- assign alts = include.alt | split: ";" -%}
 {%- assign links = include.link | split: ";" -%}
+{%- assign titles = include.title | split: ";" -%}
+{%- assign sources = include.source | split: ";" -%}
+{%- assign sourcelinks = include.sourcelink | split: ";" -%}
 <div class="row">
 {% for i in figures %}
 {% if i contains "/" %}
@@ -32,6 +38,9 @@
 {%- capture image_caption -%}{{ captions[forloop.index0] }}{%- endcapture -%}
 {%- capture image_alt -%}{{ alts[forloop.index0] }}{%- endcapture -%}
 {%- capture image_link -%}{{ links[forloop.index0] | default: image_src }}{%- endcapture -%}
+{%- capture image_title -%}{{ titles[forloop.index0] }}{%- endcapture -%}
+{%- capture image_source -%}{{ sources[forloop.index0] }}{%- endcapture -%}
+{%- capture image_sourcelink -%}{{ sourcelinks[forloop.index0] }}{%- endcapture -%}
 {% else %}
 {%- assign metadata_source = page.metadata | default: site.metadata -%}
 {%- assign figure = site.data[metadata_source] | where: "objectid", i | first -%}
@@ -42,16 +51,19 @@
 {%- capture image_caption -%}{{ captions[forloop.index0] | default: figure.title }}{%- endcapture -%}
 {%- capture image_alt -%}{{ alts[forloop.index0] | default: figure.image_alt_text | default: figure.description | default: figure.title }}{%- endcapture -%}
 {%- capture image_src -%}{{ figure.object_location | default: figure.image_small | relative_url }}{% endcapture %}
+{%- capture image_source -%}{{ sources[forloop.index0] | default: figure.source }}{%- endcapture -%}
+{%- capture image_sourcelink -%}{{ sourcelinks[forloop.index0] | default: figure.source_identifier }}{%- endcapture -%}
 {% endif %}
+{%- capture spotlight_description -%}{% if image_source != "" %}{{ image_source | escape }}{% endif %}{%- endcapture -%}
 <div class="col-md {% if figcount == 1 %}text-center{% elsif forloop.first %}text-md-end{% elsif forloop.last %}text-md-start{% else %}text-center{% endif %}">
 <figure class="figure mx-3{% if include.width %} feature-w-{{ include.width }}{% endif %}">
 {% if i contains "/" %}
-<a class="spotlight gallery-img" data-download="true" title="{{ image_caption | escape }}" href="{{ image_src }}">
+<a class="spotlight gallery-img" data-download="true" title="{{ image_title | default: image_caption | escape }}"{% if spotlight_description != "" %} data-description="{{ spotlight_description }}"{% endif %}{% if image_sourcelink != "" %} data-button-href="{{ image_sourcelink }}"{% endif %} href="{{ image_src }}">
     <div class="visually-hidden">Click for full screen</div>
     <img src="{{ image_src }}" alt="{{ image_alt | escape }}" class="img-fluid">
 </a>
 {% else %}
-<a class="spotlight gallery-img" data-objectid="{{ figure.objectid }}" data-download="true" title="{{ figure.title | escape }}" href="{{ figure.object_location }}">
+<a class="spotlight gallery-img" data-objectid="{{ figure.objectid }}" data-download="true" title="{{ figure.title | escape }}"{% if spotlight_description != "" %} data-description="{{ spotlight_description }}"{% endif %} href="{{ figure.object_location }}">
     <div class="visually-hidden">Click to view</div>
     {% if figure.image_small or figure.image_thumb %}
     <img src="{% if figure.repository contains 'Northern Arizona University' %}{{ figure.object_location | default: figure.image_small | relative_url }}{% else %}{{ figure.image_small | default: figure.object_location  | relative_url }}{% endif %}" alt="{{ figure.image_alt_text | default: figure.description | default: figure.title | escape }}" class="img-fluid">
@@ -66,7 +78,7 @@
 </a>
 {% endif %}
 
-{% unless include.caption == false %}<figcaption class="figure-caption text-center mt-2">{% if i contains "/" %}{{ image_caption }}{% else %}<a class="text-info" href="{{ image_link }}" title="link to item page">{{ image_caption }} <svg class="bi icon-sprite ms-1 mini mb-1" role="img" aria-label="link to page" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg></a>{% endif %}</figcaption>{% endunless %}
+{% unless include.caption == false %}<figcaption class="figure-caption text-center mt-2">{% if i contains "/" %}{{ image_caption }}{% if image_sourcelink != "" %} <a class="text-info" href="{{ image_sourcelink }}" title="link to source page">View Item Page <svg class="bi icon-sprite ms-1 mini mb-1" role="img" aria-label="link to page" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg></a>{% endif %}{% else %}<a class="text-info" href="{{ image_link }}" title="link to item page">{{ image_caption }} <svg class="bi icon-sprite ms-1 mini mb-1" role="img" aria-label="link to page" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg></a>{% endif %}</figcaption>{% endunless %}
 </figure>
 </div>{% endfor %}
 </div>
