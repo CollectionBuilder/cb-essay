@@ -1,4 +1,157 @@
 <script>
-    /* check url for query string, highlight matching words in page main content text */
+(function () {
+    "use strict";
 
+    var SKIP_TAGS = { SCRIPT: 1, STYLE: 1, MARK: 1, CODE: 1, PRE: 1 };
+
+    /* Escape a string for safe use in a RegExp. */
+    function escapeRegex(s) {
+        return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    /* Build an array of tokens: the full phrase plus individual words (≥2 chars).
+       Sorted longest-first so multi-word phrases match before single words. */
+    function tokenize(query) {
+        var q = query.trim();
+        if (!q) return [];
+        var tokens = [q];
+        q.split(/\s+/).forEach(function (w) {
+            if (w.length >= 2 && tokens.indexOf(w) === -1) {
+                tokens.push(w);
+            }
+        });
+        tokens.sort(function (a, b) { return b.length - a.length; });
+        return tokens;
+    }
+
+    /* Walk all Text nodes inside `root`, skipping unwanted element types. */
+    function getTextNodes(root) {
+        var nodes = [];
+        var walker = document.createTreeWalker(
+            root,
+            NodeFilter.SHOW_TEXT,
+            {
+                acceptNode: function (node) {
+                    var p = node.parentNode;
+                    while (p && p !== root) {
+                        if (SKIP_TAGS[p.nodeName]) return NodeFilter.FILTER_REJECT;
+                        p = p.parentNode;
+                    }
+                    return node.nodeValue.trim()
+                        ? NodeFilter.FILTER_ACCEPT
+                        : NodeFilter.FILTER_SKIP;
+                }
+            }
+        );
+        var n;
+        while ((n = walker.nextNode())) { nodes.push(n); }
+        return nodes;
+    }
+
+    /* Replace matches in a single Text node with <mark> elements.
+       Returns the number of replacements made. */
+    function highlightNode(textNode, regex) {
+        var text = textNode.nodeValue;
+        var match;
+        var count = 0;
+        var frag = document.createDocumentFragment();
+        var lastIndex = 0;
+        regex.lastIndex = 0;
+        while ((match = regex.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                frag.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+            }
+            var mark = document.createElement("mark");
+            mark.className = "essay-search-highlight";
+            mark.textContent = match[0];
+            frag.appendChild(mark);
+            lastIndex = regex.lastIndex;
+            count++;
+        }
+        if (count === 0) return 0;
+        if (lastIndex < text.length) {
+            frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
+        textNode.parentNode.replaceChild(frag, textNode);
+        return count;
+    }
+
+    /* Remove all highlight marks, restoring plain text. */
+    function removeHighlights() {
+        document.querySelectorAll("mark.essay-search-highlight").forEach(function (m) {
+            var parent = m.parentNode;
+            parent.replaceChild(document.createTextNode(m.textContent), m);
+            parent.normalize();
+        });
+    }
+
+    /* Inject a small dismissal banner above the essay content. */
+    function showBanner(query) {
+        var banner = document.createElement("div");
+        banner.id = "essay-search-banner";
+        banner.className = "alert alert-warning alert-dismissible d-flex align-items-center gap-2 py-2 mb-4";
+        banner.setAttribute("role", "status");
+        banner.innerHTML =
+            "<span>Showing results for <strong>" +
+            query.replace(/&/g, "&amp;").replace(/</g, "&lt;") +
+            "</strong></span>" +
+            "<button type=\"button\" class=\"btn-close ms-auto\" aria-label=\"Clear highlights\"></button>";
+        banner.querySelector("button").addEventListener("click", function () {
+            removeHighlights();
+            banner.remove();
+            // clean up the ?q= param so the URL looks tidy
+            var url = new URL(window.location.href);
+            url.searchParams.delete("q");
+            history.replaceState(null, "", url.toString());
+        });
+        // Insert before the first h1/h2 or at the top of #scrolly
+        var container = document.getElementById("scrolly");
+        if (!container) return;
+        var firstHeading = container.querySelector("h1, h2");
+        if (firstHeading) {
+            firstHeading.parentNode.insertBefore(banner, firstHeading);
+        } else {
+            container.insertBefore(banner, container.firstChild);
+        }
+    }
+
+    /* Main — runs after DOM is ready. */
+    function init() {
+        var q = new URLSearchParams(window.location.search).get("q") || "";
+        if (!q) return;
+
+        var tokens = tokenize(q);
+        if (!tokens.length) return;
+
+        var regex = new RegExp(tokens.map(escapeRegex).join("|"), "gi");
+
+        var root = document.getElementById("scrolly");
+        if (!root) return;
+
+        var textNodes = getTextNodes(root);
+        var totalMatches = 0;
+        textNodes.forEach(function (node) {
+            totalMatches += highlightNode(node, regex);
+        });
+
+        if (totalMatches === 0) return;
+
+        showBanner(q);
+
+        // Scroll to the first highlight after a short delay so any #anchor
+        // navigation from the search result link resolves first.
+        setTimeout(function () {
+            var first = document.querySelector("mark.essay-search-highlight");
+            if (first) {
+                first.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        }, 350);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
+}());
 </script>
