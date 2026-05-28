@@ -63,7 +63,7 @@
     <img src="{{ image_src }}" alt="{{ image_alt | escape }}" class="img-fluid">
 </a>
 {% else %}
-<a class="spotlight gallery-img" data-objectid="{{ figure.objectid }}" data-download="true" title="{{ figure.title | escape }}"{% if spotlight_description != "" %} data-description="{{ spotlight_description }}"{% endif %} href="{{ figure.object_location }}">
+<a class="spotlight gallery-img" data-objectid="{{ figure.objectid }}" data-download="true" title="{{ figure.title | escape }}"{% if spotlight_description != "" %} data-description="{{ spotlight_description }}"{% endif %} href="{{ figure.object_location | default: image_link }}">
     <div class="visually-hidden">Click to view</div>
     {% if figure.image_small or figure.image_thumb %}
     <img src="{% if figure.repository contains 'Northern Arizona University' %}{{ figure.object_location | default: figure.image_small | relative_url }}{% else %}{{ figure.image_small | default: figure.object_location  | relative_url }}{% endif %}" alt="{{ figure.image_alt_text | default: figure.description | default: figure.title | escape }}" class="img-fluid">
