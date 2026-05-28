@@ -4,14 +4,13 @@ order: 1
 part: Overview and Examples
 ---
 
-
 CB-Essay is a free, open source publishing framework that lets you ***write with, on, and for*** the web while keeping complete control over how your work appears online and in print.
 
-CB-Essay came out of our working with graduate students the past couple of years. We've encouraged users of CollectionBuilder to write *with* their collections since we first started promoting the framework in 2019, but more recently, several of our [(CDIL) Fellows](https://cdil.lib.uidaho.edu/) asked to flip our setup around — featuring their essays on top, with CollectionBuilder living underneath.{% include essay/feature/aside.html text="See [Sedimentation](https://cdil.lib.uidaho.edu/sedimentation/), [Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/), and [Fire Lines](https://cdil.lib.uidaho.edu/fire-lines/)." %} 
+The idea for the tool, and many of its design elements, came out of our working with graduate students on digital theses the past couple of years. We've encouraged users of CollectionBuilder to write *with* their collections since we first started promoting the framework in 2019, but these [(CDIL) Grad Fellows](https://cdil.lib.uidaho.edu/) needed us to flip our setup around — featuring their essays on top, with CollectionBuilder living underneath.{% include essay/feature/aside.html text="See [Sedimentation](https://cdil.lib.uidaho.edu/sedimentation/), [Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/), and [Fire Lines](https://cdil.lib.uidaho.edu/fire-lines/)." %} 
 
 We liked the results and decided to try to make them more available through this new template. The mini-essays below will walk you through the system and get you started.
 
-## So What Is It?
+## So What Does It Do?
 
 ***CB-Essay*** is a Jekyll-based framework that combines **long-form essay writing** with **digital collection features**. ***Built on*** [CollectionBuilder](https://collectionbuilder.github.io/), it enables you to create multimodal scholarly narratives, written in Markdown, that integrate primary sources, archival materials, and multimedia items directly into your texts.
 
