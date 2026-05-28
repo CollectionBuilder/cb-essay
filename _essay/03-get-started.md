@@ -123,7 +123,7 @@ Notice the **front matter** (between `---` lines):
 
 Want to start with a complete book? Extract one from Project Gutenberg:
 
-1. Enable [GitHub Pages]({{ 'docs.html#2-enable-github-pages | relative_url }})
+1. Enable [GitHub Pages]({{ 'docs.html#2-enable-github-pages' | relative_url }})
 1. Go to your repository's **Actions** tab
 2. Click **"Extract Gutenberg Book"** workflow
 3. Click **"Run workflow"** and enter a book ID (e.g., `84` for Frankenstein)
