@@ -18,7 +18,7 @@
 # - External URL: https://example.com/image.jpg
 # - Collection objectid: demo_001
 #
-image-style: half-image                # full-image, half-image, or no-image
+image-style: full-image                # full-image, half-image, or no-image
 featured-image: /assets/img/writing-instruments.jpg
 featured-image-credit: "General Research Division, The New York Public Library. 'An illustration of writing brushes' The New York Public Library Digital Collections. 1908. [https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34](https://digitalcollections.nypl.org/items/07caacb0-c6cc-012f-af8d-58d385a7bc34)"
 featured-image-alt-text: "An illustration of writing brushes with Japanese labels" # Add alt text for accessibility
