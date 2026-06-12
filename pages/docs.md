@@ -451,6 +451,26 @@ For complete theme documentation, see [Theme Options Guide](https://github.com/C
 
 ---
 
+## Working with AI {#working-with-ai}
+
+**When to use this section:** When you use an AI coding assistant (Claude Code, Cowork, Cursor, Copilot, Codex, and others) to edit your CB-Essay project.
+
+CB-Essay is data-driven: nearly every change happens in a CSV, in `_data/theme.yml`, or in an essay's Markdown — not in HTML or Liquid. To keep AI assistants working *with* that architecture instead of around it, the repo ships three files at its root:
+
+- **`AGENTS.md`** — the authoritative ruleset. Most coding agents read it automatically at the start of a session, so they already know the customization hierarchy, what never to edit, the essay includes, and the theming system — no need to paste rules into every prompt.
+- **`CLAUDE.md`** — a one-line pointer that imports `AGENTS.md`, so Claude Code and Cowork get the same rules with no setup.
+- **`HUMANS.md`** — a guide for *you*: how to prompt for outcomes, which changes to review closely, and how to brief the AI for bigger work like a new theme or a redesign.
+
+### How to use them
+
+1. **Just start prompting.** With `AGENTS.md` in the repo, describe outcomes ("switch the site to the `doves` theme," "add a margin aside here") and let the agent route the change to the right file.
+2. **Read `HUMANS.md` first.** It teaches you the few "red flags" to watch for in a diff — for example, an agent editing SCSS to recolor the site instead of changing `color-theme` in `_data/theme.yml`.
+3. **Keep `AGENTS.md` current.** If you change how the framework works, update that file — every agent inherits the improvement.
+
+For creating custom color themes specifically, the [Theme Options](#theme-options) section above covers the dedicated `_prompts/add-theme.md` workflow.
+
+---
+
 ## Print & PDF Output {#print-pdf}
 
 Generate publication-ready PDFs directly from your browser using Paged.js.

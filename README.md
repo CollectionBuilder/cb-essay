@@ -98,6 +98,7 @@ The demo site is **self-documenting** - each essay teaches you how to use CB-Ess
 - [**Essay Features Reference**](docs/cb-essay/essay-features.md) - Complete guide to all essay includes
 - [**Gutenberg Extraction**](docs/cb-essay/gutenberg-extraction.md) - Detailed extraction workflow
 - [**Theme Options**](docs/cb-essay/theme-options.md) - Essay vs. monograph themes
+- [**Working with AI**](HUMANS.md) - Prompting and reviewing AI coding assistants (`AGENTS.md` carries the rules)
 - [**CollectionBuilder Docs**](docs/index.md) - Full CB-CSV documentation
 
 ---
