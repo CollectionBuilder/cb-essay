@@ -510,6 +510,26 @@ For complete details on page formats, accessibility features, and technical spec
 
 ---
 
+## Accessibility {#accessibility}
+
+**When to use this section:** Before you publish, and every time you customize the theme or add new essays and collection items.
+
+CB-Essay has been tested against the [Web Content Accessibility Guidelines (WCAG) 2.1](https://www.w3.org/WAI/standards-guidelines/wcag/) using tools like WAVE and Lighthouse, and **an unmodified site should be WCAG 2.1 accessible out of the box.** Focus indicators are visible, interactive features are keyboard-operable, and the built-in color themes are tuned for sufficient contrast.
+
+**An accessible foundation is not the same as an accessible published site.** Once you customize the theme or add your own content, accessibility becomes your responsibility — you must test and verify it yourself. The most common things to check:
+
+- **Alt text** — Set `featured-image-alt-text` in `_data/theme.yml`, and add an `image_alt_text` column to your metadata CSV to give each collection item custom, meaningful alt text (recommended for any image that carries meaning; falls back to the title if omitted).
+- **Transcripts** — Add an `object_transcript` column to your metadata CSV for audio and video items; CB renders it as a transcript on the item page. Provide one for every audio/video object.
+- **Heading order** — Use `##`, `###` in sequence; don't skip levels or pick a heading for its size.
+- **Color contrast** — Built-in themes are pre-checked. If you use `color-theme: custom`, re-test contrast (aim for at least 4.5:1 for body text) and never rely on color alone to convey meaning.
+- **Keyboard** — After adding any interactive feature, confirm it works with Tab, Enter, and Escape only.
+
+Before publishing, run an automated check (WAVE or Lighthouse), do a keyboard-only pass, and spot-check with a screen reader. Repeat whenever you add content.
+
+For detailed, essay-specific guidance and a full resource list, see the [Accessibility Guide](https://github.com/CollectionBuilder/cb-essay/blob/main/docs/cb-essay/accessibility.md).
+
+---
+
 ## Gutenberg Extractor {#gutenberg}
 
 CB-Essay includes a GitHub Action to import **60,000+ public domain books** from Project Gutenberg directly into your `_essay/` folder.

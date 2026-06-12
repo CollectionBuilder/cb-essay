@@ -22,6 +22,7 @@ CB-Essay is a Jekyll-based static site generator that extends [CollectionBuilder
 ### Features & Customization
 - **[Essay Features Reference](essay-features.md)** - Complete guide to blockquotes, asides, galleries, maps, and more
 - **[Theme Options](theme-options.md)** - Choose between essay and monograph themes, customize appearance
+- **[Accessibility](accessibility.md)** - WCAG 2.1 out of the box, plus how to keep your site accessible after customizing
 
 ### Advanced Workflows
 - **[Gutenberg Extraction](gutenberg-extraction.md)** - Import 60,000+ public domain books from Project Gutenberg
