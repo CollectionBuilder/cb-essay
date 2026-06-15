@@ -453,8 +453,6 @@ For complete theme documentation, see [Theme Options Guide](https://github.com/C
 
 ## Working with AI {#working-with-ai}
 
-**When to use this section:** When you use an AI coding assistant (Claude Code, Cowork, Cursor, Copilot, Codex, and others) to edit your CB-Essay project.
-
 CB-Essay is data-driven: nearly every change happens in a CSV, in `_data/theme.yml`, or in an essay's Markdown — not in HTML or Liquid. To keep AI assistants working *with* that architecture instead of around it, the repo ships three files at its root:
 
 - **`AGENTS.md`** — the authoritative ruleset. Most coding agents read it automatically at the start of a session, so they already know the customization hierarchy, what never to edit, the essay includes, and the theming system — no need to paste rules into every prompt.
@@ -511,8 +509,6 @@ For complete details on page formats, accessibility features, and technical spec
 ---
 
 ## Accessibility {#accessibility}
-
-**When to use this section:** Before you publish, and every time you customize the theme or add new essays and collection items.
 
 CB-Essay has been tested against the [Web Content Accessibility Guidelines (WCAG) 2.1](https://www.w3.org/WAI/standards-guidelines/wcag/) using tools like WAVE and Lighthouse, and **an unmodified site should be WCAG 2.1 accessible out of the box.** Focus indicators are visible, interactive features are keyboard-operable, and the built-in color themes are tuned for sufficient contrast.
 
