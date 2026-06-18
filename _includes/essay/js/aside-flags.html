@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (asides.length === 0) return;
 
+  // Read aside display mode from theme.yml (injected by Jekyll)
+  var asideMode = '{{ site.data.theme.aside-display-mode | default: "auto" }}';
+
   // Number every marker and prepend the same number inside each aside (all screen sizes)
   asides.forEach(function (aside, i) {
     var n = i + 1;
@@ -23,8 +26,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Flag + modal system only on narrow viewports
-  if (window.innerWidth > 768) return;
+  // Determine if we should use flag system
+  var shouldUseFlags = false;
+
+  if (asideMode === 'flags') {
+    // Always use flags
+    shouldUseFlags = true;
+  } else if (asideMode === 'margin') {
+    // Only use flags on mobile
+    shouldUseFlags = window.innerWidth <= 768;
+  } else {
+    // Auto mode: use flags on mobile OR if any aside-ref is inside a <pre> tag
+    if (window.innerWidth <= 768) {
+      shouldUseFlags = true;
+    } else {
+      // Check if any aside-ref is inside a <pre> element
+      shouldUseFlags = refs.some(function(ref) {
+        return ref.closest('pre') !== null;
+      });
+    }
+  }
+
+  // Exit early if we don't need flags (use CSS margin layout)
+  if (!shouldUseFlags) return;
 
   // Build a Bootstrap modal shell once
   var modalEl = document.createElement('div');
@@ -63,7 +87,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function open() { openModal(aside, n); }
     flag.addEventListener('click', open);
-    if (refs[i]) refs[i].addEventListener('click', open);
+    if (refs[i]) {
+      refs[i].addEventListener('click', open);
+      refs[i].classList.add('clickable'); // Make cursor pointer
+    }
 
     return flag;
   });
@@ -83,15 +110,14 @@ document.addEventListener('DOMContentLoaded', function () {
   positionFlags();
 
   function openModal(aside, n) {
-    // Clone content, strip the prepended .aside-num, clear the inline display:none
+    // Clone content, strip the prepended .aside-num
     var clone = aside.cloneNode(true);
-    clone.style.removeProperty('display');
     var numInClone = clone.querySelector('.aside-num');
     if (numInClone) numInClone.remove();
 
+    // Extract just the inner HTML content, not the wrapper span with .aside class
     modalNum.textContent = 'Note ' + n;
-    modalBody.innerHTML  = '';
-    modalBody.appendChild(clone);
+    modalBody.innerHTML  = clone.innerHTML;
     bsModal.show();
   }
 });

@@ -36,8 +36,6 @@ show-section-nav: true
 # true ==  essay pages show a fixed floating sidebar (on wide screens)
 
 
-
-
 # COLOR THEME
 # ────────────────────────────────────────────────────────────────────────
 # Each theme draws its palette from a historical press,and ships with 
@@ -69,6 +67,17 @@ color-theme: default
 # navbar-style: dark    # dark (default) | light
 #
 # Want more themes? Use _prompts/add-theme.md and work with your favorite chatbot to create your own theme. 
+
+# ASIDE DISPLAY MODE
+# Controls how margin notes/asides appear in essays
+# Options: auto | margin | flags
+#
+# auto (default) - Smart detection: uses flags for asides inside <pre> tags (poems),
+#                  margin asides for regular text. Flags on mobile (<768px) regardless.
+# margin - Always use traditional margin asides on desktop (float right into margin)
+# flags - Always use flag/modal system on all screen sizes
+aside-display-mode: auto
+
 
 # TYPOGRAPHY & FONTS
 # ────────────────────────────────────────────────────────────────────────

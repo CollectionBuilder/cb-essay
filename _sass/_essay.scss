@@ -166,6 +166,12 @@ aside, .aside {
     line-height: 1;
 }
 
+/* When flags are active, make refs clickable */
+.aside-ref.clickable {
+    cursor: pointer;
+}
+
+
 /* Mobile: flag tab on right viewport edge */
 .aside-flag {
     position: fixed;
