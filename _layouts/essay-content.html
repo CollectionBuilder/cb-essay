@@ -52,3 +52,7 @@ custom-foot: essay/js/spotlight-media-handler.html;essay/js/essay-search-highlig
 {% endif %}
 
 {% include essay/js/aside-flags.html %}
+
+{% if site.data.theme.keyboard-essay-nav %}
+{% include essay/js/essay-keyboard-nav.html %}
+{% endif %}

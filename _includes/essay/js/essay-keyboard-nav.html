@@ -1,0 +1,32 @@
+<script>
+(function () {
+  var prevUrl = (document.querySelector("#prev-section-button a") || {}).href || null;
+  var nextUrl = (document.querySelector("#next-section-button a") || {}).href || null;
+
+  function isSpotlightOpen() {
+    var el = document.getElementById("spotlight");
+    return el && el.classList.contains("show");
+  }
+
+  function isModalOpen() {
+    return !!document.querySelector(".modal.show");
+  }
+
+  function isTyping() {
+    var tag = (document.activeElement || {}).tagName || "";
+    var editable = (document.activeElement || {}).isContentEditable;
+    return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || editable;
+  }
+
+  document.addEventListener("keydown", function (evt) {
+    if (isSpotlightOpen() || isModalOpen() || isTyping()) return;
+    var key = evt.key || "";
+    var code = evt.keyCode;
+    if (key === "ArrowLeft" || code === 37) {
+      if (prevUrl) { window.location.href = prevUrl; }
+    } else if (key === "ArrowRight" || code === 39) {
+      if (nextUrl) { window.location.href = nextUrl; }
+    }
+  });
+})();
+</script>

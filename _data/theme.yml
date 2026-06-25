@@ -32,8 +32,11 @@ show-contents-nav: true
 # true == navbar shows a "Contents" button that opens the essay chapter list
 show-homepage-toc: true 
 # true == homepage displays a table of contents listing all essays
-show-section-nav: true 
+show-section-nav: true
 # true ==  essay pages show a fixed floating sidebar (on wide screens)
+keyboard-essay-nav: true
+# true == left/right arrow keys navigate between essay chapters
+#         (automatically disabled when a gallery or modal is open)
 
 
 # COLOR THEME
