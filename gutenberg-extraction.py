@@ -82,8 +82,10 @@ END_MARKERS = [
 CHAPTER_PATTERNS = [
     r'^chapter\s+[ivxlcdm\d]+',  # Chapter I, Chapter 1, etc.
     r'^chap\.\s*[ivxlcdm\d]+',   # Chap. I, Chap. 1
-    r'^[ivxlcdm]+\.$',           # I., II., III. (roman numerals with period)
-    r'^\d+\.$',                   # 1., 2., 3.
+    r'^[ivxlcdm]+\.\s+\w+',      # I. Title, II. Title (roman numeral + period + space + word)
+    r'^[ivxlcdm]+\.$',           # I., II., III. (roman numerals with period only)
+    r'^\d+\.\s+\w+',             # 1. Title, 2. Title (number + period + space + word)
+    r'^\d+\.$',                   # 1., 2., 3. (numbers with period only)
     r'^letter\s+[ivxlcdm\d]+',   # Letter I, Letter 1 (for epistolary novels)
     r'^volume\s+[ivxlcdm\d]+',   # Volume I
     r'^book\s+[ivxlcdm\d]+',     # Book I
