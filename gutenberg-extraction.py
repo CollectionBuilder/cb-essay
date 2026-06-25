@@ -1001,7 +1001,11 @@ class GutenbergHTMLParser(HTMLParser):
             return
 
         if self.current_section:
-            content = ''.join(self.current_content).strip()
+            # For <pre> tags, preserve all whitespace; for others, strip it
+            if tag == 'pre':
+                content = ''.join(self.current_content)  # Don't strip!
+            else:
+                content = ''.join(self.current_content).strip()
 
             if tag == 'p':
                 if content:
@@ -1009,9 +1013,9 @@ class GutenbergHTMLParser(HTMLParser):
                 self.current_content = []
             elif tag == 'pre':
                 if content:
-                    # Preserve pre-formatted text (poetry, code blocks) using HTML <pre> tags
-                    # Markdown allows HTML, and <pre> preserves whitespace/line breaks
-                    self.current_section['content'].append(f'<pre>\n{content}\n</pre>\n\n')
+                    # Preserve pre-formatted text (poetry) with exact whitespace
+                    # Don't add extra newlines - keep content exactly as-is
+                    self.current_section['content'].append(f'<pre>{content}</pre>\n\n')
                 self.current_content = []
                 self.in_pre = False
             # Note: h1-h4 are handled in the heading block above
@@ -1128,14 +1132,19 @@ class WholeBookParser(HTMLParser):
         if self.in_boilerplate:
             return
 
-        text = ''.join(self.current_text).strip()
+        # For <pre> tags, preserve all whitespace; for others, strip it
+        if tag == 'pre':
+            text = ''.join(self.current_text)  # Don't strip!
+        else:
+            text = ''.join(self.current_text).strip()
+
         if tag == 'p' and text:
             self.content.append(text + '\n\n')
             self.current_text = []
         elif tag == 'pre' and text:
-            # Preserve pre-formatted text (poetry, code blocks) using HTML <pre> tags
-            # Markdown allows HTML, and <pre> preserves whitespace/line breaks
-            self.content.append(f'<pre>\n{text}\n</pre>\n\n')
+            # Preserve pre-formatted text (poetry) with exact whitespace
+            # Don't add extra newlines - keep content exactly as-is
+            self.content.append(f'<pre>{text}</pre>\n\n')
             self.current_text = []
             self.in_pre = False
         elif tag == 'h1' and text:

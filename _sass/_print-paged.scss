@@ -253,22 +253,22 @@ ul, ol {
   }
 }
 
-/* Code blocks — Jekyll/Rouge wraps pre in .highlight; target both */
-pre {
-  font-family: var(--print-mono, 'Courier New', Courier, monospace);
-  font-size: 8.5pt;
-  line-height: 1.55;
-  background: #f4f4f4;
-  border: 0.5pt solid rgba(0, 0, 0, 0.1);
-  padding: 0.65rem 0.85rem;
-  margin: 0.75rem 0;
-  /* Wrap long lines instead of overflowing the page column */
+/* Pre-formatted text (poetry, verse) — NOT code blocks
+   Scoped to essay body so any other pre elements (e.g. cover, TOC) keep normal styling.
+   pre-wrap preserves exact whitespace/line breaks but wraps lines that exceed the column. */
+.print-essay-body pre {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0.75rem 0 0.75rem 1.5rem;
   white-space: pre-wrap;
   overflow-wrap: break-word;
-  word-break: break-word;
-  /* Keep short-to-medium blocks on one page; long blocks will still split */
-  break-inside: avoid;
-  page-break-inside: avoid;
+  color: inherit;
+  break-inside: auto;
+  page-break-inside: auto;
 }
 
 code {
@@ -278,7 +278,7 @@ code {
   padding: 0.1em 0.25em;
 }
 
-pre code {
+.print-essay-body pre code {
   font-size: inherit;
   background: none;
   padding: 0;
@@ -673,6 +673,15 @@ video { display: none !important; }
       }
     }
   }
+}
+
+
+/* ============================================================
+   CHAPTERS
+   ============================================================ */
+
+.print-chapter + .print-chapter {
+  break-before: page;
 }
 
 
