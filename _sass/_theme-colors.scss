@@ -346,3 +346,32 @@ $_luminance-list: .0008 .001 .0011 .0013 .0015 .0017 .002 .0022 .0025 .0027 .003
         }
     }
 }
+
+/* ============================================================
+   Runtime CB color token → Bootstrap btn CSS variable bridge
+   Overrides the compile-time values above when the CB color
+   theme system sets --cb-primary-color at runtime (OKLCH themes,
+   custom-color, etc.). CSS vars resolve at paint time, so this
+   always reflects the active theme regardless of what was
+   compiled from config-theme-colors.csv.
+   Bootstrap 5.2+ supports per-selector --bs-btn-* overrides.
+   ============================================================ */
+.btn-primary {
+    --bs-btn-bg:                  var(--cb-primary-color);
+    --bs-btn-border-color:        var(--cb-primary-color);
+    --bs-btn-hover-bg:            var(--cb-primary-color);
+    --bs-btn-hover-border-color:  var(--cb-primary-color);
+    --bs-btn-active-bg:           var(--cb-primary-color);
+    --bs-btn-active-border-color: var(--cb-primary-color);
+    --bs-btn-disabled-bg:         var(--cb-primary-color);
+    --bs-btn-disabled-border-color: var(--cb-primary-color);
+}
+
+.btn-outline-primary {
+    --bs-btn-color:               var(--cb-primary-color);
+    --bs-btn-border-color:        var(--cb-primary-color);
+    --bs-btn-hover-bg:            var(--cb-primary-color);
+    --bs-btn-hover-border-color:  var(--cb-primary-color);
+    --bs-btn-active-bg:           var(--cb-primary-color);
+    --bs-btn-active-border-color: var(--cb-primary-color);
+}

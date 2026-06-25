@@ -25,7 +25,7 @@ $toc-a-color: #191919 !default;
 }
 .breadcrumb {
     padding: 0.75rem 1rem;
-    background-color: rgb(248, 249, 250);
+    background-color: var(--cb-surface-200);
     border-radius: 0.25rem;
 }
 .compound-thumb {
@@ -78,7 +78,7 @@ $toc-a-color: #191919 !default;
     min-width: 80px; /* Reduce minimum width */
     height: calc(1.5em + 0.75rem + 2px); /* Match Bootstrap form-control height */
     padding: 1.35rem 0.5rem; /* Reduce padding to save space */
-    border: 1px solid #ced4da;
+    border: 1px solid var(--cb-border-200);
     border-radius: 0.25rem; /* Add border radius back for consistency */
     font-size: 1rem; /* Match main input font size */
 }
@@ -92,7 +92,7 @@ $toc-a-color: #191919 !default;
 
 .date-separator {
     font-size: 0.875rem;
-    color: #6c757d;
+    color: var(--cb-text-600);
     padding: 0 0.25rem;
     white-space: nowrap;
 }
@@ -165,7 +165,7 @@ $toc-a-color: #191919 !default;
 #about-toc-title {
     button { 
         width: 100%;
-        background-color: #dedede;
+        background-color: var(--cb-surface-300);
     }
 }
 #about-toc-list {
@@ -284,6 +284,78 @@ $toc-a-color: #191919 !default;
         a {
             color: $toc-a-color !important;
         }
+    }
+}
+
+/* Spotlight */
+
+/* Custom icon for Spotlight item-page button */
+.spl-item-page {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="%23fff" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg>');
+    background-size: 21px;
+}
+
+/* Spotlight footer: grid layout — title+description stack left, button anchored right */
+#spotlight .spl-footer {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    align-items: start;
+    column-gap: 20px;
+}
+
+#spotlight .spl-footer .spl-title {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 6px 0 4px;
+    font-size: 25px;
+}
+
+#spotlight .spl-footer .spl-description {
+    grid-column: 1;
+    grid-row: 2;
+    display: block;
+    font-size: 12px;
+    opacity: 0.7;
+    margin: 0 0 16px;
+    line-height: 1.4;
+}
+
+/* Button sits in the right column, spanning both title and description rows */
+#spotlight .spl-footer .spl-button {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: start;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    margin-top: 6px;
+    margin-bottom: 12px;
+    width: auto;
+}
+
+/* Responsive: revert to block flow on mobile */
+@media (max-width: 768px) {
+    #spotlight .spl-footer {
+        display: block;
+    }
+
+    #spotlight .spl-footer .spl-title {
+        width: 100%;
+        margin-bottom: 6px;
+    }
+
+    #spotlight .spl-footer .spl-description {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    #spotlight .spl-footer .spl-button {
+        align-items: flex-start;
+        text-align: left;
+        width: auto;
+        margin-top: 0;
     }
 }
 
