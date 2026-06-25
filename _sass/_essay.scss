@@ -806,57 +806,73 @@ mark.essay-search-highlight {
     border: 1px solid var(--cb-border-200);
     padding: 1.25rem 1.5rem;
 
-    .book-controls {
+    // ── Filter row: search input + All · None text controls ──────────────────
+    .book-filter-row {
       display: flex;
-      gap: 0.4rem;
-      margin-bottom: 0.75rem;
-
-      .book-control-btn {
-        font-family: system-ui, sans-serif;
-        font-size: 0.68rem;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        background: transparent;
-        border: 1px solid var(--cb-border-200);
-        color: var(--cb-text-600);
-        padding: 0.2rem 0.6rem;
-        cursor: pointer;
-        transition: background 120ms ease;
-
-        &:hover { background: var(--cb-surface-200); }
-      }
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
     }
 
     .book-filter {
-      width: 100%;
+      flex: 1;
+      min-width: 0;
       font-family: system-ui, sans-serif;
       font-size: 0.8rem;
       padding: 0.35rem 0.6rem;
       border: 1px solid var(--cb-border-200);
       background: transparent;
       color: var(--cb-text-800);
-      margin-bottom: 0.6rem;
       box-sizing: border-box;
 
       &::placeholder { color: var(--cb-text-400); }
       &:focus { outline: 1px solid var(--cb-border-300); outline-offset: 0; }
     }
 
+    .book-filter-actions {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .book-action-btn {
+      font-family: system-ui, sans-serif;
+      font-size: 0.67rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: none;
+      border: none;
+      color: var(--cb-text-500);
+      cursor: pointer;
+      padding: 0.15rem 0.35rem;
+      transition: color 100ms ease;
+
+      &:hover { color: var(--cb-text-900); }
+    }
+
+    .book-action-sep {
+      color: var(--cb-text-300);
+      font-size: 0.75rem;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    // ── Chapter checklist ──────────────────────────────────────────────────────
     .book-checklist {
       list-style: none;
       padding: 0;
-      margin: 0 0 1.25rem;
+      margin: 0;
       max-height: 40vh;
       overflow-y: auto;
 
       li {
         display: flex;
-        align-items: center;
-        gap: 0.4rem;
+        align-items: baseline;
+        gap: 0.5rem;
         font-family: system-ui, sans-serif;
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         color: var(--cb-text-800);
-        padding: 0.2rem 0;
+        padding: 0.28rem 0;
 
         input[type="checkbox"] {
           flex-shrink: 0;
@@ -864,22 +880,98 @@ mark.essay-search-highlight {
           height: 13px;
           cursor: pointer;
           accent-color: var(--cb-primary-color);
+          position: relative;
+          top: 1px; // optical alignment with text baseline
         }
+
+        label { cursor: pointer; line-height: 1.3; }
       }
     }
 
-    .book-generate-btn {
+    // ── Options panel: Layout + Cover ──────────────────────────────────────────
+    .book-options {
+      border-top: 1px solid var(--cb-border-200);
+      margin-top: 0.85rem;
+      padding-top: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .book-opt {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .book-opt-label {
+      font-family: system-ui, sans-serif;
+      font-size: 0.67rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cb-text-500);
+      width: 3.75rem;
+      flex-shrink: 0;
+    }
+
+    .book-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      cursor: pointer;
+      font-family: system-ui, sans-serif;
+      font-size: 0.82rem;
+      color: var(--cb-text-800);
+
+      input[type="checkbox"] {
+        flex-shrink: 0;
+        width: 13px;
+        height: 13px;
+        cursor: pointer;
+        accent-color: var(--cb-primary-color);
+      }
+    }
+
+    .layout-hub-btns { display: flex; gap: 2px; }
+
+    .layout-hub-btn {
       font-family: system-ui, sans-serif;
       font-size: 0.72rem;
-      padding: 0.45rem 1.1rem;
+      padding: 0.2rem 0.65rem;
+      border: 1px solid var(--cb-border-300);
+      background: transparent;
+      color: var(--cb-text-700);
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: all 100ms ease;
+      line-height: 1.4;
+
+      &:hover { background: var(--cb-surface-200); }
+
+      &.active {
+        background: var(--cb-navbar-bg);
+        color: var(--cb-navbar-text);
+        border-color: var(--cb-navbar-bg);
+      }
+    }
+
+    // ── Generate button ────────────────────────────────────────────────────────
+    .book-generate-btn {
+      width: 100%;
+      margin-top: 1.25rem;
+      font-family: system-ui, sans-serif;
+      font-size: 0.72rem;
+      padding: 0.55rem 1.1rem;
       background: var(--cb-navbar-bg);
       color: var(--cb-navbar-text);
       border: none;
       cursor: pointer;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
-      display: inline-flex;
+      display: flex;
       align-items: center;
+      justify-content: center;
       transition: background 120ms ease;
 
       &:hover { background: var(--cb-footer-bg); }

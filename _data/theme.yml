@@ -127,6 +127,7 @@ print:
   author:                  # Author name for PDF <meta> and cover page
   institution:             # Institution shown on cover page
   cover-subtitle:          # Subtitle line beneath site title on book cover
+  cover-image: false       # true/false — show featured-image on book cover by default
   show-individual: true    # true/false — show individual essay print cards
   show-book: true          # true/false — show book builder section
   aside-style: margin      # margin (float into page gutter) | inline (indented callout block)

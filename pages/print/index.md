@@ -15,7 +15,7 @@ search_exclude: true
 
   <!-- Featured essay (shown via JS when ?essay= URL param is present) -->
   <div class="print-hub-featured" id="print-featured" aria-live="polite">
-    <p class="featured-label">Print This Essay</p>
+    <h2 class="featured-label">Print This Essay</h2>
     <p class="featured-title" id="featured-title"></p>
     <a class="featured-print-btn" id="featured-print-btn" href="#" target="_blank" rel="noopener">
       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
@@ -33,13 +33,16 @@ search_exclude: true
   <div class="print-hub-section">
     <h2>Build the Book</h2>
     <div class="book-builder">
-      <input class="book-filter" id="chapter-filter" type="search" placeholder="Filter chapters…" aria-label="Filter chapter list" autocomplete="off">
-      <div class="book-controls">
-        <button class="book-control-btn" id="select-all-btn">Select All</button>
-        <button class="book-control-btn" id="deselect-all-btn">Deselect All</button>
-        <button class="book-control-btn" id="select-filtered-btn" hidden>Select All Filtered</button>
+      <div class="book-filter-row">
+        <input class="book-filter" id="chapter-filter" type="search" placeholder="Filter chapters…" aria-label="Filter chapter list" autocomplete="off">
+        <div class="book-filter-actions">
+          <button class="book-action-btn" id="select-all-btn" aria-label="Select all chapters">All</button>
+          <span class="book-action-sep" aria-hidden="true">·</span>
+          <button class="book-action-btn" id="deselect-all-btn" aria-label="Deselect all chapters">None</button>
+          <button class="book-action-btn" id="select-filtered-btn" aria-label="Select all filtered chapters" hidden>Filtered</button>
+        </div>
       </div>
-      <ul class="book-checklist" id="book-checklist">
+      <ul class="book-checklist" id="book-checklist" aria-label="Chapters to include">
         {% for essay in sorted_essays %}{% assign url_key = essay.url | split: "/" | last | remove: ".html" %}
         <li>
           <input type="checkbox" id="book-{{ essay.slug }}" value="{{ url_key }}" data-url-key="{{ url_key }}" checked>
@@ -47,13 +50,25 @@ search_exclude: true
         </li>
         {% endfor %}
       </ul>
-      <button class="book-generate-btn" id="book-generate-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16" style="margin-right:0.4rem;">
-          <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
-          <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
-        </svg>
-        Generate Book PDF
-      </button>
+      <div class="book-options">
+        <div class="book-opt">
+          <span class="book-opt-label">Layout</span>
+          <div class="layout-hub-btns" role="group" aria-label="Layout mode">
+            <button class="layout-hub-btn" data-layout="digital" aria-pressed="false">Digital PDF</button>
+            <button class="layout-hub-btn" data-layout="book" aria-pressed="false">Print Book</button>
+          </div>
+        </div>
+        {% if site.data.theme.featured-image %}
+        <div class="book-opt">
+          <span class="book-opt-label">Cover</span>
+          <label class="book-checkbox-label">
+            <input type="checkbox" id="cover-image-toggle" {% if site.data.theme.print.cover-image %}checked{% endif %}>
+            <span>Include cover image</span>
+          </label>
+        </div>
+        {% endif %}
+      </div>
+      <button class="book-generate-btn" id="book-generate-btn">Generate Book PDF</button>
     </div>
   </div>
   {% endif %}
@@ -67,8 +82,8 @@ search_exclude: true
       {% for essay in sorted_essays %}{% assign url_key = essay.url | split: "/" | last | remove: ".html" %}
       <div class="tributary-card">
         <p class="card-title">{{ essay.title }}</p>
-        <a class="card-link" href="{{ '/print/book/' | relative_url }}?essays={{ url_key }}" target="_blank">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+        <a class="card-link" href="{{ '/print/book/' | relative_url }}?essays={{ url_key }}" target="_blank" aria-label="Print {{ essay.title | escape }}, opens in new tab">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
             <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
             <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
           </svg>
@@ -111,6 +126,45 @@ search_exclude: true
     });
   }
 
+  // ——— Layout toggle ———
+  var layoutMode = localStorage.getItem('print-layout') || 'digital';
+  document.querySelectorAll('.layout-hub-btn').forEach(function(btn) {
+    var isActive = btn.dataset.layout === layoutMode;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    btn.addEventListener('click', function() {
+      layoutMode = this.dataset.layout;
+      localStorage.setItem('print-layout', layoutMode);
+      document.querySelectorAll('.layout-hub-btn').forEach(function(b) {
+        var active = b.dataset.layout === layoutMode;
+        b.classList.toggle('active', active);
+        b.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    });
+    // Buttons activate on Enter natively, but be explicit for reliability
+    btn.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') this.click();
+    });
+  });
+
+  // ——— Cover image toggle ———
+  var coverToggle = document.getElementById('cover-image-toggle');
+  if (coverToggle) {
+    // Restore localStorage preference (overrides theme.yml default)
+    var storedCover = localStorage.getItem('print-cover-image');
+    if (storedCover !== null) coverToggle.checked = (storedCover === 'true');
+    coverToggle.addEventListener('change', function() {
+      localStorage.setItem('print-cover-image', this.checked);
+    });
+    // Checkboxes toggle on Space by default; add Enter support for consistency
+    coverToggle.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        this.checked = !this.checked;
+        this.dispatchEvent(new Event('change'));
+      }
+    });
+  }
+
   // ——— Book builder ———
   var generateBtn = document.getElementById('book-generate-btn');
   if (generateBtn) {
@@ -124,7 +178,10 @@ search_exclude: true
         return;
       }
 
-      window.open('{{ "/print/book/" | relative_url }}' + '?essays=' + checked.join(','), '_blank');
+      var url = '{{ "/print/book/" | relative_url }}' + '?essays=' + checked.join(',');
+      if (coverToggle && coverToggle.checked) url += '&cover=1';
+      if (layoutMode === 'book') url += '&layout=book';
+      window.open(url, '_blank');
     });
   }
 

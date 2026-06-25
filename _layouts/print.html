@@ -26,6 +26,21 @@
 
   {% assign print_author = site.data.theme.print.author | default: "" %}
 
+  {% comment %}Resolve featured-image to a usable URL (relative path, external URL, or objectid){% endcomment %}
+  {% assign featured_raw = site.data.theme.featured-image %}
+  {% if featured_raw contains "/" or featured_raw contains "http" %}
+    {% assign featured_image_url = featured_raw %}
+  {% elsif featured_raw != "" and featured_raw != nil %}
+    {% assign _items = site.data[site.metadata] %}
+    {% assign _item = _items | where: "objectid", featured_raw | first %}
+    {% if _item.filename contains "http" %}
+      {% assign featured_image_url = _item.filename %}
+    {% elsif _item.filename %}
+      {% assign featured_image_url = "/objects/" | append: _item.filename %}
+    {% endif %}
+  {% endif %}
+  {% assign print_cover_image_default = site.data.theme.print.cover-image | default: false %}
+
   <!-- PDF metadata: Chrome uses <title> for document title, <meta name="author"> for author -->
   <title>{% if page.book %}{{ site.title }} — Print Edition{% else %}{{ page.title | default: "Print" }} — {{ site.title }}{% endif %}</title>
   <meta name="author" content="{{ print_author }}">
@@ -85,6 +100,14 @@
           '</style>');
       }
       window._printFormat = format;
+
+      var layout = params.get('layout') || localStorage.getItem('print-layout') || 'digital';
+      window._printLayout = layout;
+      if (layout === 'book') {
+        document.head.insertAdjacentHTML('beforeend',
+          '<style>.print-cover-page { break-after: right; }</style>'
+        );
+      }
     })();
   </script>
 
@@ -119,6 +142,17 @@
       <button class="format-btn" data-format="69" aria-pressed="false">6×9″</button>
     </div>
 
+    {% if page.book %}
+    <div class="layout-selector" role="group" aria-label="Layout">
+      <button class="layout-btn" data-layout="digital" aria-pressed="false">Digital</button>
+      <button class="layout-btn" data-layout="book" aria-pressed="false">Book</button>
+    </div>
+    {% endif %}
+
+    {% if page.book and featured_image_url %}
+    <button class="cover-toggle-btn" id="cover-toggle-btn" aria-pressed="false">Cover Image</button>
+    {% endif %}
+
     <button class="print-btn" onclick="window.print()">Print / Save PDF</button>
   </nav>
 
@@ -130,13 +164,16 @@
 
     <!-- Cover page -->
     <div class="print-cover-page">
-      <div class="print-cover-ornament" aria-hidden="true">— — —</div>
-      <h1 class="print-cover-title">{{ site.title }}</h1>
-      {% if site.data.theme.print.cover-subtitle %}<p class="print-cover-subtitle">{{ site.data.theme.print.cover-subtitle }}</p>{% endif %}
-      <div class="print-cover-meta">
-        {% if print_author %}{{ print_author }}<br>{% endif %}
-        {% if site.data.theme.print.institution %}{{ site.data.theme.print.institution }}{% endif %}
+      <div class="print-cover-content">
+        <div class="print-cover-ornament" aria-hidden="true">— — —</div>
+        <h1 class="print-cover-title">{{ site.title }}</h1>
+        {% if site.data.theme.print.cover-subtitle %}<p class="print-cover-subtitle">{{ site.data.theme.print.cover-subtitle }}</p>{% endif %}
+        <div class="print-cover-meta">
+          {% if print_author %}{{ print_author }}<br>{% endif %}
+          {% if site.data.theme.print.institution %}{{ site.data.theme.print.institution }}{% endif %}
+        </div>
       </div>
+      {% if featured_image_url %}<img class="print-cover-img" src="{{ featured_image_url }}" alt="{{ site.data.theme.featured-image-alt-text | default: '' }}">{% endif %}
     </div>
 
     <!-- Table of contents — nav landmark so AT can jump to it -->
@@ -327,6 +364,67 @@
           window.location.href = url.toString();
         });
       });
+
+      // 9. Cover image toggle — reads ?cover= param, then localStorage, then theme default.
+      //    Toggles .has-cover-image on .print-cover-page without reloading the page.
+      {% if page.book and featured_image_url %}
+      (function() {
+        var coverDefault = {{ print_cover_image_default | jsonify }};
+        var coverParam = params.get('cover');
+        var coverStored = localStorage.getItem('print-cover-image');
+        var coverEnabled = coverParam !== null
+          ? (coverParam === '1' || coverParam === 'true')
+          : coverStored !== null
+            ? (coverStored === 'true')
+            : coverDefault;
+
+        var coverPage = document.querySelector('.print-cover-page');
+        var coverBtn = document.getElementById('cover-toggle-btn');
+
+        function applyCoverState(enabled) {
+          if (coverPage) coverPage.classList.toggle('has-cover-image', enabled);
+          if (coverBtn) {
+            coverBtn.classList.toggle('active', enabled);
+            coverBtn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+          }
+        }
+
+        applyCoverState(coverEnabled);
+
+        if (coverBtn) {
+          coverBtn.addEventListener('click', function() {
+            coverEnabled = !coverEnabled;
+            localStorage.setItem('print-cover-image', coverEnabled);
+            // Reload with updated ?cover= param so Paged.js re-renders cleanly
+            var url = new URL(window.location.href);
+            if (coverEnabled) {
+              url.searchParams.set('cover', '1');
+            } else {
+              url.searchParams.delete('cover');
+            }
+            window.location.href = url.toString();
+          });
+        }
+      })();
+      {% endif %}
+
+      // 10. Layout selector — body class for CSS + button state + click handler (reload).
+      {% if page.book %}
+      if (window._printLayout === 'book') document.body.classList.add('print-layout-book');
+      var currentLayout = window._printLayout || 'digital';
+      document.querySelectorAll('.layout-btn').forEach(function(btn) {
+        var isActive = btn.dataset.layout === currentLayout;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        btn.addEventListener('click', function() {
+          var lay = this.dataset.layout;
+          localStorage.setItem('print-layout', lay);
+          var url = new URL(window.location.href);
+          url.searchParams.set('layout', lay);
+          window.location.href = url.toString();
+        });
+      });
+      {% endif %}
     })();
   </script>
 

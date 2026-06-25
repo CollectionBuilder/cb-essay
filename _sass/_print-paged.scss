@@ -589,7 +589,7 @@ video { display: none !important; }
   justify-content: center;
   /* min-height injected per format by print.html JS — must fit within content area */
   text-align: center;
-  break-after: right;
+  break-after: page;
 
   .print-cover-ornament {
     margin-bottom: 4rem;
@@ -621,6 +621,38 @@ video { display: none !important; }
     font-size: 10pt;
     color: rgba(0, 0, 0, 0.45);
     line-height: 1.8;
+  }
+
+  /* Featured image — flows below text content; hidden until .has-cover-image is applied */
+  .print-cover-img {
+    display: none;
+    width: 100%;
+    flex: 1;
+    min-height: 2in;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* .print-cover-content wraps the text block; transparent by default (layout unchanged) */
+  .print-cover-content {
+    display: contents;
+  }
+}
+
+/* Image-enabled cover: text at top in plain style, image fills remaining space below */
+.print-cover-page.has-cover-image {
+  justify-content: flex-start;
+
+  .print-cover-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 2rem 2.5rem 1.5rem;
+  }
+
+  .print-cover-img {
+    display: block;
   }
 }
 
@@ -676,6 +708,18 @@ video { display: none !important; }
 }
 
 
+/* Digital PDF: TOC links are underlined for clickability */
+.print-toc ol li a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Print Book: restore plain text links */
+.print-layout-book .print-toc ol li a {
+  text-decoration: none;
+}
+
+
 /* ============================================================
    CHAPTERS
    ============================================================ */
@@ -715,9 +759,12 @@ video { display: none !important; }
     text-overflow: ellipsis;
   }
 
-  .format-selector { display: flex; gap: 2px; }
+  .format-selector,
+  .layout-selector { display: flex; gap: 2px; }
 
-  .format-btn {
+  .format-btn,
+  .layout-btn,
+  .cover-toggle-btn {
     font-family: var(--print-mono, 'Courier New', Courier, monospace);
     font-size: 0.72rem;
     padding: 0.2rem 0.55rem;
