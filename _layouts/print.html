@@ -157,8 +157,9 @@
       <div class="print-title-page">
         <div class="print-ornament" aria-hidden="true">— —</div>
         <h1 class="print-essay-title">{{ essay.title }}</h1>
-        {% if essay.byline and essay.byline != print_author %}
-        <p class="print-essay-subtitle">{{ essay.byline }}</p>
+        {% if essay.byline %}<p class="print-essay-subtitle">{{ essay.byline }}</p>{% endif %}
+        {% if print_author or site.data.theme.print.institution %}
+        <p class="print-essay-meta">{% if print_author %}{{ print_author }}{% endif %}{% if print_author and site.data.theme.print.institution %} · {% endif %}{% if site.data.theme.print.institution %}{{ site.data.theme.print.institution }}{% endif %}</p>
         {% endif %}
       </div>
 
@@ -279,17 +280,37 @@
       var requested = params.get('essays');
       if (requested) {
         var allowed = requested.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+        // Remove non-selected chapters
         document.querySelectorAll('.print-chapter').forEach(function(ch) {
           if (allowed.indexOf(ch.dataset.essay) === -1) {
             ch.parentNode.removeChild(ch);
           }
         });
+        // Filter TOC to only the selected slugs
+        document.querySelectorAll('.print-toc li').forEach(function(li) {
+          var a = li.querySelector('a[href]');
+          var slug = a ? a.getAttribute('href').replace('#chapter-', '') : '';
+          if (allowed.indexOf(slug) === -1) {
+            li.parentNode.removeChild(li);
+          }
+        });
         if (allowed.length === 1) {
+          // Single essay: remove book cover + TOC; keep the per-chapter title page
           var cover = document.querySelector('.print-cover-page');
           if (cover) cover.parentNode.removeChild(cover);
           var toc = document.querySelector('.print-toc');
           if (toc) toc.parentNode.removeChild(toc);
+        } else {
+          // Multi-essay selection: book has its own cover, remove per-chapter title pages
+          document.querySelectorAll('.print-title-page').forEach(function(tp) {
+            tp.parentNode.removeChild(tp);
+          });
         }
+      } else {
+        // Full book (no ?essays= filter): remove per-chapter title pages
+        document.querySelectorAll('.print-title-page').forEach(function(tp) {
+          tp.parentNode.removeChild(tp);
+        });
       }
 
       // 8. Format selector button state + click handler

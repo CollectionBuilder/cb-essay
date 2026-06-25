@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const essayIndex = pathParts.indexOf('essay');
   const rawSlug = essayIndex >= 0 ? pathParts[essayIndex + 1] : null;
   const essaySlug = rawSlug ? rawSlug.replace(/\.html$/, '') : null;
-  const printBase = '{{ "/print/book/" | relative_url }}';
-  const printHref = essaySlug ? (printBase + '?essays=' + essaySlug) : null;
+  const printBase = '{{ "/print/" | relative_url }}';
+  const printHref = essaySlug ? (printBase + '?essay=' + essaySlug) : null;
   const printLinkHtml = printHref
     ? `<a href="${printHref}" class="section-nav-print" aria-label="Print or save this essay as PDF" title="Print or save as PDF" target="_blank" rel="noopener">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">

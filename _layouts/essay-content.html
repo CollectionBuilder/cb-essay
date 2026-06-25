@@ -47,6 +47,8 @@ custom-foot: essay/js/spotlight-media-handler.html;essay/js/essay-search-highlig
 
 {% if site.data.theme.show-section-nav and page.show-section-nav != false %}
 {% include essay/js/section-nav.html %}
+{% else %}
+{% include essay/print-button.html %}
 {% endif %}
 
 {% include essay/js/aside-flags.html %}
