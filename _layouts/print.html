@@ -144,15 +144,15 @@
       <h2>Contents</h2>
       <ol>
         {% assign sorted_essays = site.essay | sort: "order" %}
-        {% for essay in sorted_essays %}
-        <li><a href="#chapter-{{ essay.slug }}">{{ essay.title }}</a></li>
+        {% for essay in sorted_essays %}{% assign url_key = essay.url | split: "/" | last | remove: ".html" %}
+        <li><a href="#chapter-{{ url_key }}">{{ essay.title }}</a></li>
         {% endfor %}
       </ol>
     </nav>
 
     <!-- Chapters — each is a self-contained article -->
-    {% for essay in sorted_essays %}
-    <article class="print-chapter" id="chapter-{{ essay.slug }}" data-essay="{{ essay.slug }}" aria-label="{{ essay.title }}">
+    {% for essay in sorted_essays %}{% assign url_key = essay.url | split: "/" | last | remove: ".html" %}
+    <article class="print-chapter" id="chapter-{{ url_key }}" data-essay="{{ url_key }}" aria-label="{{ essay.title }}">
 
       <div class="print-title-page">
         <div class="print-ornament" aria-hidden="true">— —</div>
