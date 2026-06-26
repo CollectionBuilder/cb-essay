@@ -1381,8 +1381,8 @@ def generate_about_page(metadata: Dict, root_path: Path) -> None:
     include_tag = '{%' + ' include essay/feature/catalog-card.html ' + '%}'
 
     edition_note = (
-        f"This edition was automatically generated from [Project Gutenberg](https://www.gutenberg.org/about/),  the preeminent online library of "
-        "public domain ebooks on the internet. "
+        f"This edition was automatically generated from [Project Gutenberg](https://www.gutenberg.org/about/), the preeminent library of "
+        "public domain ebooks on the internet.\n\n"
         "The edition is published using [CB-Essay](https://collectionbuilder.github.io/cb-essay/), "
         "and the text used for this edition was extracted via its "
         "[Gutenberg Extraction Script](https://github.com/CollectionBuilder/cb-essay/blob/main/gutenberg-extraction.py)."
