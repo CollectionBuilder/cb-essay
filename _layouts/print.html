@@ -28,15 +28,17 @@
 
   {% comment %}Resolve featured-image to a usable URL (relative path, external URL, or objectid){% endcomment %}
   {% assign featured_raw = site.data.theme.featured-image %}
-  {% if featured_raw contains "/" or featured_raw contains "http" %}
+  {% if featured_raw contains "http" %}
     {% assign featured_image_url = featured_raw %}
+  {% elsif featured_raw contains "/" %}
+    {% assign featured_image_url = featured_raw | relative_url %}
   {% elsif featured_raw != "" and featured_raw != nil %}
     {% assign _items = site.data[site.metadata] %}
     {% assign _item = _items | where: "objectid", featured_raw | first %}
     {% if _item.filename contains "http" %}
       {% assign featured_image_url = _item.filename %}
     {% elsif _item.filename %}
-      {% assign featured_image_url = "/objects/" | append: _item.filename %}
+      {% assign featured_image_url = "/objects/" | append: _item.filename | relative_url %}
     {% endif %}
   {% endif %}
   {% assign print_cover_image_default = site.data.theme.print.cover-image | default: false %}
