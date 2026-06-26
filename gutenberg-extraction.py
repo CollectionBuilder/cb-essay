@@ -22,11 +22,13 @@ Options:
     --skip-images           Skip downloading images to objects/
     --all-images            Download all inline images in addition to the cover
     --local-html, -l FILE   Use a locally downloaded HTML file instead of fetching from Gutenberg
+    --about-page            Generate pages/about.md with a catalog card and placeholder sections
     --verbose, -v           Enable verbose output
 
 Examples:
     python3 gutenberg-extraction.py 64317
     python3 gutenberg-extraction.py 84 --clear
+    python3 gutenberg-extraction.py 84 --about-page
     python3 gutenberg-extraction.py 84 --project-root ~/my-site
     python3 gutenberg-extraction.py 84 --output ./staging
     python3 gutenberg-extraction.py 11 --all-images
@@ -1368,10 +1370,52 @@ def download_html(book_id: str) -> Tuple[Optional[str], Optional[str]]:
     return None, None
 
 
+def generate_about_page(metadata: Dict, root_path: Path) -> None:
+    """Write pages/about.md with the catalog card include and placeholder sections."""
+    pages_dir = root_path / 'pages'
+    pages_dir.mkdir(parents=True, exist_ok=True)
+
+    title = metadata.get('title', 'About This Book')
+    author = metadata.get('author', '')
+    page_title = f"{title} — About"
+    sep = '-' * 3
+    include_tag = '{%' + ' include feature/catalog-card.html ' + '%}'
+    author_note = f"About {author}." if author else "Add biographical notes about the author here."
+
+    lines = [
+        sep,
+        f'title: "{page_title}"',
+        'layout: about',
+        'permalink: /about.html',
+        sep,
+        '',
+        include_tag,
+        '',
+        '## About This Edition',
+        '',
+        'Add your editorial introduction here.',
+        '',
+        '## About the Author',
+        '',
+        author_note,
+        '',
+        '## Editorial Notes',
+        '',
+        'Add notes on the source text, any emendations, or scholarly context here.',
+        '',
+    ]
+
+    about_path = pages_dir / 'about.md'
+    with open(about_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(lines))
+    print(f"  ✓ pages/about.md")
+
+
 def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
                  slug: str = None, skip_images: bool = False,
                  download_all_images: bool = False, local_html: str = None,
-                 clear: bool = False, verbose: bool = False) -> bool:
+                 clear: bool = False, about_page: bool = False,
+                 verbose: bool = False) -> bool:
     """
     Main extraction function. Writes essay files to _essay/, metadata to _data/book.yml,
     and images to objects/ within the project root.
@@ -1385,6 +1429,7 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
         download_all_images: Download all inline images, not just the cover
         local_html: Path to local HTML file (skips download)
         clear: Delete existing .md files from essay output dir before writing
+        about_page: Generate pages/about.md with catalog card include and placeholder sections
         verbose: Enable verbose output
 
     Returns:
@@ -1530,6 +1575,10 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
     elif not skip_images:
         print("  Cover image:   not found")
 
+    if about_page:
+        generate_about_page(metadata, root_path)
+        print(f"  About page:    pages/about.md")
+
     return True
 
 
@@ -1570,6 +1619,8 @@ If downloads fail (403 errors), download the HTML manually first:
                         help='Download all inline images in addition to the cover')
     parser.add_argument('--local-html', '-l', metavar='FILE',
                         help='Path to a locally downloaded HTML file (skips fetching from Gutenberg)')
+    parser.add_argument('--about-page', action='store_true',
+                        help='Generate pages/about.md with a catalog card include and placeholder editorial sections')
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='Enable verbose output')
 
@@ -1584,6 +1635,7 @@ If downloads fail (403 errors), download the HTML manually first:
         skip_images=args.skip_images,
         download_all_images=args.all_images,
         local_html=args.local_html,
+        about_page=args.about_page,
         verbose=args.verbose,
     )
 

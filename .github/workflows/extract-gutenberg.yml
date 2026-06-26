@@ -12,6 +12,11 @@ on:
         required: false
         default: false
         type: boolean
+      generate_about:
+        description: 'Generate pages/about.md with catalog card and placeholder editorial sections'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   extract:
@@ -153,22 +158,69 @@ jobs:
 
           python update_config.py
 
+      - name: Generate about page
+        if: ${{ inputs.generate_about }}
+        run: |
+          echo "Generating pages/about.md from book.yml..."
+
+          cat << 'EOF' > generate_about.py
+          import yaml
+
+          with open('_data/book.yml', 'r') as f:
+              book_data = yaml.safe_load(f)
+
+          title = book_data.get('title', 'About This Book')
+          author = book_data.get('author', '')
+
+          page_title = f"{title} — About"
+          sep = '-' * 3
+          include_tag = '{%' + ' include feature/catalog-card.html ' + '%}'
+          author_note = f"About {author}." if author else "Add biographical notes about the author here."
+
+          lines = [
+              sep,
+              f'title: "{page_title}"',
+              'layout: about',
+              'permalink: /about.html',
+              sep,
+              '',
+              include_tag,
+              '',
+              '## About This Edition',
+              '',
+              'Add your editorial introduction here.',
+              '',
+              '## About the Author',
+              '',
+              author_note,
+              '',
+              '## Editorial Notes',
+              '',
+              'Add notes on the source text, any emendations, or scholarly context here.',
+              '',
+          ]
+
+          with open('pages/about.md', 'w') as f:
+              f.write('\n'.join(lines))
+
+          print(f"Generated pages/about.md for: {title}")
+          EOF
+
+          python generate_about.py
+
       - name: Commit and push changes
         id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add _essay/ _data/ _config.yml 2>/dev/null || true
+          git add _essay/ _data/ _config.yml pages/about.md 2>/dev/null || true
 
           if git diff --staged --quiet; then
             echo "No changes to commit"
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
             git commit -m "Extract Gutenberg book #${{ inputs.book_id }} and update site config" \
-              -m "Extracted using gutenberg-extraction.py --cb-essay" \
-              -m "Updated _config.yml with book title and author" \
-              -m "Updated _data/theme.yml with cover image (if available)" \
               -m "Source: https://www.gutenberg.org/ebooks/${{ inputs.book_id }}"
             git push
             echo "Changes committed and pushed!"
