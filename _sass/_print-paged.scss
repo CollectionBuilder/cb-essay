@@ -760,7 +760,11 @@ video { display: none !important; }
   }
 
   .format-selector,
-  .layout-selector { display: flex; gap: 2px; }
+  .layout-selector {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+  }
 
   .format-btn,
   .layout-btn,
@@ -825,5 +829,77 @@ body.has-print-bar { padding-top: 3rem; }
     max-width: 680px;
     margin: 0 auto;
     padding: 1rem 2rem 4rem;
+  }
+}
+
+@media screen and (max-width: 767.98px) {
+  .print-control-bar {
+    padding: 0.5rem 0.75rem;
+    gap: 0.45rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+    .print-control-title {
+      flex: 1 1 100%;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.3;
+      margin-bottom: 0.1rem;
+    }
+
+    .print-back-link {
+      order: 2;
+      white-space: nowrap;
+    }
+
+    .format-selector,
+    .layout-selector {
+      order: 3;
+      flex: 1 1 auto;
+      min-width: 0;
+      gap: 0.3rem;
+    }
+
+    .format-btn,
+    .layout-btn,
+    .cover-toggle-btn {
+      padding: 0.32rem 0.58rem;
+      font-size: 0.7rem;
+    }
+
+    .print-btn {
+      order: 4;
+      margin-left: auto;
+      white-space: nowrap;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.68rem;
+    }
+  }
+
+  body.has-print-bar {
+    padding-top: 7.2rem;
+  }
+
+  #print-content {
+    max-width: 100%;
+    padding: 0.65rem 0.8rem 3rem;
+    overflow-x: hidden;
+  }
+
+  .float-start,
+  .float-end,
+  .feature-float-start,
+  .feature-float-end {
+    float: none !important;
+  }
+
+  .w-25,
+  .w-50,
+  .w-75,
+  .feature-w-25,
+  .feature-w-50,
+  .feature-w-75 {
+    width: 100% !important;
   }
 }
