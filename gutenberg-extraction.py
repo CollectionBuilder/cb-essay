@@ -14,15 +14,14 @@ Arguments:
     book_id                 Project Gutenberg book ID (e.g., 84 for Frankenstein)
 
 Options:
-    --project-root DIR      CB-Essay project root; writes to {root}/_essay/ and
-                            {root}/_data/book.yml (default: current directory)
+     --clear                 Clear existing markdown files from the essay output dir before writing
+    --about-page            Generate pages/about.md with a catalog card and placeholder sections
+    --project-root DIR      CB-Essay project root; writes to {root}/_essay/ and {root}/_data/book.yml (default: current directory)
     --output, -o DIR        Write essay markdown files here instead of {project-root}/_essay/
     --slug, -s NAME         Custom book slug for book.yml (default: auto-generated)
-    --clear                 Clear existing markdown files from the essay output dir before writing
     --skip-images           Skip downloading images to objects/
     --all-images            Download all inline images in addition to the cover
     --local-html, -l FILE   Use a locally downloaded HTML file instead of fetching from Gutenberg
-    --about-page            Generate pages/about.md with a catalog card and placeholder sections
     --verbose, -v           Enable verbose output
 
 Examples:
@@ -1371,7 +1370,7 @@ def download_html(book_id: str) -> Tuple[Optional[str], Optional[str]]:
 
 
 def generate_about_page(metadata: Dict, root_path: Path) -> None:
-    """Write pages/about.md with the catalog card include and placeholder sections."""
+    """Write pages/about.md with the catalog card include and attribution paragraph."""
     pages_dir = root_path / 'pages'
     pages_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1379,29 +1378,30 @@ def generate_about_page(metadata: Dict, root_path: Path) -> None:
     author = metadata.get('author', '')
     page_title = f"{title} — About"
     sep = '-' * 3
-    include_tag = '{%' + ' include feature/catalog-card.html ' + '%}'
-    author_note = f"About {author}." if author else "Add biographical notes about the author here."
+    include_tag = '{%' + ' include essay/feature/catalog-card.html ' + '%}'
+
+    edition_note = (
+        f"This edition was automatically generated from [Project Gutenberg](https://www.gutenberg.org/about/),  the preeminent online library of "
+        "public domain ebooks on the internet. "
+        "The edition is published using [CB-Essay](https://collectionbuilder.github.io/cb-essay/), "
+        "and the text used for this edition was extracted via its "
+        "[Gutenberg Extraction Script](https://github.com/CollectionBuilder/cb-essay/blob/main/gutenberg-extraction.py)."
+    )
 
     lines = [
         sep,
         f'title: "{page_title}"',
         'layout: about',
         'permalink: /about.html',
+        'credits: true',
+        'text-search: false',
         sep,
         '',
         include_tag,
         '',
         '## About This Edition',
         '',
-        'Add your editorial introduction here.',
-        '',
-        '## About the Author',
-        '',
-        author_note,
-        '',
-        '## Editorial Notes',
-        '',
-        'Add notes on the source text, any emendations, or scholarly context here.',
+        edition_note,
         '',
     ]
 

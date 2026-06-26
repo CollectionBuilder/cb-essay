@@ -10,7 +10,7 @@ on:
       clear_existing:
         description: 'Clear existing _essay content before extraction'
         required: false
-        default: false
+        default: true
         type: boolean
       generate_about:
         description: 'Generate pages/about.md with catalog card and placeholder editorial sections'
@@ -174,29 +174,30 @@ jobs:
 
           page_title = f"{title} — About"
           sep = '-' * 3
-          include_tag = '{%' + ' include feature/catalog-card.html ' + '%}'
-          author_note = f"About {author}." if author else "Add biographical notes about the author here."
+          include_tag = '{%' + ' include essay/feature/catalog-card.html ' + '%}'
+
+          edition_note = (
+              "This edition was automatically generated from [Project Gutenberg](https://www.gutenberg.org/about/),  the preeminent online library of "
+              "public domain ebooks on the internet. "
+              "The edition is published using [CB-Essay](https://collectionbuilder.github.io/cb-essay/), "
+              "and the text used for this edition was extracted via its "
+              "[Gutenberg Extraction Script](https://github.com/CollectionBuilder/cb-essay/blob/main/gutenberg-extraction.py)."
+          )
 
           lines = [
               sep,
               f'title: "{page_title}"',
               'layout: about',
               'permalink: /about.html',
+              'credits: true',
+              'text-search: false',
               sep,
               '',
               include_tag,
               '',
               '## About This Edition',
               '',
-              'Add your editorial introduction here.',
-              '',
-              '## About the Author',
-              '',
-              author_note,
-              '',
-              '## Editorial Notes',
-              '',
-              'Add notes on the source text, any emendations, or scholarly context here.',
+              edition_note,
               '',
           ]
 
