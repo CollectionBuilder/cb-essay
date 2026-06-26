@@ -107,6 +107,7 @@ jobs:
               theme_data['featured-image'] = selected_cover
               theme_data['featured-image-credit'] = f'This is a cover of the {title} by {author} as extracted from Project Gutenberg; it can be found here: {gutenberg_url}'
               theme_data['featured-image-alt-text'] = f'Cover image of {title}'
+              theme_data['image-style'] = 'half-image'
 
               with open(theme_file, 'w') as f:
                   ryaml.dump(theme_data, f)
