@@ -541,8 +541,15 @@ video::cue {
     min-width: 0;
 }
 
-.section-nav-print {
+.section-nav-icon-group {
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-nav-print,
+.section-nav-search {
     color: var(--cb-text-500);
     display: flex;
     align-items: center;
@@ -665,6 +672,325 @@ mark.essay-search-highlight {
     margin-bottom: 1.5rem;
 
     .btn-close { margin-left: auto; }
+}
+
+/* ========================================
+   Search Hub Page (/search/)
+   Mirrors the print hub aesthetic.
+   ======================================== */
+
+.essay-search-hub {
+  max-width: 860px;
+  margin: 3rem auto;
+  padding: 0 1.5rem 4rem;
+}
+
+.essay-search-hub-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--cb-border-200);
+
+  h1 {
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cb-text-600);
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 1rem;
+    color: var(--cb-text-600);
+    max-width: 55ch;
+    margin: 0;
+  }
+}
+
+/* Scope toggle row — shown only when ?essay= param is present */
+.essay-search-scope {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.essay-scope-label {
+  font-family: system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cb-text-500);
+}
+
+.essay-scope-btns {
+  display: flex;
+  gap: 3px;
+}
+
+.essay-scope-btn {
+  font-family: system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--cb-text-600);
+  background: var(--cb-surface-200);
+  border: 1px solid var(--cb-border-300);
+  border-radius: 3px;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+
+  &:hover {
+    background: var(--cb-surface-300);
+    color: var(--cb-text-900);
+  }
+
+  &.active {
+    background: var(--cb-text-800);
+    color: var(--cb-surface-100);
+    border-color: var(--cb-text-800);
+  }
+}
+
+.essay-scope-context {
+  font-size: 0.85rem;
+  color: var(--cb-text-500);
+  font-style: italic;
+}
+
+/* Sort order row — same visual language as scope row, appears above results */
+.essay-search-sort-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.essay-sort-label {
+  font-family: system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cb-text-500);
+}
+
+.essay-sort-btns {
+  display: flex;
+  gap: 3px;
+}
+
+.essay-sort-btn {
+  font-family: system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--cb-text-600);
+  background: var(--cb-surface-200);
+  border: 1px solid var(--cb-border-300);
+  border-radius: 3px;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+
+  &:hover {
+    background: var(--cb-surface-300);
+    color: var(--cb-text-900);
+  }
+
+  &.active {
+    background: var(--cb-text-800);
+    color: var(--cb-surface-100);
+    border-color: var(--cb-text-800);
+  }
+}
+
+/* Reset button — labeled text, to the right of Search, visible only when a query is active */
+.essay-search-clear-btn {
+  flex-shrink: 0;
+  margin-left: 0.4rem;
+  font-family: system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: none;
+  border: 1px solid var(--cb-border-200);
+  border-radius: 3px;
+  color: var(--cb-text-400);
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease;
+
+  &:hover {
+    color: var(--cb-text-700);
+    border-color: var(--cb-border-400);
+  }
+
+  &[hidden] { display: none; }
+}
+
+/* Search form */
+.essay-search-form {
+  margin-bottom: 2rem;
+}
+
+.essay-search-input-group {
+  display: flex;
+  gap: 0;
+  max-width: 600px;
+}
+
+.essay-search-input {
+  flex: 1;
+  font-family: var(--cb-font-family-base, Georgia, serif);
+  font-size: 1rem;
+  color: var(--cb-text-900);
+  background: var(--cb-surface-100);
+  border: 1px solid var(--cb-border-300);
+  border-right: none;
+  border-radius: 3px 0 0 3px;
+  padding: 0.55rem 0.85rem;
+  outline: none;
+  transition: border-color 150ms ease;
+
+  &::placeholder { color: var(--cb-text-400); }
+  &:focus { border-color: var(--cb-text-600); }
+}
+
+.essay-search-btn {
+  font-family: system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cb-surface-100);
+  background: var(--cb-text-800);
+  border: 1px solid var(--cb-text-800);
+  border-radius: 0 3px 3px 0;
+  padding: 0.55rem 1.1rem;
+  cursor: pointer;
+  transition: background 120ms ease;
+  white-space: nowrap;
+
+  &:hover { background: var(--cb-text-950); border-color: var(--cb-text-950); }
+}
+
+/* Results region */
+.essay-search-results {
+  margin-top: 1rem;
+}
+
+.essay-search-meta {
+  font-family: system-ui, sans-serif;
+  font-size: 0.82rem;
+  color: var(--cb-text-500);
+  margin-bottom: 1.5rem;
+
+  strong { color: var(--cb-text-700); font-weight: 600; }
+}
+
+.essay-search-no-results {
+  font-size: 0.9rem;
+  color: var(--cb-text-600);
+}
+
+.essay-search-result-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.essay-search-result {
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--cb-border-200);
+
+  &:first-child { border-top: 1px solid var(--cb-border-200); }
+}
+
+.essay-search-result-title {
+  font-family: var(--cb-font-family-base, Georgia, serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--cb-link-color, #3d7b53);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: 1px;
+
+  &:hover { text-decoration-thickness: 2px; }
+}
+
+.essay-search-result-chapter {
+  font-family: system-ui, sans-serif;
+  font-size: 0.78rem;
+  color: var(--cb-text-500);
+  margin-left: 0.4rem;
+}
+
+.essay-search-result-snippet {
+  font-size: 0.875rem;
+  color: var(--cb-text-600);
+  line-height: 1.6;
+  margin: 0.4rem 0 0;
+}
+
+/* Highlighted match in search result snippets */
+mark.essay-result-mark {
+  background-color: oklch(93% 0.08 85);
+  color: inherit;
+  padding: 0 0.1em;
+  border-radius: 2px;
+}
+
+/* Grouped results by chapter (all-essays mode) */
+.essay-search-chapter-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.essay-search-chapter-group {
+  padding: 1.4rem 0 0.8rem;
+  border-top: 1px solid var(--cb-border-200);
+
+  &:last-child { border-bottom: 1px solid var(--cb-border-200); }
+}
+
+.essay-search-context-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+}
+
+.essay-search-context {
+  padding: 0.45rem 0 0.45rem 1rem;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--cb-border-100);
+  }
+}
+
+.essay-search-chapter-heading {
+  font-family: system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cb-text-600);
+  margin: 0 0 0.3rem;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    &:hover { color: var(--cb-text-900); text-decoration: underline; text-underline-offset: 0.15em; }
+  }
+}
+
+.essay-search-more {
+  font-family: system-ui, sans-serif;
+  font-size: 0.75rem;
+  color: var(--cb-text-400);
+  margin: 0.5rem 0 0.2rem 1rem;
 }
 
 /* ========================================
@@ -989,6 +1315,9 @@ mark.essay-search-highlight {
   bottom: 1.5rem;
   left: 1.5rem;
   z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 
   a {
     display: flex;

@@ -29,10 +29,18 @@ document.addEventListener('DOMContentLoaded', function() {
       </a>`
     : '';
 
+  const searchBase = '{{ "/search/" | relative_url }}';
+  const searchHref = searchBase + (essaySlug ? '?essay=' + essaySlug : '');
+  const searchLinkHtml = `<a href="${searchHref}" class="section-nav-search" aria-label="Search this essay" title="Search">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.44 0a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+      </svg>
+    </a>`;
+
   // Create the section navigation menu
   const navMenu = document.createElement('div');
   navMenu.className = 'section-nav-menu';
-  navMenu.innerHTML = `<div class="section-nav-title"><span class="section-nav-title-text">${pageTitle}</span>${printLinkHtml}</div><ul class="section-nav-list"></ul>`;
+  navMenu.innerHTML = `<div class="section-nav-title"><span class="section-nav-title-text">${pageTitle}</span><span class="section-nav-icon-group">${printLinkHtml}${searchLinkHtml}</span></div><ul class="section-nav-list"></ul>`;
 
   const navList = navMenu.querySelector('.section-nav-list');
 

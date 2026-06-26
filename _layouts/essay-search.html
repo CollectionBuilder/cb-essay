@@ -4,14 +4,48 @@ layout: page
 custom-foot: essay/js/essay-search-js.html
 ---
 
-{{ content }}
+{% assign sorted_essays = site.essay | sort: "order" %}
 
-<form role="search" id="essaySearchForm" class="mt-3">
-    <div class="input-group input-group-lg">
-        <label for="essaySearchInput" class="visually-hidden">Search essay text</label>
-        <input id="essaySearchInput" class="form-control" type="search" placeholder="Enter search terms…" autocomplete="off">
-        <button class="btn btn-primary" type="submit">Search</button>
+<div class="essay-search-hub">
+
+  <div class="essay-search-hub-header">
+    <h1>Search</h1>
+    <p>{{ content | strip_html | strip | default: "Search the full text of all essays in this collection." }}</p>
+  </div>
+
+  <div class="essay-search-scope" id="essayScopeRow" hidden>
+    <span class="essay-scope-label" id="essayScopeLabel">Scope</span>
+    <div class="essay-scope-btns" role="group" aria-labelledby="essayScopeLabel" aria-describedby="essayScopeContext">
+      <button class="essay-scope-btn active" data-scope="essay" aria-pressed="true">This Essay</button>
+      <button class="essay-scope-btn" data-scope="all" aria-pressed="false">All Essays</button>
     </div>
-</form>
+    <span class="essay-scope-context" id="essayScopeContext" aria-live="polite"></span>
+  </div>
 
-<div id="essaySearchResults" class="my-4" role="region" aria-live="polite" aria-label="Search results"></div>
+  <form role="search" id="essaySearchForm" class="essay-search-form">
+    <label for="essaySearchInput" class="visually-hidden">Search essay text</label>
+    <div class="essay-search-input-group">
+      <input id="essaySearchInput" class="essay-search-input" type="search" placeholder="Enter search terms…" autocomplete="off" aria-controls="essaySearchResults">
+      <button class="essay-search-btn" type="submit">Search</button>
+      <button class="essay-search-clear-btn" id="essaySearchClear" type="button" hidden>Reset</button>
+    </div>
+  </form>
+
+  <div class="essay-search-sort-row" id="essaySortRow" hidden>
+    <span class="essay-sort-label" id="essaySortLabel">Sort</span>
+    <div class="essay-sort-btns" role="group" aria-labelledby="essaySortLabel">
+      <button class="essay-sort-btn active" data-sort="relevance" aria-pressed="true">Relevance</button>
+      <button class="essay-sort-btn" data-sort="alpha" aria-pressed="false">A–Z</button>
+      <button class="essay-sort-btn" data-sort="order" aria-pressed="false">Content Order</button>
+    </div>
+  </div>
+
+  <div id="essaySearchResults" class="essay-search-results" role="region" aria-live="polite" aria-label="Search results"></div>
+
+</div>
+
+<!-- Essay maps injected by Liquid for JS sorting and scope filtering -->
+<script>
+var essayTitleMap = { {% for essay in sorted_essays %}{% assign url_key = essay.url | split: "/" | last | remove: ".html" %}"{{ url_key }}": "{{ essay.title | escape }}"{% unless forloop.last %},{% endunless %}{% endfor %} };
+var essayOrderMap = { {% for essay in sorted_essays %}"{{ essay.title | escape }}": {{ forloop.index }}{% unless forloop.last %},{% endunless %}{% endfor %} };
+</script>

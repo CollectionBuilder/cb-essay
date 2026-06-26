@@ -4,138 +4,316 @@
 (function () {
     "use strict";
 
-    var searchIndex = null;
+    var CONTEXTS_PER_CHAPTER = 2;  // occurrence contexts shown per chapter
+    var CONTEXT_LEN = 100;         // characters of context on each side of a match
 
-    /* Build a FlexSearch Document index from the site-search.json data.
-       Only section-level entries are indexed (records where page !== null).
-       Page-summary entries (page === null) contain heading lists, not prose. */
+    var searchIndex = null;
+    var lastQuery = '';
+
+    var essayParam = new URLSearchParams(window.location.search).get('essay') || '';
+    var essayTitle = (typeof essayTitleMap !== 'undefined' && essayParam)
+        ? (essayTitleMap[essayParam] || '')
+        : '';
+    var currentScope = essayTitle ? 'essay' : 'all';
+    var currentSort  = 'relevance';
+
+    /* Build FlexSearch Document index. Only indexes section-level records
+       (page !== null); page-summary records have no prose content. */
     function buildIndex(data) {
         searchIndex = new FlexSearch.Document({
             tokenize: "forward",
-            document: {
-                id: "id",
-                index: ["title", "content"],
-                store: true
-            }
+            document: { id: "id", index: ["title", "content"], store: true }
         });
         Object.keys(data).forEach(function (id) {
             var doc = data[id];
             if (doc.page !== null) {
-                searchIndex.add({
-                    id: id,
-                    url: doc.url,
-                    title: doc.title,
-                    page: doc.page,
-                    content: doc.content
-                });
+                searchIndex.add({ id: id, url: doc.url, title: doc.title, page: doc.page, content: doc.content });
             }
         });
     }
 
-    /* Truncate text to max characters at a word boundary. */
-    function truncate(text, max) {
-        if (!text || text.length <= max) return text || "";
-        return text.slice(0, max).replace(/\s\S*$/, "") + "\u2026";
+    /* Build search tokens: full phrase + individual words ≥2 chars, longest first. */
+    function buildTokens(query) {
+        var q = query.trim();
+        if (!q) return [];
+        var tokens = [q];
+        q.split(/\s+/).forEach(function (w) {
+            if (w.length >= 2 && tokens.indexOf(w) < 0) tokens.push(w);
+        });
+        return tokens.sort(function (a, b) { return b.length - a.length; });
     }
 
-    /* Minimal HTML escaping to prevent XSS when building innerHTML strings. */
+    /* Minimal HTML escaping. */
     function esc(str) {
         return (str || "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;");
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    /* Count literal occurrences of the search string across an array of docs. */
+    function countOccurrences(docs, query) {
+        var pat = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        if (!pat) return 0;
+        var re = new RegExp(pat, 'gi');
+        var total = 0;
+        docs.forEach(function (doc) {
+            var m = (doc.content || '').match(re);
+            if (m) total += m.length;
+        });
+        return total;
+    }
+
+    /* Collect up to maxCtx occurrence context snippets (safe HTML with <mark>)
+       from across the docs array, in document order.
+       Advances past each match by CONTEXT_LEN to avoid overlapping windows. */
+    function collectContexts(docs, query, maxCtx) {
+        var pat = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        if (!pat) return [];
+        var re = new RegExp(pat, 'gi');
+        var contexts = [];
+        for (var i = 0; i < docs.length && contexts.length < maxCtx; i++) {
+            var content = docs[i].content || '';
+            re.lastIndex = 0;
+            var match;
+            while ((match = re.exec(content)) !== null && contexts.length < maxCtx) {
+                var preStart = Math.max(0, match.index - CONTEXT_LEN);
+                var postEnd  = Math.min(content.length, match.index + match[0].length + CONTEXT_LEN);
+                var pre   = (preStart > 0 ? '…' : '') + content.slice(preStart, match.index);
+                var post  = content.slice(match.index + match[0].length, postEnd) + (postEnd < content.length ? '…' : '');
+                contexts.push(esc(pre) + '<mark class="essay-result-mark">' + esc(match[0]) + '</mark>' + esc(post));
+                /* Skip forward so the next context window doesn't overlap this one */
+                re.lastIndex = match.index + match[0].length + CONTEXT_LEN;
+            }
+        }
+        return contexts;
     }
 
     /* Collect unique result documents across all matched fields. */
     function collectDocs(raw) {
-        var seen = {};
-        var docs = [];
+        var seen = {}, docs = [];
         raw.forEach(function (field) {
             field.result.forEach(function (r) {
-                if (!seen[r.id]) {
-                    seen[r.id] = true;
-                    docs.push(r.doc);
-                }
+                if (!seen[r.id]) { seen[r.id] = true; docs.push(r.doc); }
             });
         });
         return docs;
     }
 
-    /* Render search results into #essaySearchResults. */
-    function renderResults(query, docs) {
-        var el = document.getElementById("essaySearchResults");
-        var q = (query || "").trim();
-
-        if (!q) {
-            el.innerHTML = "";
-            return;
-        }
-        if (docs.length === 0) {
-            el.innerHTML = "<p>No results found for <strong>" + esc(q) + "</strong>.</p>";
-            return;
-        }
-
-        var count = docs.length;
-        var html = "<p class=\"text-muted mb-3\">" +
-            count + " result" + (count !== 1 ? "s" : "") +
-            " for <strong>" + esc(q) + "</strong></p>";
-
-        html += "<ol class=\"list-group list-group-flush\" role=\"list\">";
+    /* Group docs by chapter, computing occurrence count and context snippets.
+       Sorts according to currentSort:
+         relevance  — most occurrences first
+         alpha      — chapter title A–Z
+         order      — book/essay order from the essayOrderMap Liquid variable */
+    function groupByChapter(docs, query) {
+        var seen = [], groups = {};
         docs.forEach(function (doc) {
-            var snippet = truncate(doc.content, 220);
-            // append ?q= so the destination essay page can highlight matching terms
-            var urlParts = doc.url.split("#");
-            var href = esc(urlParts[0]) + "?q=" + encodeURIComponent(q) + (urlParts[1] ? "#" + esc(urlParts[1]) : "");
-            html += "<li class=\"list-group-item px-0\">";
-            html += "<a class=\"fw-semibold\" href=\"" + href + "\">" + esc(doc.title) + "</a>";
-            html += " <span class=\"text-muted small\">in " + esc(doc.page) + "</span>";
-            if (snippet) {
-                html += "<p class=\"mb-0 mt-1 small\">" + esc(snippet) + "</p>";
+            var page = doc.page;
+            if (!groups[page]) {
+                groups[page] = { page: page, chapterUrl: doc.url.split('#')[0], docs: [] };
+                seen.push(page);
             }
-            html += "</li>";
+            groups[page].docs.push(doc);
         });
-        html += "</ol>";
-
-        el.innerHTML = html;
+        var result = seen.map(function (page) {
+            var g = groups[page];
+            g.occurrences = countOccurrences(g.docs, query);
+            g.contexts    = collectContexts(g.docs, query, CONTEXTS_PER_CHAPTER);
+            return g;
+        });
+        if (currentSort === 'relevance') {
+            result.sort(function (a, b) { return b.occurrences - a.occurrences; });
+        } else if (currentSort === 'alpha') {
+            result.sort(function (a, b) { return a.page.toLowerCase().localeCompare(b.page.toLowerCase()); });
+        } else if (currentSort === 'order') {
+            var orderMap = (typeof essayOrderMap !== 'undefined') ? essayOrderMap : {};
+            result.sort(function (a, b) {
+                return (orderMap[a.page] || 9999) - (orderMap[b.page] || 9999);
+            });
+        }
+        return result;
     }
 
-    /* Run a search query, update results, and update the browser URL. */
+    /* Build a context snippet using token-based regex (for flat/essay mode). */
+    function buildSnippet(content, tokens) {
+        if (!content) return '';
+        var re = new RegExp(
+            tokens.map(function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|'), 'i');
+        var match = re.exec(content);
+        if (!match) return esc(content.slice(0, CONTEXT_LEN * 2));
+        var preStart = Math.max(0, match.index - CONTEXT_LEN);
+        var postEnd  = Math.min(content.length, match.index + match[0].length + CONTEXT_LEN);
+        var pre  = (preStart > 0 ? '…' : '') + content.slice(preStart, match.index);
+        var post = content.slice(match.index + match[0].length, postEnd) + (postEnd < content.length ? '…' : '');
+        return esc(pre) + '<mark class="essay-result-mark">' + esc(match[0]) + '</mark>' + esc(post);
+    }
+
+    /* Show/hide the sort row (only meaningful in all-essays grouped mode). */
+    function setSortRowVisible(visible) {
+        var el = document.getElementById('essaySortRow');
+        if (el) el.hidden = !visible;
+    }
+
+    /* Render flat section list for essay-scope mode. */
+    function renderFlat(query, docs) {
+        if (docs.length === 0) {
+            setSortRowVisible(false);
+            return '<p class="essay-search-no-results">No results found for <strong>' + esc(query) + '</strong>.</p>';
+        }
+        setSortRowVisible(false);
+        var tokens  = buildTokens(query);
+        var total   = countOccurrences(docs, query);
+        var scopeNote = essayTitle ? ' in <em>' + esc(essayTitle) + '</em>' : '';
+        var html = '<p class="essay-search-meta">'
+            + total + ' occurrence' + (total !== 1 ? 's' : '')
+            + ' of <strong>' + esc(query) + '</strong>' + scopeNote + '</p>';
+        html += '<ol class="essay-search-result-list" role="list">';
+        docs.forEach(function (doc) {
+            var snippet  = buildSnippet(doc.content, tokens);
+            var urlParts = doc.url.split('#');
+            var href     = esc(urlParts[0]) + '?q=' + encodeURIComponent(query) + (urlParts[1] ? '#' + esc(urlParts[1]) : '');
+            html += '<li class="essay-search-result">';
+            html += '<a class="essay-search-result-title" href="' + href + '">' + esc(doc.title) + '</a>';
+            if (snippet) html += '<p class="essay-search-result-snippet">' + snippet + '</p>';
+            html += '</li>';
+        });
+        html += '</ol>';
+        return html;
+    }
+
+    /* Render grouped chapters list for all-essays mode. */
+    function renderGrouped(query, groups) {
+        if (groups.length === 0) {
+            setSortRowVisible(false);
+            return '<p class="essay-search-no-results">No results found for <strong>' + esc(query) + '</strong>.</p>';
+        }
+        setSortRowVisible(true);
+        var html = '<p class="essay-search-meta">'
+            + groups.length + ' chapter' + (groups.length !== 1 ? 's' : '')
+            + ' contain <strong>' + esc(query) + '</strong></p>';
+        html += '<ol class="essay-search-chapter-list" role="list">';
+        groups.forEach(function (group) {
+            var chapterHref = esc(group.chapterUrl) + '?q=' + encodeURIComponent(query);
+            html += '<li class="essay-search-chapter-group">';
+            html += '<h3 class="essay-search-chapter-heading"><a href="' + chapterHref + '">' + esc(group.page) + '</a></h3>';
+            if (group.contexts.length > 0) {
+                html += '<ul class="essay-search-context-list">';
+                group.contexts.forEach(function (snippet) {
+                    html += '<li class="essay-search-context"><p class="essay-search-result-snippet">' + snippet + '</p></li>';
+                });
+                html += '</ul>';
+            }
+            var n = group.occurrences;
+            html += '<p class="essay-search-more">'
+                + n + ' occurrence' + (n !== 1 ? 's' : '') + ' in this chapter</p>';
+            html += '</li>';
+        });
+        html += '</ol>';
+        return html;
+    }
+
+    /* Show or hide the inline clear button based on whether a query is active. */
+    function setClearVisible(visible) {
+        var btn = document.getElementById('essaySearchClear');
+        if (btn) btn.hidden = !visible;
+    }
+
+    /* Run a search query and render results. */
     function doSearch(query) {
-        var q = (query || "").trim();
+        var q = (query || '').trim();
+        lastQuery = q;
+        var el = document.getElementById('essaySearchResults');
         if (!searchIndex) return;
         if (!q) {
-            renderResults("", []);
+            setSortRowVisible(false);
+            setClearVisible(false);
+            el.innerHTML = '';
             return;
         }
-        var raw = searchIndex.search(q, { enrich: true, limit: 50 });
-        renderResults(q, collectDocs(raw));
+
+        setClearVisible(true);
+        var raw  = searchIndex.search(q, { enrich: true, limit: 500 });
+        var docs = collectDocs(raw);
+
+        if (currentScope === 'essay' && essayTitle) {
+            docs = docs.filter(function (doc) { return doc.page === essayTitle; });
+            el.innerHTML = renderFlat(q, docs);
+        } else {
+            el.innerHTML = renderGrouped(q, groupByChapter(docs, q));
+        }
     }
 
-    /* Load the JSON index, then handle any ?q= param from nav search or direct link. */
+    /* Wire scope and sort toggle buttons. */
+    function initControls() {
+        var scopeRow     = document.getElementById('essayScopeRow');
+        var scopeContext = document.getElementById('essayScopeContext');
+        if (essayTitle && scopeRow) {
+            scopeRow.hidden = false;
+            if (scopeContext) scopeContext.textContent = essayTitle;
+        }
+        document.querySelectorAll('.essay-scope-btn').forEach(function (btn) {
+            btn.classList.toggle('active', btn.dataset.scope === currentScope);
+            btn.setAttribute('aria-pressed', (btn.dataset.scope === currentScope).toString());
+            btn.addEventListener('click', function () {
+                currentScope = this.dataset.scope;
+                document.querySelectorAll('.essay-scope-btn').forEach(function (b) {
+                    b.classList.toggle('active', b.dataset.scope === currentScope);
+                    b.setAttribute('aria-pressed', (b.dataset.scope === currentScope).toString());
+                });
+                if (lastQuery) doSearch(lastQuery);
+            });
+        });
+        document.querySelectorAll('.essay-sort-btn').forEach(function (btn) {
+            btn.classList.toggle('active', btn.dataset.sort === currentSort);
+            btn.setAttribute('aria-pressed', (btn.dataset.sort === currentSort).toString());
+            btn.addEventListener('click', function () {
+                currentSort = this.dataset.sort;
+                document.querySelectorAll('.essay-sort-btn').forEach(function (b) {
+                    b.classList.toggle('active', b.dataset.sort === currentSort);
+                    b.setAttribute('aria-pressed', (b.dataset.sort === currentSort).toString());
+                });
+                if (lastQuery) doSearch(lastQuery);
+            });
+        });
+
+        var clearBtn = document.getElementById('essaySearchClear');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function () {
+                var input = document.getElementById('essaySearchInput');
+                if (input) { input.value = ''; input.focus(); }
+                document.getElementById('essaySearchResults').innerHTML = '';
+                setSortRowVisible(false);
+                setClearVisible(false);
+                lastQuery = '';
+                var url = new URL(window.location.href);
+                url.searchParams.delete('q');
+                history.replaceState(null, '', url.toString());
+            });
+        }
+    }
+
     fetch("{{ '/assets/js/site-search.json' | relative_url }}")
         .then(function (r) { return r.json(); })
         .then(function (data) {
             buildIndex(data);
-            var q = new URLSearchParams(window.location.search).get("q") || "";
+            initControls();
+            var q = new URLSearchParams(window.location.search).get('q') || '';
             if (q) {
-                document.getElementById("essaySearchInput").value = q;
+                var inp = document.getElementById('essaySearchInput');
+                if (inp) inp.value = q;
                 doSearch(q);
             }
         });
 
-    /* Form submission — update URL param so the search is bookmarkable/shareable. */
-    document.getElementById("essaySearchForm").addEventListener("submit", function (e) {
+    document.getElementById('essaySearchForm').addEventListener('submit', function (e) {
         e.preventDefault();
-        var q = document.getElementById("essaySearchInput").value;
+        var q = document.getElementById('essaySearchInput').value;
         var url = new URL(window.location.href);
-        url.searchParams.set("q", q);
-        history.replaceState(null, "", url.toString());
+        url.searchParams.set('q', q);
+        history.replaceState(null, '', url.toString());
         doSearch(q);
     });
 
-    /* Live search as the user types. */
-    document.getElementById("essaySearchInput").addEventListener("input", function () {
+    document.getElementById('essaySearchInput').addEventListener('input', function () {
         doSearch(this.value);
     });
 

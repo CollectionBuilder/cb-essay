@@ -4,4 +4,4 @@ layout: essay-search
 permalink: /search/
 ---
 
-## Search Essay Text 
+Search the full text of all essays in this collection.
