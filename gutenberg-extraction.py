@@ -2,17 +2,39 @@
 """
 Gutenberg Extraction Script
 
-A robust script for extracting book data from Project Gutenberg, including:
-- Book metadata (title, author, subjects, language, etc.)
-- Cover and inline images
-- Content converted to markdown files
-- A 000-data.yml file with comprehensive book metadata
+Extracts a Project Gutenberg book into a CollectionBuilder-Essay project:
+- Chapter markdown files → _essay/
+- Book metadata          → _data/book.yml
+- Cover (and optionally all inline) images → objects/
 
 Usage:
-    python gutenberg-extraction.py <book_id> [options]
+    python3 gutenberg-extraction.py <book_id> [options]
 
-Example:
-    python gutenberg-extraction.py 64317 --output ./books
+Arguments:
+    book_id                 Project Gutenberg book ID (e.g., 84 for Frankenstein)
+
+Options:
+    --project-root DIR      CB-Essay project root; writes to {root}/_essay/ and
+                            {root}/_data/book.yml (default: current directory)
+    --output, -o DIR        Write essay markdown files here instead of {project-root}/_essay/
+    --slug, -s NAME         Custom book slug for book.yml (default: auto-generated)
+    --clear                 Clear existing markdown files from the essay output dir before writing
+    --skip-images           Skip downloading images to objects/
+    --all-images            Download all inline images in addition to the cover
+    --local-html, -l FILE   Use a locally downloaded HTML file instead of fetching from Gutenberg
+    --verbose, -v           Enable verbose output
+
+Examples:
+    python3 gutenberg-extraction.py 64317
+    python3 gutenberg-extraction.py 84 --clear
+    python3 gutenberg-extraction.py 84 --project-root ~/my-site
+    python3 gutenberg-extraction.py 84 --output ./staging
+    python3 gutenberg-extraction.py 11 --all-images
+    python3 gutenberg-extraction.py 84 --local-html pg84.html
+
+If downloads fail (403 errors), download the HTML manually first:
+    wget -O book.html 'https://www.gutenberg.org/cache/epub/84/pg84-images.html'
+    python3 gutenberg-extraction.py 84 --local-html book.html
 """
 
 import re
@@ -29,6 +51,14 @@ from html.parser import HTMLParser
 from datetime import datetime
 import html
 from typing import Optional, Dict, List, Tuple, Any
+
+
+_verbose = False
+
+
+def vprint(*args, **kwargs):
+    if _verbose:
+        print(*args, **kwargs)
 
 
 # =============================================================================
@@ -661,34 +691,28 @@ def extract_image_urls(book_id: str, html_content: str, base_url: str) -> Dict:
 class ImageExtractor:
     """Extract and download images from Gutenberg books."""
 
-    def __init__(self, book_id: str, output_dir: Path):
+    def __init__(self, book_id: str, objects_dir: Path):
         self.book_id = book_id
-        self.output_dir = output_dir
-        self.images_dir = output_dir / 'images'
+        self.objects_dir = objects_dir
         self.downloaded_images = []
         self.cover_image = None
 
     def download_cover(self) -> Optional[str]:
-        """Download the cover image."""
-        self.images_dir.mkdir(parents=True, exist_ok=True)
+        """Download the cover image to the objects directory."""
+        self.objects_dir.mkdir(parents=True, exist_ok=True)
 
-        # Try medium cover first, then small
         cover_urls = [
             GUTENBERG_URLS['cover_medium'].format(id=self.book_id),
             GUTENBERG_URLS['cover_small'].format(id=self.book_id),
         ]
 
         for url in cover_urls:
-            print(f"  Trying cover: {url}")
+            vprint(f"  Trying cover: {url}")
             content = make_request(url, binary=True)
             if content:
-                # Determine extension from URL
-                ext = '.jpg'
-                if '.png' in url.lower():
-                    ext = '.png'
-
+                ext = '.png' if '.png' in url.lower() else '.jpg'
                 filename = f"cover{ext}"
-                filepath = self.images_dir / filename
+                filepath = self.objects_dir / filename
 
                 with open(filepath, 'wb') as f:
                     f.write(content)
@@ -699,45 +723,39 @@ class ImageExtractor:
                     'source_url': url,
                     'type': 'cover'
                 })
-                print(f"  ✓ Downloaded cover: {filename}")
+                print(f"  ✓ Downloaded cover: objects/{filename}")
                 return filename
 
-        print(f"  Warning: No cover image found")
+        print("  Warning: No cover image found")
         return None
 
     def extract_images_from_html(self, html_content: str, base_url: str) -> List[Dict]:
-        """Extract and download images referenced in HTML content."""
-        self.images_dir.mkdir(parents=True, exist_ok=True)
+        """Extract and download inline images to the objects directory."""
+        self.objects_dir.mkdir(parents=True, exist_ok=True)
 
-        # Find all image tags
         img_pattern = r'<img[^>]+src=["\']([^"\']+)["\'][^>]*>'
         matches = re.findall(img_pattern, html_content, re.IGNORECASE)
 
         inline_images = []
         for idx, src in enumerate(matches, 1):
-            # Skip data URIs
             if src.startswith('data:'):
                 continue
 
-            # Resolve relative URLs
             if not src.startswith('http'):
                 src = urljoin(base_url, src)
 
-            # Download the image
-            print(f"  Downloading image {idx}: {src}")
+            vprint(f"  Downloading image {idx}: {src}")
             content = make_request(src, binary=True)
             if not content:
                 continue
 
-            # Determine filename
             parsed = urlparse(src)
             original_name = Path(parsed.path).name
             ext = Path(original_name).suffix or '.jpg'
 
-            # Create safe filename
             safe_name = sanitize_filename(Path(original_name).stem, 30)
             filename = f"img-{idx:03d}-{safe_name}{ext}"
-            filepath = self.images_dir / filename
+            filepath = self.objects_dir / filename
 
             with open(filepath, 'wb') as f:
                 f.write(content)
@@ -750,7 +768,7 @@ class ImageExtractor:
             }
             inline_images.append(image_info)
             self.downloaded_images.append(image_info)
-            print(f"  ✓ Downloaded: {filename}")
+            vprint(f"  ✓ Downloaded: {filename}")
 
         return inline_images
 
@@ -759,7 +777,6 @@ class ImageExtractor:
         return {
             'cover': self.cover_image,
             'images': self.downloaded_images,
-            'images_dir': str(self.images_dir.relative_to(self.output_dir.parent)) if self.images_dir.exists() else None
         }
 
 
@@ -1179,89 +1196,9 @@ class WholeBookParser(HTMLParser):
 # Output Generation
 # =============================================================================
 
-def create_yaml_data(metadata: Dict, images: Dict, sections_info: Dict) -> str:
-    """Create the 000-data.yml content."""
-    lines = ['# Book Metadata', '# Generated by gutenberg-extraction.py', '']
-
-    # Core metadata
-    lines.append('# === Core Metadata ===')
-    lines.append(f'book_id: "{metadata.get("book_id", "")}"')
-    lines.append(f'title: {normalize_text(metadata.get("title", ""), for_yaml=True)}')
-
-    if metadata.get('author'):
-        lines.append(f'author: {normalize_text(metadata.get("author", ""), for_yaml=True)}')
-
-    if metadata.get('authors') and len(metadata['authors']) > 1:
-        lines.append('authors:')
-        for author in metadata['authors']:
-            lines.append(f'  - {normalize_text(author, for_yaml=True)}')
-
-    if metadata.get('language'):
-        lines.append(f'language: "{metadata["language"]}"')
-
-    if metadata.get('publication_date'):
-        lines.append(f'publication_date: "{metadata["publication_date"]}"')
-
-    if metadata.get('rights'):
-        lines.append(f'rights: {normalize_text(metadata.get("rights", ""), for_yaml=True)}')
-
-    lines.append('')
-    lines.append('# === Source Information ===')
-    lines.append(f'gutenberg_url: "{metadata.get("gutenberg_url", "")}"')
-    if metadata.get('download_count'):
-        lines.append(f'download_count: {metadata["download_count"]}')
-    lines.append(f'extracted_at: "{metadata.get("extracted_at", "")}"')
-
-    # Subjects
-    if metadata.get('subjects'):
-        lines.append('')
-        lines.append('# === Subjects ===')
-        lines.append('subjects:')
-        for subject in metadata['subjects']:
-            lines.append(f'  - {normalize_text(subject, for_yaml=True)}')
-
-    # Bookshelves
-    if metadata.get('bookshelves'):
-        lines.append('')
-        lines.append('# === Bookshelves ===')
-        lines.append('bookshelves:')
-        for shelf in metadata['bookshelves']:
-            lines.append(f'  - {normalize_text(shelf, for_yaml=True)}')
-
-    # Images
-    if images.get('cover') or images.get('images'):
-        lines.append('')
-        lines.append('# === Images ===')
-        if images.get('cover'):
-            lines.append(f'cover_image: "images/{images["cover"]}"')
-        if images.get('images'):
-            lines.append(f'image_count: {len(images["images"])}')
-
-    # Sections info
-    lines.append('')
-    lines.append('# === Content Structure ===')
-    lines.append(f'front_matter_count: {sections_info.get("front_matter_count", 0)}')
-    lines.append(f'chapter_count: {sections_info.get("chapter_count", 0)}')
-    lines.append(f'total_sections: {sections_info.get("total_sections", 0)}')
-
-    if sections_info.get('files'):
-        lines.append('')
-        lines.append('# === Generated Files ===')
-        lines.append('files:')
-        for f in sections_info['files']:
-            lines.append(f'  - "{f}"')
-
-    return '\n'.join(lines) + '\n'
-
-
-def create_cb_essay_book_yml(metadata: Dict, image_urls: Dict, sections_info: Dict) -> str:
-    """Create book.yml for CB-Essay _data folder.
-
-    Args:
-        metadata: Book metadata dict
-        image_urls: Dict with 'cover_urls' and 'inline_images' lists
-        sections_info: Dict with chapter/section counts and file list
-    """
+def create_cb_essay_book_yml(metadata: Dict, image_urls: Dict, sections_info: Dict,
+                             downloaded_cover: str = None) -> str:
+    """Create book.yml for CB-Essay _data folder."""
     lines = ['# Book Metadata for CB-Essay', '# Generated by gutenberg-extraction.py', '']
 
     # Core metadata
@@ -1306,9 +1243,11 @@ def create_cb_essay_book_yml(metadata: Dict, image_urls: Dict, sections_info: Di
         for shelf in metadata['bookshelves'][:10]:  # Limit to 10
             lines.append(f'  - {normalize_text(shelf, for_yaml=True)}')
 
-    # Image URLs (not downloaded, just referenced)
+    # Images
     lines.append('')
-    lines.append('# Cover Image URLs (from Project Gutenberg)')
+    lines.append('# Cover Image')
+    if downloaded_cover:
+        lines.append(f'cover_image: "objects/{downloaded_cover}"')
     if image_urls.get('cover_urls'):
         lines.append('cover_urls:')
         for url in image_urls['cover_urls']:
@@ -1357,37 +1296,26 @@ def create_cb_essay_markdown(section: Dict, order: int) -> str:
 
 
 def save_cb_essay_files(front_matter: List[Dict], chapters: List[Dict],
-                        project_root: Path, metadata: Dict, image_urls: Dict) -> Dict:
-    """Save files in CB-Essay structure.
-
-    Args:
-        front_matter: List of front matter section dicts
-        chapters: List of chapter section dicts
-        project_root: Path to CB-Essay project root
-        metadata: Book metadata dict
-        image_urls: Dict with 'cover_urls' and 'inline_images' (URLs, not downloaded)
-    """
-    essay_dir = project_root / '_essay'
-    data_dir = project_root / '_data'
-
-    # Create directories
-    essay_dir.mkdir(parents=True, exist_ok=True)
+                        essay_out: Path, data_dir: Path,
+                        metadata: Dict, image_urls: Dict,
+                        downloaded_cover: str = None) -> Dict:
+    """Save essay markdown files and book.yml."""
+    essay_out.mkdir(parents=True, exist_ok=True)
     data_dir.mkdir(parents=True, exist_ok=True)
 
     all_sections = front_matter + chapters
     saved_files = []
 
-    print(f"\nSaving {len(front_matter)} front matter + {len(chapters)} chapters to _essay/...")
+    print(f"\nSaving {len(front_matter)} front matter + {len(chapters)} chapters...")
 
     for idx, section in enumerate(all_sections, 1):
-        # Create filename with order prefix
         if idx <= len(front_matter):
             number = f"00-{idx:02d}"
         else:
             number = f"{idx - len(front_matter):02d}"
 
         filename = f"{number}-{sanitize_filename(section['title'])}.md"
-        filepath = essay_dir / filename
+        filepath = essay_out / filename
 
         content = create_cb_essay_markdown(section, idx)
 
@@ -1395,9 +1323,8 @@ def save_cb_essay_files(front_matter: List[Dict], chapters: List[Dict],
             f.write(content)
 
         saved_files.append(filename)
-        print(f"  ✓ _essay/{filename}")
+        vprint(f"  ✓ {essay_out.name}/{filename}")
 
-    # Create book.yml in _data (with image URLs, not downloaded files)
     sections_info = {
         'front_matter_count': len(front_matter),
         'chapter_count': len(chapters),
@@ -1405,18 +1332,11 @@ def save_cb_essay_files(front_matter: List[Dict], chapters: List[Dict],
         'files': saved_files
     }
 
-    # Report image URLs found
-    if image_urls.get('cover_urls'):
-        print(f"\n  Found {len(image_urls['cover_urls'])} cover image URL(s)")
-    if image_urls.get('inline_images'):
-        print(f"  Found {len(image_urls['inline_images'])} inline image URL(s)")
-
-    yaml_content = create_cb_essay_book_yml(metadata, image_urls, sections_info)
+    yaml_content = create_cb_essay_book_yml(metadata, image_urls, sections_info, downloaded_cover)
     yaml_path = data_dir / 'book.yml'
 
     with open(yaml_path, 'w', encoding='utf-8') as f:
         f.write(yaml_content)
-    print(f"\n  ✓ _data/book.yml")
 
     return {
         'essay_files': saved_files,
@@ -1424,54 +1344,6 @@ def save_cb_essay_files(front_matter: List[Dict], chapters: List[Dict],
         'image_urls': image_urls
     }
 
-
-def create_markdown_file(section: Dict, metadata: Dict, order: int) -> str:
-    """Create markdown file content with front matter."""
-    title = normalize_text(section['title'], for_yaml=True)
-
-    fm_lines = ['---']
-    fm_lines.append(f'title: {title}')
-
-    if metadata.get('author'):
-        fm_lines.append(f'byline: {normalize_text(metadata.get("author", ""), for_yaml=True)}')
-
-    fm_lines.append(f'order: {order}')
-    fm_lines.append(f'section_type: "{section["type"]}"')
-    fm_lines.append('---')
-    fm_lines.append('')
-
-    return '\n'.join(fm_lines) + section['content']
-
-
-def save_markdown_files(front_matter: List[Dict], chapters: List[Dict],
-                        output_dir: Path, metadata: Dict) -> List[str]:
-    """Save all markdown files and return list of filenames."""
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    all_sections = front_matter + chapters
-    saved_files = []
-
-    print(f"\nSaving {len(front_matter)} front matter sections and {len(chapters)} chapters...")
-
-    for idx, section in enumerate(all_sections, 1):
-        # Create filename
-        if idx <= len(front_matter):
-            number = f"00-{idx:02d}"
-        else:
-            number = f"{idx - len(front_matter):02d}"
-
-        filename = f"{number}-{sanitize_filename(section['title'])}.md"
-        filepath = output_dir / filename
-
-        content = create_markdown_file(section, metadata, idx)
-
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write(content)
-
-        saved_files.append(filename)
-        print(f"  ✓ {filename}")
-
-    return saved_files
 
 
 # =============================================================================
@@ -1496,124 +1368,122 @@ def download_html(book_id: str) -> Tuple[Optional[str], Optional[str]]:
     return None, None
 
 
-def extract_book(book_id: str, output_base: str = './books', slug: str = None,
-                 skip_images: bool = False, download_all_images: bool = False,
-                 local_html: str = None, cb_essay: bool = False,
-                 project_root: str = None) -> bool:
+def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
+                 slug: str = None, skip_images: bool = False,
+                 download_all_images: bool = False, local_html: str = None,
+                 clear: bool = False, verbose: bool = False) -> bool:
     """
-    Main extraction function.
+    Main extraction function. Writes essay files to _essay/, metadata to _data/book.yml,
+    and images to objects/ within the project root.
 
     Args:
         book_id: Project Gutenberg book ID
-        output_base: Base output directory
-        slug: Custom folder name (optional)
-        skip_images: Skip downloading images entirely
-        download_all_images: Download all inline images, not just cover
-        local_html: Path to local HTML file (optional, skips download)
-        cb_essay: Output in CB-Essay format (_essay/, _data/book.yml, objects/)
-        project_root: Project root directory for CB-Essay mode (default: current dir)
+        project_root: CB-Essay project root (default: current directory)
+        essay_dir: Write essay markdown here instead of {project_root}/_essay/
+        slug: Custom book slug for book.yml (default: auto-generated)
+        skip_images: Skip downloading images to objects/
+        download_all_images: Download all inline images, not just the cover
+        local_html: Path to local HTML file (skips download)
+        clear: Delete existing .md files from essay output dir before writing
+        verbose: Enable verbose output
 
     Returns:
         True if successful, False otherwise
     """
+    global _verbose
+    _verbose = verbose
+
     print("=" * 60)
     print(f"Extracting Project Gutenberg Book #{book_id}")
     print("=" * 60)
 
+    root_path = Path(project_root) if project_root else Path.cwd()
+    essay_out = Path(essay_dir) if essay_dir else root_path / '_essay'
+    data_dir = root_path / '_data'
+    objects_dir = root_path / 'objects'
+
     html_content = None
     html_url = None
 
-    # Check for local HTML file first
+    # Step 1: Load HTML
     if local_html:
         print(f"\n[1/5] Loading local HTML file: {local_html}")
         try:
             with open(local_html, 'r', encoding='utf-8', errors='replace') as f:
                 html_content = f.read()
             html_url = f"file://{Path(local_html).absolute()}"
-            print(f"  ✓ Loaded {len(html_content)} bytes")
+            vprint(f"  ✓ Loaded {len(html_content)} bytes")
         except Exception as e:
             print(f"  ERROR: Could not read local file: {e}")
             return False
 
-        # Extract metadata from local HTML
         print("\n[2/5] Extracting metadata from HTML...")
         meta_extractor = MetadataExtractor(book_id)
         meta_extractor.extract_from_html(html_content)
     else:
-        # Step 1: Fetch metadata from online sources
         print("\n[1/5] Extracting metadata...")
         meta_extractor = MetadataExtractor(book_id)
-        meta_extractor.extract_from_gutendex()  # Try rich API first
-        meta_extractor.extract_from_rdf()  # Then authoritative RDF
+        meta_extractor.extract_from_gutendex()
+        meta_extractor.extract_from_rdf()
 
-        # Step 2: Download HTML
         print("\n[2/5] Downloading HTML content...")
         html_content, html_url = download_html(book_id)
         if not html_content:
             print("ERROR: Could not download HTML from any source")
-            print("\nTIP: You can download the HTML manually and use --local-html flag:")
+            print("\nTIP: Download the HTML manually and use --local-html:")
             print(f"     wget -O book.html 'https://www.gutenberg.org/cache/epub/{book_id}/pg{book_id}-images.html'")
             print(f"     python gutenberg-extraction.py {book_id} --local-html book.html")
             return False
 
-        # Extract metadata from HTML as additional source
         meta_extractor.extract_from_html(html_content)
 
-    # Also extract metadata from body text (most reliable per extraction guide)
     body_metadata = extract_metadata_from_body_text(html_content)
-    # Merge body text metadata (use as fallback for missing fields)
     current_metadata = meta_extractor.get_metadata()
     for key, value in body_metadata.items():
         if key not in current_metadata or not current_metadata[key]:
             meta_extractor.metadata[key] = value
 
     metadata = meta_extractor.get_metadata()
-
-    print(f"  Title: {metadata.get('title', 'Unknown')}")
+    print(f"  Title:  {metadata.get('title', 'Unknown')}")
     print(f"  Author: {metadata.get('author', 'Unknown')}")
 
-    # Determine output directory
     if not slug:
         slug = create_slug(metadata.get('title'), metadata.get('author'), book_id)
-    output_dir = Path(output_base) / slug
-    print(f"\n  Output directory: {output_dir}")
 
-    # Step 3: Download images
+    # Step 3: Download images to objects/
     print("\n[3/5] Processing images...")
-    image_extractor = ImageExtractor(book_id, output_dir)
+    image_extractor = ImageExtractor(book_id, objects_dir)
+    downloaded_cover = None
 
     if not skip_images:
-        image_extractor.download_cover()
-
+        downloaded_cover = image_extractor.download_cover()
         if download_all_images:
-            image_extractor.extract_images_from_html(html_content, html_url)
+            image_extractor.extract_images_from_html(html_content, html_url or '')
     else:
-        print("  Skipping images (--skip-images flag)")
+        print("  Skipping images (--skip-images)")
 
-    images_result = image_extractor.get_results()
+    # Always collect image URLs for book.yml regardless of download choice
+    image_urls = extract_image_urls(book_id, html_content, html_url or '')
+    vprint(f"  Found {len(image_urls.get('cover_urls', []))} cover URL(s)")
+    vprint(f"  Found {len(image_urls.get('inline_images', []))} inline image URL(s)")
 
-    # Step 4: Parse HTML and convert to markdown
+    # Step 4: Parse HTML to markdown
     print("\n[4/5] Parsing content and converting to Markdown...")
-
-    # Remove boilerplate using text markers (most reliable per extraction guide)
     clean_html = remove_gutenberg_boilerplate(html_content)
-    print(f"  Removed boilerplate: {len(html_content)} -> {len(clean_html)} chars")
+    vprint(f"  Removed boilerplate: {len(html_content)} -> {len(clean_html)} chars")
 
-    # Extract TOC anchors to help identify section boundaries
     toc_anchors = extract_toc_anchors(html_content)
     if toc_anchors:
-        print(f"  Found {len(toc_anchors)} TOC anchor links")
+        vprint(f"  Found {len(toc_anchors)} TOC anchor links")
 
     parser = GutenbergHTMLParser(toc_anchors=toc_anchors)
     parser.feed(clean_html)
     front_matter, chapters, _ = parser.get_results()
 
-    print(f"  Found {len(front_matter)} front matter sections")
-    print(f"  Found {len(chapters)} chapters/parts")
+    print(f"  Found {len(front_matter)} front matter + {len(chapters)} chapters")
 
-    # Handle case with no chapters found
     if not chapters and not front_matter:
-        print("  No chapters detected - extracting as single document...")
+        print("  No chapters detected — extracting as single document...")
         whole_parser = WholeBookParser()
         whole_parser.feed(clean_html)
         content = whole_parser.get_content()
@@ -1629,134 +1499,77 @@ def extract_book(book_id: str, output_base: str = './books', slug: str = None,
             print("ERROR: Could not extract any content")
             return False
 
-    # CB-Essay mode: save to _essay/, _data/book.yml (with image URLs, no downloads)
-    if cb_essay:
-        print("\n[5/5] Saving in CB-Essay format...")
-        root_path = Path(project_root) if project_root else Path.cwd()
+    # Step 5: Save files
+    print("\n[5/5] Saving files...")
 
-        # Extract image URLs (don't download - just collect URLs for book.yml)
-        image_urls = extract_image_urls(book_id, html_content, html_url or '')
-        print(f"  Collected {len(image_urls.get('cover_urls', []))} cover URL(s)")
-        print(f"  Collected {len(image_urls.get('inline_images', []))} inline image URL(s)")
+    # Handle --clear and warn about existing files
+    if essay_out.exists():
+        existing_md = list(essay_out.glob('*.md'))
+        if clear and existing_md:
+            for f in existing_md:
+                f.unlink()
+            print(f"  Cleared {len(existing_md)} existing file(s) from {essay_out}")
+        elif existing_md and not clear:
+            print(f"\n  Warning: {len(existing_md)} existing markdown file(s) in {essay_out}")
+            print("  Use --clear to remove them before extraction.")
 
-        # Save essay files and book.yml
-        result = save_cb_essay_files(front_matter, chapters, root_path, metadata, image_urls)
+    save_cb_essay_files(
+        front_matter, chapters, essay_out, data_dir,
+        metadata, image_urls, downloaded_cover
+    )
 
-        # Clean up temp directory if it exists and is different from project root
-        if output_dir != root_path and output_dir.exists():
-            import shutil
-            shutil.rmtree(output_dir)
-
-        # Summary for CB-Essay mode
-        print("\n" + "=" * 60)
-        print("✓ CB-Essay Extraction Complete!")
-        print("=" * 60)
-        print(f"  Project root:     {root_path}")
-        print(f"  Essay files:      _essay/ ({len(front_matter) + len(chapters)} files)")
-        print(f"  Metadata file:    _data/book.yml")
-        print(f"  Image URLs:       {len(image_urls.get('inline_images', []))} inline + {len(image_urls.get('cover_urls', []))} cover")
-
-        return True
-
-    # Standard mode: save markdown files
-    saved_files = save_markdown_files(front_matter, chapters, output_dir, metadata)
-
-    # Step 5: Create YAML data file
-    print("\n[5/5] Creating 000-data.yml...")
-    sections_info = {
-        'front_matter_count': len(front_matter),
-        'chapter_count': len(chapters),
-        'total_sections': len(front_matter) + len(chapters),
-        'files': saved_files
-    }
-
-    yaml_content = create_yaml_data(metadata, images_result, sections_info)
-    yaml_path = output_dir / '000-data.yml'
-
-    with open(yaml_path, 'w', encoding='utf-8') as f:
-        f.write(yaml_content)
-    print(f"  ✓ 000-data.yml")
-
-    # Create README
-    readme_content = f"# {metadata.get('title', 'Unknown')}\n\n"
-    if metadata.get('author'):
-        readme_content += f"*by {metadata['author']}*\n\n"
-    readme_content += f"Extracted from [Project Gutenberg #{book_id}]({metadata['gutenberg_url']})\n\n"
-    readme_content += f"## Contents\n\n"
-
-    if front_matter:
-        readme_content += "### Front Matter\n\n"
-        for idx, section in enumerate(front_matter, 1):
-            filename = f"00-{idx:02d}-{sanitize_filename(section['title'])}.md"
-            readme_content += f"- [{section['title']}]({filename})\n"
-        readme_content += "\n"
-
-    readme_content += "### Chapters\n\n"
-    for idx, chapter in enumerate(chapters, 1):
-        filename = f"{idx:02d}-{sanitize_filename(chapter['title'])}.md"
-        readme_content += f"- [{chapter['title']}]({filename})\n"
-
-    readme_path = output_dir / 'README.md'
-    with open(readme_path, 'w', encoding='utf-8') as f:
-        f.write(readme_content)
-    print(f"  ✓ README.md")
-
-    # Summary
+    total = len(front_matter) + len(chapters)
     print("\n" + "=" * 60)
     print("✓ Extraction Complete!")
     print("=" * 60)
-    print(f"  Output directory: {output_dir}")
-    print(f"  Metadata file:    000-data.yml")
-    print(f"  Front matter:     {len(front_matter)} sections")
-    print(f"  Chapters:         {len(chapters)} sections")
-    print(f"  Images:           {len(images_result.get('images', []))} downloaded")
-    if images_result.get('cover'):
-        print(f"  Cover image:      images/{images_result['cover']}")
+    print(f"  Project root:  {root_path}")
+    print(f"  Essay files:   {essay_out} ({total} files)")
+    print(f"  Metadata:      {data_dir / 'book.yml'}")
+    if downloaded_cover:
+        print(f"  Cover image:   objects/{downloaded_cover}")
+    elif not skip_images:
+        print("  Cover image:   not found")
 
     return True
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Extract book data from Project Gutenberg',
+        description='Extract a Project Gutenberg book into a CollectionBuilder-Essay project.',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s 64317                        # Extract The Great Gatsby
-  %(prog)s 1342 --output ./essays       # Extract Pride and Prejudice to ./essays
-  %(prog)s 84 --slug frankenstein       # Extract Frankenstein with custom folder name
-  %(prog)s 11 --all-images              # Extract Alice's Adventures with all images
-  %(prog)s 84 --local-html pg84.html    # Use locally downloaded HTML file
-  %(prog)s 84 --cb-essay                # Extract directly into CB-Essay structure
+  %(prog)s 64317                          # Extract The Great Gatsby into ./_essay/
+  %(prog)s 84 --clear                     # Extract Frankenstein, clearing prior files first
+  %(prog)s 84 --project-root ~/my-site    # Extract into a different project directory
+  %(prog)s 84 --output ./staging          # Write markdown to ./staging/ instead of _essay/
+  %(prog)s 11 --all-images                # Download all inline images to objects/
+  %(prog)s 84 --skip-images               # Skip image downloading entirely
+  %(prog)s 84 --local-html pg84.html      # Use a locally downloaded HTML file
+  %(prog)s 84 --slug frankenstein         # Set a custom book slug in book.yml
 
-CB-Essay mode (--cb-essay):
-  Outputs files directly into a CollectionBuilder-Essay project structure:
-  - Markdown chapters -> _essay/ folder (with order front matter)
-  - Metadata -> _data/book.yml
-  - Images -> objects/ folder
-
-If downloads fail (403 errors), download HTML manually:
+If downloads fail (403 errors), download the HTML manually first:
   wget -O book.html 'https://www.gutenberg.org/cache/epub/84/pg84-images.html'
   %(prog)s 84 --local-html book.html
         """
     )
 
     parser.add_argument('book_id', type=str,
-                        help='Project Gutenberg book ID (e.g., 64317 for Great Gatsby)')
-    parser.add_argument('--output', '-o', default='./books',
-                        help='Output directory (default: ./books)')
-    parser.add_argument('--slug', '-s',
-                        help='Custom folder name (default: auto-generated from title/author)')
-    parser.add_argument('--skip-images', action='store_true',
-                        help='Skip downloading images')
-    parser.add_argument('--all-images', action='store_true',
-                        help='Download all inline images (not just cover)')
-    parser.add_argument('--local-html', '-l', metavar='FILE',
-                        help='Path to locally downloaded HTML file (skips download)')
-    parser.add_argument('--cb-essay', action='store_true',
-                        help='Output in CB-Essay format (_essay/, _data/book.yml, objects/)')
+                        help='Project Gutenberg book ID (e.g., 84 for Frankenstein)')
     parser.add_argument('--project-root', metavar='DIR',
-                        help='Project root for CB-Essay mode (default: current directory)')
+                        help='CB-Essay project root — writes to {root}/_essay/ and {root}/_data/book.yml (default: current directory)')
+    parser.add_argument('--output', '-o', metavar='DIR',
+                        help='Write essay markdown files here instead of {project-root}/_essay/')
+    parser.add_argument('--slug', '-s',
+                        help='Custom book slug for book.yml (default: auto-generated from title/author)')
+    parser.add_argument('--clear', action='store_true',
+                        help='Clear existing markdown files from the essay output directory before writing')
+    parser.add_argument('--skip-images', action='store_true',
+                        help='Skip downloading images to objects/')
+    parser.add_argument('--all-images', action='store_true',
+                        help='Download all inline images in addition to the cover')
+    parser.add_argument('--local-html', '-l', metavar='FILE',
+                        help='Path to a locally downloaded HTML file (skips fetching from Gutenberg)')
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='Enable verbose output')
 
@@ -1764,13 +1577,14 @@ If downloads fail (403 errors), download HTML manually:
 
     success = extract_book(
         book_id=args.book_id,
-        output_base=args.output,
+        project_root=args.project_root,
+        essay_dir=args.output,
         slug=args.slug,
+        clear=args.clear,
         skip_images=args.skip_images,
         download_all_images=args.all_images,
         local_html=args.local_html,
-        cb_essay=args.cb_essay,
-        project_root=args.project_root
+        verbose=args.verbose,
     )
 
     sys.exit(0 if success else 1)

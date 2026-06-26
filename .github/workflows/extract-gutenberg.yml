@@ -47,7 +47,7 @@ jobs:
       - name: Extract book from Project Gutenberg
         run: |
           echo "Extracting book #${{ inputs.book_id }} from Project Gutenberg..."
-          python gutenberg-extraction.py ${{ inputs.book_id }} --cb-essay --project-root .
+          python gutenberg-extraction.py ${{ inputs.book_id }} --project-root . --skip-images
           echo "Extraction complete!"
 
       - name: List extracted files
