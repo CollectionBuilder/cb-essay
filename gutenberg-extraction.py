@@ -1411,6 +1411,63 @@ def generate_about_page(metadata: Dict, root_path: Path) -> None:
     print(f"  ✓ pages/about.md")
 
 
+def update_theme_print_author(root_path: Path, author: Optional[str]) -> bool:
+    """Update _data/theme.yml print.author when author metadata is available."""
+    author_value = (author or '').strip()
+    if not author_value:
+        print("  Skipping theme print.author update (no author metadata)")
+        return False
+
+    theme_path = root_path / '_data' / 'theme.yml'
+    if not theme_path.exists():
+        print(f"  Warning: {theme_path} not found; skipping print.author update")
+        return False
+
+    content = theme_path.read_text(encoding='utf-8')
+    has_trailing_newline = content.endswith('\n')
+    lines = content.splitlines()
+
+    author_yaml = '"' + author_value.replace('\\', '\\\\').replace('"', '\\"') + '"'
+
+    print_start = None
+    for i, line in enumerate(lines):
+        if re.match(r'^\s*print:\s*$', line):
+            print_start = i
+            break
+
+    if print_start is None:
+        if lines and lines[-1].strip():
+            lines.append('')
+        lines.append('print:')
+        lines.append(f'  author: {author_yaml}')
+    else:
+        print_end = len(lines)
+        for i in range(print_start + 1, len(lines)):
+            line = lines[i]
+            if line and not line.startswith((' ', '\t')):
+                print_end = i
+                break
+
+        author_line = None
+        for i in range(print_start + 1, print_end):
+            if re.match(r'^\s{2}author\s*:', lines[i]):
+                author_line = i
+                break
+
+        if author_line is not None:
+            lines[author_line] = f'  author: {author_yaml}'
+        else:
+            lines.insert(print_start + 1, f'  author: {author_yaml}')
+
+    updated = '\n'.join(lines)
+    if has_trailing_newline:
+        updated += '\n'
+
+    theme_path.write_text(updated, encoding='utf-8')
+    print(f'  ✓ Updated _data/theme.yml print.author: {author_value}')
+    return True
+
+
 def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
                  slug: str = None, skip_images: bool = False,
                  download_all_images: bool = False, local_html: str = None,
@@ -1562,6 +1619,8 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
         front_matter, chapters, essay_out, data_dir,
         metadata, image_urls, downloaded_cover
     )
+
+    update_theme_print_author(root_path, metadata.get('author'))
 
     total = len(front_matter) + len(chapters)
     print("\n" + "=" * 60)

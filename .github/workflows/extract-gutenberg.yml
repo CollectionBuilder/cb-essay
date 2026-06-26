@@ -78,48 +78,58 @@ jobs:
               book_data = yaml.safe_load(f)
 
           title = book_data.get('title', 'Unknown Title')
-          author = book_data.get('author', 'Unknown Author')
+          author = (book_data.get('author') or '').strip()
+          display_author = author or 'Unknown Author'
           cover_urls = book_data.get('cover_urls', [])
 
-          if not cover_urls:
-              print("No cover images found in book.yml")
-              exit(0)
-
           selected_cover = None
-          for priority in ['large', 'medium', 'small']:
-              for url in cover_urls:
-                  if priority in url.lower():
-                      selected_cover = url
+          if cover_urls:
+              for priority in ['large', 'medium', 'small']:
+                  for url in cover_urls:
+                      if priority in url.lower():
+                          selected_cover = url
+                          break
+                  if selected_cover:
                       break
-              if selected_cover:
-                  break
 
-          if not selected_cover and cover_urls:
-              selected_cover = cover_urls[0]
+              if not selected_cover:
+                  selected_cover = cover_urls[0]
+
+          theme_file = '_data/theme.yml'
+          ryaml = YAML()
+          ryaml.preserve_quotes = True
+          try:
+              with open(theme_file, 'r') as f:
+                  theme_data = ryaml.load(f) or {}
+          except FileNotFoundError:
+              theme_data = {}
 
           if selected_cover:
               print(f"Found cover image: {selected_cover}")
-
-              theme_file = '_data/theme.yml'
-              ryaml = YAML()
-              ryaml.preserve_quotes = True
-              try:
-                  with open(theme_file, 'r') as f:
-                      theme_data = ryaml.load(f) or {}
-              except FileNotFoundError:
-                  theme_data = {}
-
               theme_data['featured-image'] = selected_cover
-              theme_data['featured-image-credit'] = f'This is a cover of the {title} by {author} as extracted from Project Gutenberg; it can be found here: {gutenberg_url}'
+              theme_data['featured-image-credit'] = f'This is a cover of the {title} by {display_author} as extracted from Project Gutenberg; it can be found here: {gutenberg_url}'
               theme_data['featured-image-alt-text'] = f'Cover image of {title}'
               theme_data['image-style'] = 'half-image'
-
-              with open(theme_file, 'w') as f:
-                  ryaml.dump(theme_data, f)
-
-              print(f"Updated {theme_file} with cover image metadata")
-          else:
+          elif cover_urls:
               print("No suitable cover image found")
+          else:
+              print("No cover images found in book.yml")
+
+          print_config = theme_data.get('print')
+          if not isinstance(print_config, dict):
+              print_config = {}
+              theme_data['print'] = print_config
+
+          if author:
+              print_config['author'] = author
+              print(f"Set print.author in {theme_file}: {author}")
+          else:
+              print(f"Author missing in _data/book.yml; leaving {theme_file} print.author unchanged")
+
+          with open(theme_file, 'w') as f:
+              ryaml.dump(theme_data, f)
+
+          print(f"Updated {theme_file}")
           EOF
 
           python process_cover.py
