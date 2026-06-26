@@ -683,6 +683,7 @@ mark.essay-search-highlight {
   max-width: 860px;
   margin: 3rem auto;
   padding: 0 1.5rem 4rem;
+  overflow-x: hidden;
 }
 
 .essay-search-hub-header {
@@ -729,6 +730,7 @@ mark.essay-search-highlight {
 .essay-scope-btns {
   display: flex;
   gap: 3px;
+  flex-wrap: wrap;
 }
 
 .essay-scope-btn {
@@ -759,6 +761,7 @@ mark.essay-search-highlight {
   font-size: 0.85rem;
   color: var(--cb-text-500);
   font-style: italic;
+  overflow-wrap: anywhere;
 }
 
 /* Sort order row — same visual language as scope row, appears above results */
@@ -767,6 +770,7 @@ mark.essay-search-highlight {
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 1.25rem;
+  flex-wrap: wrap;
 }
 
 .essay-sort-label {
@@ -781,6 +785,7 @@ mark.essay-search-highlight {
 .essay-sort-btns {
   display: flex;
   gap: 3px;
+  flex-wrap: wrap;
 }
 
 .essay-sort-btn {
@@ -839,10 +844,12 @@ mark.essay-search-highlight {
   display: flex;
   gap: 0;
   max-width: 600px;
+  min-width: 0;
 }
 
 .essay-search-input {
   flex: 1;
+  min-width: 0;
   font-family: var(--cb-font-family-base, Georgia, serif);
   font-size: 1rem;
   color: var(--cb-text-900);
@@ -991,6 +998,55 @@ mark.essay-result-mark {
   font-size: 0.75rem;
   color: var(--cb-text-400);
   margin: 0.5rem 0 0.2rem 1rem;
+}
+
+@media (max-width: 767.98px) {
+  .essay-search-hub {
+    margin: 2rem auto;
+    padding: 0 1rem 3rem;
+  }
+
+  .essay-search-scope,
+  .essay-search-sort-row {
+    align-items: flex-start;
+  }
+
+  .essay-scope-btns,
+  .essay-sort-btns {
+    width: 100%;
+    gap: 0.4rem;
+  }
+
+  .essay-scope-btn,
+  .essay-sort-btn {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  .essay-search-input-group {
+    max-width: 100%;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .essay-search-input {
+    flex: 1 1 100%;
+    border-right: 1px solid var(--cb-border-300);
+    border-radius: 3px;
+  }
+
+  .essay-search-btn,
+  .essay-search-clear-btn {
+    border-radius: 3px;
+    margin-left: 0;
+    padding: 0.55rem 0.9rem;
+  }
+
+  .essay-search-result-title,
+  .essay-search-result-snippet {
+    overflow-wrap: anywhere;
+  }
 }
 
 /* ========================================
