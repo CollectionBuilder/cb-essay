@@ -126,6 +126,9 @@ jobs:
           else:
               print(f"Author missing in _data/book.yml; leaving {theme_file} print.author unchanged")
 
+          theme_data['show-section-nav'] = False
+          print(f"Set show-section-nav in {theme_file}: false")
+
           with open(theme_file, 'w') as f:
               ryaml.dump(theme_data, f)
 
