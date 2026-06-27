@@ -5,14 +5,18 @@ custom-foot: essay/js/essay-search-js.html
 ---
 
 {% assign sorted_essays = site.essay | sort: "order" %}
+{% assign _essay_count = site.essay | size %}
+{% assign _search_desc = content | strip_html | strip %}
+{% if _search_desc == "" %}{% if _essay_count == 1 %}{% assign _search_desc = "Search the full text of this essay." %}{% else %}{% assign _search_desc = "Search the full text of all essays in this collection." %}{% endif %}{% endif %}
 
 <div class="essay-search-hub">
 
   <div class="essay-search-hub-header">
     <h1>Search</h1>
-    <p>{{ content | strip_html | strip | default: "Search the full text of all essays in this collection." }}</p>
+    <p>{{ _search_desc }}</p>
   </div>
 
+  {% if _essay_count > 1 %}
   <div class="essay-search-scope" id="essayScopeRow" hidden>
     <span class="essay-scope-label" id="essayScopeLabel">Scope</span>
     <div class="essay-scope-btns" role="group" aria-labelledby="essayScopeLabel" aria-describedby="essayScopeContext">
@@ -21,6 +25,7 @@ custom-foot: essay/js/essay-search-js.html
     </div>
     <span class="essay-scope-context" id="essayScopeContext" aria-live="polite"></span>
   </div>
+  {% endif %}
 
   <form role="search" id="essaySearchForm" class="essay-search-form">
     <label for="essaySearchInput" class="visually-hidden">Search essay text</label>

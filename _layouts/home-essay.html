@@ -430,6 +430,7 @@ If only one essay exists, render it inline with essay-content structure
 
 {%- comment -%} Include custom footer scripts from essay-content layout {%- endcomment -%}
 {% include essay/js/spotlight-media-handler.html %}
+{% include essay/js/essay-search-highlight-js.html %}
 
 {%- assign essay_slug = single_essay.url | remove: '.html' | split: '/' | compact | last -%}
 {% include essay/print-button.html essay_slug=essay_slug %}

@@ -8,6 +8,8 @@ permalink: /assets/js/site-search.json
 {%- assign i = 0 -%}
 {%- assign search_pages = site.essay | concat: site.html_pages | where_exp: 'p', 'p.title and p.text_search == true' -%}
 {%- assign heading_level = site.search_heading_level | default: 3 -%}
+{%- assign _actual_essays = site.essay | where_exp: "item", "item.title and item.order" -%}
+{%- assign _single_essay_mode = false -%}{%- if _actual_essays.size == 1 -%}{%- assign _single_essay_mode = true -%}{%- assign _home_url = '/' | relative_url -%}{%- endif -%}
 {%- for p in search_pages -%}
     {%- assign page_content = p.content -%}
     {%- assign page_title = p.title -%}
@@ -37,7 +39,7 @@ permalink: /assets/js/site-search.json
         {% endif %}
     {%- capture s_title -%}{% if s contains '|#|' %}{{ s | split: '|#|' | first | strip_html | strip }}{% else %}{{ page_title }}{% endif %}{%- endcapture -%}
     "{{ i }}": {
-        "url": "{{ p.url | relative_url }}#{{ s_id }}",
+        "url": "{% if _single_essay_mode and p.order %}{{ _home_url }}#{{ s_id }}{% else %}{{ p.url | relative_url }}#{{ s_id }}{% endif %}",
         "title": {{ s_title | jsonify }},
         "page": {{ page_title | jsonify }},
         "content": {{ s_content | jsonify }}
@@ -45,7 +47,7 @@ permalink: /assets/js/site-search.json
     {%- assign i = i | plus: 1 -%}
     {%- endfor -%}
     "{{ i }}": {
-        "url": "{{ p.url | relative_url }}",
+        "url": "{% if _single_essay_mode and p.order %}{{ _home_url }}{% else %}{{ p.url | relative_url }}{% endif %}",
         "title": {{ page_title | jsonify }},
         "page": null,
         "content": {{ p.description | default: all_headings | normalize_whitespace | jsonify }}

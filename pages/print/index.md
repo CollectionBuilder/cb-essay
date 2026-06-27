@@ -7,10 +7,11 @@ search_exclude: true
 ---
 
 <div class="print-hub">
+{% assign essay_count = site.essay | size %}
 
   <div class="print-hub-header">
     <h1>Print &amp; PDF</h1>
-    <p>Print individual essays or build a custom PDF book from the full collection.</p>
+    <p>{% if essay_count == 1 %}Print or save this essay as a PDF.{% else %}Print individual essays or build a custom PDF book from the full collection.{% endif %}</p>
   </div>
 
   <!-- Featured essay (shown via JS when ?essay= URL param is present) -->
@@ -31,8 +32,9 @@ search_exclude: true
   {% assign show_book = site.data.theme.print.show-book | default: true %}
   {% if show_book != false %}
   <div class="print-hub-section">
-    <h2>Build the Book</h2>
+    <h2>{% if essay_count == 1 %}Print Options{% else %}Build the Book{% endif %}</h2>
     <div class="book-builder">
+      {% if essay_count > 1 %}
       <div class="book-filter-row">
         <input class="book-filter" id="chapter-filter" type="search" placeholder="Filter chapters…" aria-label="Filter chapter list" autocomplete="off">
         <div class="book-filter-actions">
@@ -42,7 +44,8 @@ search_exclude: true
           <button class="book-action-btn" id="select-filtered-btn" aria-label="Select all filtered chapters" hidden>Filtered</button>
         </div>
       </div>
-      <ul class="book-checklist" id="book-checklist" aria-label="Chapters to include">
+      {% endif %}
+      <ul class="book-checklist" id="book-checklist" {% if essay_count == 1 %}hidden{% endif %} aria-label="Chapters to include">
         {% for essay in sorted_essays %}{% assign url_key = essay.url | split: "/" | last | remove: ".html" %}
         <li>
           <input type="checkbox" id="book-{{ essay.slug }}" value="{{ url_key }}" data-url-key="{{ url_key }}" checked>
@@ -76,14 +79,14 @@ search_exclude: true
         </div>
         {% endif %}
       </div>
-      <button class="book-generate-btn" id="book-generate-btn">Generate Book PDF</button>
+      <button class="book-generate-btn" id="book-generate-btn">{% if essay_count == 1 %}Generate PDF{% else %}Generate Book PDF{% endif %}</button>
     </div>
   </div>
   {% endif %}
 
   <!-- Individual essays -->
   {% assign show_individual = site.data.theme.print.show-individual | default: true %}
-  {% if show_individual != false %}
+  {% if show_individual != false and essay_count > 1 %}
   <div class="print-hub-section">
     <h2>Essays</h2>
     <div class="tributary-cards">
