@@ -68,6 +68,94 @@
   <style media="screen" data-pagedjs-ignore>
     .print-control-bar { display: flex !important; }
     body.has-print-bar { padding-top: 3rem !important; }
+
+    /* Mobile full-screen control pad — these rules must live in this
+       data-pagedjs-ignore block because Paged.js strips and re-processes
+       the main stylesheet, which removes the @media screen rules. */
+    @media (max-width: 767.98px) {
+      .print-control-bar {
+        inset: 0 !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 2.5rem 1.75rem !important;
+        gap: 0 !important;
+        border-bottom: none !important;
+        overflow-y: auto !important;
+      }
+      body.has-print-bar {
+        overflow: hidden !important;
+        padding-top: 0 !important;
+      }
+      .print-control-title {
+        font-size: 1.1rem !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        letter-spacing: 0 !important;
+        margin-bottom: 0.3rem !important;
+      }
+      .print-back-link {
+        font-size: 0.8rem !important;
+        display: block !important;
+        margin-bottom: 2.5rem !important;
+      }
+      .format-selector {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.5rem !important;
+        margin-bottom: 1.5rem !important;
+      }
+      .format-selector::before {
+        content: "Page size";
+        display: block !important;
+        grid-column: 1 / -1 !important;
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: oklch(55% 0.003 90);
+        margin-bottom: 0.35rem;
+      }
+      .layout-selector {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+        margin-bottom: 1.5rem !important;
+      }
+      .layout-selector::before {
+        content: "Layout";
+        display: block !important;
+        grid-column: 1 / -1 !important;
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: oklch(55% 0.003 90);
+        margin-bottom: 0.35rem;
+      }
+      .format-btn,
+      .layout-btn {
+        padding: 0.9rem 0.5rem !important;
+        font-size: 0.85rem !important;
+        text-align: center !important;
+        min-height: 3.5rem !important;
+      }
+      .cover-toggle-btn {
+        width: 100% !important;
+        padding: 0.9rem 0.5rem !important;
+        font-size: 0.85rem !important;
+        text-align: center !important;
+        min-height: 3.5rem !important;
+        margin-bottom: 1.5rem !important;
+      }
+      .print-btn {
+        margin-top: auto !important;
+        width: 100% !important;
+        padding: 1.25rem 1rem !important;
+        font-size: 1.05rem !important;
+        letter-spacing: 0.1em !important;
+      }
+    }
   </style>
 
   <!-- CSS custom properties from theme.yml — drive fonts and colors in print.css -->
@@ -363,6 +451,7 @@
           localStorage.setItem('print-format', fmt);
           var url = new URL(window.location.href);
           url.searchParams.set('format', fmt);
+          url.searchParams.delete('autoprint');
           window.location.href = url.toString();
         });
       });
@@ -404,6 +493,7 @@
             } else {
               url.searchParams.delete('cover');
             }
+            url.searchParams.delete('autoprint');
             window.location.href = url.toString();
           });
         }
@@ -423,6 +513,7 @@
           localStorage.setItem('print-layout', lay);
           var url = new URL(window.location.href);
           url.searchParams.set('layout', lay);
+          url.searchParams.delete('autoprint');
           window.location.href = url.toString();
         });
       });
@@ -463,6 +554,12 @@
             window.addEventListener('afterprint', function() {
               bar.style.setProperty('display', 'flex', 'important');
             });
+          }
+
+          // Auto-print when opened from the print hub (?autoprint=1).
+          // Fires after Paged.js finishes rendering so the PDF output is complete.
+          if (new URLSearchParams(window.location.search).get('autoprint') === '1') {
+            setTimeout(function() { window.print(); }, 400);
           }
         }
       }

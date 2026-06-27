@@ -52,6 +52,14 @@ search_exclude: true
       </ul>
       <div class="book-options">
         <div class="book-opt">
+          <span class="book-opt-label">Format</span>
+          <div class="format-hub-btns" role="group" aria-label="Page format">
+            <button class="format-hub-btn" data-format="letter" aria-pressed="false">Letter</button>
+            <button class="format-hub-btn" data-format="a4" aria-pressed="false">A4</button>
+            <button class="format-hub-btn" data-format="69" aria-pressed="false">6×9″</button>
+          </div>
+        </div>
+        <div class="book-opt">
           <span class="book-opt-label">Layout</span>
           <div class="layout-hub-btns" role="group" aria-label="Layout mode">
             <button class="layout-hub-btn" data-layout="digital" aria-pressed="false">Digital PDF</button>
@@ -62,7 +70,7 @@ search_exclude: true
         <div class="book-opt">
           <span class="book-opt-label">Cover</span>
           <label class="book-checkbox-label">
-            <input type="checkbox" id="cover-image-toggle" {% if site.data.theme.print.cover-image %}checked{% endif %}>
+            <input type="checkbox" id="cover-image-toggle" checked>
             <span>Include cover image</span>
           </label>
         </div>
@@ -82,7 +90,7 @@ search_exclude: true
       {% for essay in sorted_essays %}{% assign url_key = essay.url | split: "/" | last | remove: ".html" %}
       <div class="tributary-card">
         <p class="card-title">{{ essay.title }}</p>
-        <a class="card-link" href="{{ '/print/book/' | relative_url }}?essays={{ url_key }}" target="_blank" aria-label="Print {{ essay.title | escape }}, opens in new tab">
+        <a class="card-link" href="{{ '/print/book/' | relative_url }}?essays={{ url_key }}&autoprint=1" target="_blank" aria-label="Print {{ essay.title | escape }}, opens in new tab">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
             <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
             <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
@@ -107,6 +115,10 @@ search_exclude: true
     {% assign sorted_essays = site.essay | sort: "order" %}{% for essay in sorted_essays %}{% assign url_key = essay.url | split: "/" | last | remove: ".html" %}"{{ url_key }}": "{{ essay.title | escape }}"{% unless forloop.last %},{% endunless %}{% endfor %}
   };
 
+  // ——— Persistent user preferences ———
+  var formatMode = localStorage.getItem('print-format') || 'letter';
+  var layoutMode = localStorage.getItem('print-layout') || 'digital';
+
   // ——— URL param: ?essay=url-key ———
   var params = new URLSearchParams(window.location.search);
   var featuredUrlKey = params.get('essay');
@@ -117,7 +129,7 @@ search_exclude: true
     var btn = document.getElementById('featured-print-btn');
 
     titleEl.textContent = essayTitles[featuredUrlKey];
-    btn.href = '{{ "/print/book/" | relative_url }}' + '?essays=' + featuredUrlKey;
+    btn.href = '{{ "/print/book/" | relative_url }}' + '?essays=' + featuredUrlKey + '&format=' + formatMode + '&autoprint=1';
     block.style.display = 'block';
 
     // Pre-check only this essay in the book builder
@@ -126,8 +138,26 @@ search_exclude: true
     });
   }
 
+  // ——— Format toggle ———
+  document.querySelectorAll('.format-hub-btn').forEach(function(btn) {
+    var isActive = btn.dataset.format === formatMode;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    btn.addEventListener('click', function() {
+      formatMode = this.dataset.format;
+      localStorage.setItem('print-format', formatMode);
+      document.querySelectorAll('.format-hub-btn').forEach(function(b) {
+        var active = b.dataset.format === formatMode;
+        b.classList.toggle('active', active);
+        b.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    });
+    btn.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') this.click();
+    });
+  });
+
   // ——— Layout toggle ———
-  var layoutMode = localStorage.getItem('print-layout') || 'digital';
   document.querySelectorAll('.layout-hub-btn').forEach(function(btn) {
     var isActive = btn.dataset.layout === layoutMode;
     btn.classList.toggle('active', isActive);
@@ -179,8 +209,10 @@ search_exclude: true
       }
 
       var url = '{{ "/print/book/" | relative_url }}' + '?essays=' + checked.join(',');
+      url += '&format=' + formatMode;
       if (coverToggle && coverToggle.checked) url += '&cover=1';
       if (layoutMode === 'book') url += '&layout=book';
+      url += '&autoprint=1';
       window.open(url, '_blank');
     });
   }

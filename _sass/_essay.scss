@@ -1315,9 +1315,11 @@ mark.essay-result-mark {
       }
     }
 
-    .layout-hub-btns { display: flex; gap: 2px; }
+    .layout-hub-btns,
+    .format-hub-btns { display: flex; gap: 2px; }
 
-    .layout-hub-btn {
+    .layout-hub-btn,
+    .format-hub-btn {
       font-family: system-ui, sans-serif;
       font-size: 0.72rem;
       padding: 0.2rem 0.65rem;
