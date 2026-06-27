@@ -13,7 +13,7 @@ custom-foot: essay/js/spotlight-media-handler.html;essay/js/essay-search-highlig
             {%- assign content_start = content | strip | slice: 0, 200 -%}
             {%- assign has_title_header = false -%}
             {%- if content_start contains page.title -%}
-                {%- if content_start contains '<h1' or content_start contains '<h2' -%}
+                {%- if content_start contains '<h1' or content_start contains '<h2' or content_start contains '<h3' or content_start contains '<h4' -%}
                     {%- assign has_title_header = true -%}
                 {%- endif -%}
             {%- endif -%}

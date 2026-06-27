@@ -1354,7 +1354,7 @@ def create_cb_essay_book_yml(metadata: Dict, image_urls: Dict, sections_info: Di
     return '\n'.join(lines) + '\n'
 
 
-def create_cb_essay_markdown(section: Dict, order: int, part: str = None) -> str:
+def create_cb_essay_markdown(section: Dict, order: int, part: str = None, is_divider: bool = False) -> str:
     """Create markdown file for CB-Essay _essay folder (simplified front matter)."""
     title = normalize_text(section['title'], for_yaml=True)
 
@@ -1363,6 +1363,8 @@ def create_cb_essay_markdown(section: Dict, order: int, part: str = None) -> str
     fm_lines.append(f'order: {order}')
     if part:
         fm_lines.append(f'part: {part}')
+    if is_divider:
+        fm_lines.append('part_divider: true')
     fm_lines.append('---')
     fm_lines.append('')
 
@@ -1373,7 +1375,8 @@ def save_cb_essay_files(front_matter: List[Dict], chapters: List[Dict],
                         essay_out: Path, data_dir: Path,
                         metadata: Dict, image_urls: Dict,
                         downloaded_cover: str = None,
-                        part_map: Dict = None) -> Dict:
+                        part_map: Dict = None,
+                        part_divider_ids: set = None) -> Dict:
     """Save essay markdown files and book.yml."""
     essay_out.mkdir(parents=True, exist_ok=True)
     data_dir.mkdir(parents=True, exist_ok=True)
@@ -1393,7 +1396,8 @@ def save_cb_essay_files(front_matter: List[Dict], chapters: List[Dict],
         filepath = essay_out / filename
 
         part = (part_map or {}).get(section.get('id'))
-        content = create_cb_essay_markdown(section, idx, part=part)
+        is_divider = bool(part_divider_ids and section.get('id') in part_divider_ids)
+        content = create_cb_essay_markdown(section, idx, part=part, is_divider=is_divider)
 
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(content)
@@ -1655,6 +1659,7 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
         vprint(f"  Found {len(toc_anchors)} TOC anchor links")
 
     part_map = extract_toc_part_map(html_content)
+    part_divider_ids = {k for k in part_map if re.match(r'^part\d+$', k, re.IGNORECASE)}
     if part_map:
         part_labels = sorted(set(part_map.values()))
         vprint(f"  Detected {len(part_labels)} TOC parts: {part_labels}")
@@ -1700,6 +1705,7 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
         front_matter, chapters, essay_out, data_dir,
         metadata, image_urls, downloaded_cover,
         part_map=part_map,
+        part_divider_ids=part_divider_ids,
     )
 
     update_theme_print_author(root_path, metadata.get('author'))
