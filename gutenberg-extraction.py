@@ -71,6 +71,8 @@ GUTENBERG_URLS = {
     'html_images': 'https://www.gutenberg.org/cache/epub/{id}/pg{id}-images.html',
     'html_simple': 'https://www.gutenberg.org/files/{id}/{id}-h/{id}-h.htm',
     'html_alt': 'https://www.gutenberg.org/files/{id}/{id}-h.htm',
+    'cover_hires_jpg': 'https://www.gutenberg.org/cache/epub/{id}/images/cover.jpg',
+    'cover_hires_png': 'https://www.gutenberg.org/cache/epub/{id}/images/cover.png',
     'cover_medium': 'https://www.gutenberg.org/cache/epub/{id}/pg{id}.cover.medium.jpg',
     'cover_small': 'https://www.gutenberg.org/cache/epub/{id}/pg{id}.cover.small.jpg',
     'rdf': 'https://www.gutenberg.org/ebooks/{id}.rdf',
@@ -649,6 +651,8 @@ def extract_image_urls(book_id: str, html_content: str, base_url: str) -> Dict:
     """
     result = {
         'cover_urls': [
+            GUTENBERG_URLS['cover_hires_jpg'].format(id=book_id),
+            GUTENBERG_URLS['cover_hires_png'].format(id=book_id),
             GUTENBERG_URLS['cover_medium'].format(id=book_id),
             GUTENBERG_URLS['cover_small'].format(id=book_id),
         ],
@@ -703,6 +707,8 @@ class ImageExtractor:
         self.objects_dir.mkdir(parents=True, exist_ok=True)
 
         cover_urls = [
+            GUTENBERG_URLS['cover_hires_jpg'].format(id=self.book_id),
+            GUTENBERG_URLS['cover_hires_png'].format(id=self.book_id),
             GUTENBERG_URLS['cover_medium'].format(id=self.book_id),
             GUTENBERG_URLS['cover_small'].format(id=self.book_id),
         ]
@@ -712,7 +718,7 @@ class ImageExtractor:
             content = make_request(url, binary=True)
             if content:
                 ext = '.png' if '.png' in url.lower() else '.jpg'
-                filename = f"cover{ext}"
+                filename = f"{self.book_id}cover{ext}"
                 filepath = self.objects_dir / filename
 
                 with open(filepath, 'wb') as f:

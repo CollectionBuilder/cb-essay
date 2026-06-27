@@ -52,7 +52,7 @@ jobs:
       - name: Extract book from Project Gutenberg
         run: |
           echo "Extracting book #${{ inputs.book_id }} from Project Gutenberg..."
-          python gutenberg-extraction.py ${{ inputs.book_id }} --project-root . --skip-images
+          python gutenberg-extraction.py ${{ inputs.book_id }} --project-root .
           echo "Extraction complete!"
 
       - name: List extracted files
@@ -82,16 +82,17 @@ jobs:
           display_author = author or 'Unknown Author'
           cover_urls = book_data.get('cover_urls', [])
 
+          # Prefer the locally downloaded cover; fall back to CDN URL
+          local_cover = book_data.get('cover_image')  # e.g. "objects/64317cover.jpg"
           selected_cover = None
-          if cover_urls:
-              for priority in ['large', 'medium', 'small']:
+          if not local_cover and cover_urls:
+              for priority in ['hires', 'large', 'medium', 'small']:
                   for url in cover_urls:
                       if priority in url.lower():
                           selected_cover = url
                           break
                   if selected_cover:
                       break
-
               if not selected_cover:
                   selected_cover = cover_urls[0]
 
@@ -104,14 +105,19 @@ jobs:
           except FileNotFoundError:
               theme_data = {}
 
-          if selected_cover:
-              print(f"Found cover image: {selected_cover}")
+          if local_cover:
+              featured_image = f"/{local_cover}"
+              print(f"Using local cover image: {featured_image}")
+              theme_data['featured-image'] = featured_image
+              theme_data['featured-image-credit'] = f'This is a cover of the {title} by {display_author} as extracted from Project Gutenberg; it can be found here: {gutenberg_url}'
+              theme_data['featured-image-alt-text'] = f'Cover image of {title}'
+              theme_data['image-style'] = 'half-image'
+          elif selected_cover:
+              print(f"Local cover not available; using CDN URL: {selected_cover}")
               theme_data['featured-image'] = selected_cover
               theme_data['featured-image-credit'] = f'This is a cover of the {title} by {display_author} as extracted from Project Gutenberg; it can be found here: {gutenberg_url}'
               theme_data['featured-image-alt-text'] = f'Cover image of {title}'
               theme_data['image-style'] = 'half-image'
-          elif cover_urls:
-              print("No suitable cover image found")
           else:
               print("No cover images found in book.yml")
 
@@ -228,7 +234,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add _essay/ _data/ _config.yml pages/about.md 2>/dev/null || true
+          git add _essay/ _data/ _config.yml pages/about.md objects/ 2>/dev/null || true
 
           if git diff --staged --quiet; then
             echo "No changes to commit"
