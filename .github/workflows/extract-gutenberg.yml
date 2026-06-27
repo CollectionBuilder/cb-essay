@@ -83,7 +83,7 @@ jobs:
           cover_urls = book_data.get('cover_urls', [])
 
           # Prefer the locally downloaded cover; fall back to CDN URL
-          local_cover = book_data.get('cover_image')  # e.g. "objects/64317cover.jpg"
+          local_cover = book_data.get('cover_image')  # e.g. "assets/img/64317cover.jpg"
           selected_cover = None
           if not local_cover and cover_urls:
               for priority in ['hires', 'large', 'medium', 'small']:
@@ -234,7 +234,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add _essay/ _data/ _config.yml pages/about.md objects/ 2>/dev/null || true
+          git add _essay/ _data/ _config.yml pages/about.md assets/img/ 2>/dev/null || true
 
           if git diff --staged --quiet; then
             echo "No changes to commit"

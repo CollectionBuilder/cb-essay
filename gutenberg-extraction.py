@@ -696,15 +696,16 @@ def extract_image_urls(book_id: str, html_content: str, base_url: str) -> Dict:
 class ImageExtractor:
     """Extract and download images from Gutenberg books."""
 
-    def __init__(self, book_id: str, objects_dir: Path):
+    def __init__(self, book_id: str, objects_dir: Path, cover_dir: Path = None):
         self.book_id = book_id
         self.objects_dir = objects_dir
+        self.cover_dir = cover_dir or objects_dir
         self.downloaded_images = []
         self.cover_image = None
 
     def download_cover(self) -> Optional[str]:
-        """Download the cover image to the objects directory."""
-        self.objects_dir.mkdir(parents=True, exist_ok=True)
+        """Download the cover image to the cover directory (assets/img/ by default)."""
+        self.cover_dir.mkdir(parents=True, exist_ok=True)
 
         cover_urls = [
             GUTENBERG_URLS['cover_hires_jpg'].format(id=self.book_id),
@@ -719,7 +720,7 @@ class ImageExtractor:
             if content:
                 ext = '.png' if '.png' in url.lower() else '.jpg'
                 filename = f"{self.book_id}cover{ext}"
-                filepath = self.objects_dir / filename
+                filepath = self.cover_dir / filename
 
                 with open(filepath, 'wb') as f:
                     f.write(content)
@@ -730,7 +731,7 @@ class ImageExtractor:
                     'source_url': url,
                     'type': 'cover'
                 })
-                print(f"  ✓ Downloaded cover: objects/{filename}")
+                print(f"  ✓ Downloaded cover: assets/img/{filename}")
                 return filename
 
         print("  Warning: No cover image found")
@@ -1254,7 +1255,7 @@ def create_cb_essay_book_yml(metadata: Dict, image_urls: Dict, sections_info: Di
     lines.append('')
     lines.append('# Cover Image')
     if downloaded_cover:
-        lines.append(f'cover_image: "objects/{downloaded_cover}"')
+        lines.append(f'cover_image: "assets/img/{downloaded_cover}"')
     if image_urls.get('cover_urls'):
         lines.append('cover_urls:')
         for url in image_urls['cover_urls']:
@@ -1509,6 +1510,7 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
     essay_out = Path(essay_dir) if essay_dir else root_path / '_essay'
     data_dir = root_path / '_data'
     objects_dir = root_path / 'objects'
+    assets_img_dir = root_path / 'assets' / 'img'
 
     html_content = None
     html_url = None
@@ -1560,7 +1562,7 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
 
     # Step 3: Download images to objects/
     print("\n[3/5] Processing images...")
-    image_extractor = ImageExtractor(book_id, objects_dir)
+    image_extractor = ImageExtractor(book_id, objects_dir, cover_dir=assets_img_dir)
     downloaded_cover = None
 
     if not skip_images:
@@ -1636,7 +1638,7 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
     print(f"  Essay files:   {essay_out} ({total} files)")
     print(f"  Metadata:      {data_dir / 'book.yml'}")
     if downloaded_cover:
-        print(f"  Cover image:   objects/{downloaded_cover}")
+        print(f"  Cover image:   assets/img/{downloaded_cover}")
     elif not skip_images:
         print("  Cover image:   not found")
 
