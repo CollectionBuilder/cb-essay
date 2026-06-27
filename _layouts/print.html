@@ -422,9 +422,23 @@
           }
         });
         if (allowed.length === 1) {
-          // Single essay: remove book cover + TOC; keep the per-chapter title page
-          var cover = document.querySelector('.print-cover-page');
-          if (cover) cover.parentNode.removeChild(cover);
+          // Single essay: remove TOC; keep the per-chapter title page.
+          // Keep the book cover only when cover image is enabled.
+          var keepCover = false;
+          {% if page.book and featured_image_url %}
+          var singleCoverParam = params.get('cover');
+          var singleCoverStored = localStorage.getItem('print-cover-image');
+          var singleCoverDefault = {{ print_cover_image_default | jsonify }};
+          keepCover = singleCoverParam !== null
+            ? (singleCoverParam === '1' || singleCoverParam === 'true')
+            : singleCoverStored !== null
+              ? (singleCoverStored === 'true')
+              : singleCoverDefault;
+          {% endif %}
+          if (!keepCover) {
+            var cover = document.querySelector('.print-cover-page');
+            if (cover) cover.parentNode.removeChild(cover);
+          }
           var toc = document.querySelector('.print-toc');
           if (toc) toc.parentNode.removeChild(toc);
         } else {
