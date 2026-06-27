@@ -1,0 +1,32 @@
+{% comment %}
+
+    Call to Action
+    Renders a CTA button as a margin note (aside) or centered block section.
+
+    E.G. --> {% include essay/feature/cta.html text="Use This Template" link="https://example.com" %}
+    E.G. --> {% include essay/feature/cta.html text="Use This Template" link="https://example.com" style="aside" %}
+
+    Options:
+    - "text" = button label (required)
+    - "link" = destination URL (required)
+    - "description" = short invitation text above the button, block mode only (optional)
+    - "color" = Bootstrap color, default "primary"
+    - "size" = Bootstrap btn size: "lg" or "sm", default "lg"
+    - "width" = Bootstrap width: "25", "50", "75", or "100" (optional)
+    - "open-new-tab" = open link in new tab, default true; pass false to disable (optional)
+    - "style" = "aside" floats into the margin; omit or use "block" for centered section
+
+{%- endcomment -%}
+{%- assign cta_color = include.color | default: "primary" -%}
+{%- assign cta_size = include.size | default: "lg" -%}
+{%- unless include.open-new-tab == false or include.open-new-tab == "false" -%}
+  {%- assign cta_target = ' target="_blank"' -%}
+{%- endunless -%}
+{%- if include.style == "aside" -%}
+<sup class="aside-ref"></sup><span class="aside">{%- if include.description %}{{ include.description }}{% endif -%}<a class="btn btn-{{ cta_color }} btn-sm {% if include.width %} w-{{ include.width | default: '100' }}{% endif %}" href="{{ include.link }}"{{ cta_target }}>{{ include.text }}</a></span>
+{%- else -%}
+<div class="text-center my-4">
+{%- if include.description %}<p class="lead mb-2">{{ include.description }}</p>{% endif -%}
+<a class="btn btn-{{ cta_color }} btn-{{ cta_size }}{% if include.width %} w-{{ include.width }}{% endif %}" href="{{ include.link }}"{{ cta_target }}>{{ include.text }}</a>
+</div>
+{%- endif -%}
