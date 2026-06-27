@@ -150,6 +150,7 @@ You now understand the basics of integrating collection items with CB-Essay!
 - **[CB Discussion Forum](https://github.com/CollectionBuilder/collectionbuilder.github.io/discussions)** - Community support
 - **[Open an issue](https://github.com/CollectionBuilder/cb-essay/issues)** - Report bugs or request features
 
+
 ---
 
-**Remember:** Start simple with one or two collection items in asides, then explore advanced features as you need them. Copy the examples above and adapt them for your own work!
+{% include essay/feature/cta.html text="Use This Template →" link="https://github.com/new?template_name=cb-essay&template_owner=CollectionBuilder" description="You've seen everything CB-Essay can do. Now build something of your own." %}

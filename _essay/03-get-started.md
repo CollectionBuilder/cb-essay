@@ -244,4 +244,7 @@ Or dive into the [documentation]({{ '/docs.html' | relative_url }}).
 
 ---
 
-**You're ready to write!** The next essay will show you every available feature with working examples you can copy.
+{% include essay/feature/cta.html text="Use This Template →" link="https://github.com/new?template_name=cb-essay&template_owner=CollectionBuilder" description="Just want to start building? Create your own copy of CB-Essay with one click." %}
+
+
+

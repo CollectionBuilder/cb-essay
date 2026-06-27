@@ -8,7 +8,7 @@ CB-Essay is a free, open source publishing framework that lets you ***write with
 
 The idea for the tool, and many of its design elements, came out of our working with graduate students on digital theses the past couple of years. We've encouraged users of CollectionBuilder to write *with* their collections since we first started promoting the framework in 2019, but these [(CDIL) Grad Fellows](https://cdil.lib.uidaho.edu/) needed us to flip our setup around — featuring their essays on top, with CollectionBuilder living underneath.{% include essay/feature/aside.html text="See [Sedimentation](https://cdil.lib.uidaho.edu/sedimentation/), [Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/), and [Fire Lines](https://cdil.lib.uidaho.edu/fire-lines/)." %} 
 
-We liked the results and decided to try to make them more available through this new template. The mini-essays below will walk you through the system and get you started.
+We liked the results and decided to try to make them more available through this new template. The mini-essays below will walk you through the system and get you started.{% include essay/feature/cta.html style="aside" text="Use This Template →" link="https://github.com/new?template_name=cb-essay&template_owner=CollectionBuilder" description="Click below to start now: " size="sm" width="75" %}
 
 ## So What Does It Do?
 
@@ -72,5 +72,9 @@ Check out some examples sites, then get started. The remaining essays show off C
 Or jump straight to the [documentation]({{ '/docs.html' | relative_url }}) for reference guides.
 
 ---
+
+{% include essay/feature/cta.html text="Use This Template →" link="https://github.com/new?template_name=cb-essay&template_owner=CollectionBuilder" description="Ready to start your own CB-Essay project?" %}
+
+
 
 

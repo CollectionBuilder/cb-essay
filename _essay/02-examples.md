@@ -72,7 +72,10 @@ Ready to get started? The remaining essays walk you through everything:
 - **[Collection Integration](05-collection-integration.html)** - Blend essays with collection items
 
 Or jump straight to the [documentation]({{ '/docs.html' | relative_url }}) for reference guides.
-
 ---
+
+{% include essay/feature/cta.html text="Use This Template →" link="https://github.com/new?template_name=cb-essay&template_owner=CollectionBuilder" description="Start your own CB-Essay project on GitHub by clicking here." %}
+
+
 
 

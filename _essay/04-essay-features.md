@@ -348,8 +348,9 @@ You now know every feature available in CB-Essay! The final essay shows how to i
 
 **[Collection Integration →](05-collection-integration.html)**
 
-
-
+You can also get answers to your questions with our [online documentation]({{ '/docs.html' | relative_url }}) .
 ---
 
-**Remember:** Copy any feature from this page, replace the content with yours, and it will work in your essay!
+{% include essay/feature/cta.html text="Use This Template →" link="https://github.com/new?template_name=cb-essay&template_owner=CollectionBuilder" description="Ready to put these features to use? Start your own project." %}
+
+
