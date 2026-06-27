@@ -5,13 +5,38 @@
     </div>
     <div class="offcanvas-body">
         {%- assign ordered_essays = site.essay | sort: 'order' -%}
-        {% for e in ordered_essays %}
-        {% if e.title and e.order %}
-        <a class="essay-toc-link{% if page.url == e.url %} is-current{% endif %}" href="{{ e.url | relative_url }}">
-            {% if e.chapter %}<span class="essay-toc-num">{{ e.chapter }}</span>{% endif %}
-            <span class="essay-toc-title">{{ e.title }}</span>
-        </a>
-        {% endif %}
-        {% endfor %}
+        {%- assign toc_parts = ordered_essays | map: 'part' | compact | uniq -%}
+        {%- if toc_parts.size > 0 -%}
+            {%- for part in toc_parts -%}
+            <div class="essay-toc-part-label">{{ part }}</div>
+            {%- for e in ordered_essays -%}
+                {%- if e.title and e.order and e.part == part -%}
+                <a class="essay-toc-link{% if page.url == e.url %} is-current{% endif %}" href="{{ e.url | relative_url }}">
+                    {%- if e.chapter -%}<span class="essay-toc-num">{{ e.chapter }}</span>{%- endif -%}
+                    <span class="essay-toc-title">{{ e.title }}</span>
+                </a>
+                {%- endif -%}
+            {%- endfor -%}
+            {%- endfor -%}
+            {%- for e in ordered_essays -%}
+                {%- unless e.part -%}
+                {%- if e.title and e.order -%}
+                <a class="essay-toc-link{% if page.url == e.url %} is-current{% endif %}" href="{{ e.url | relative_url }}">
+                    {%- if e.chapter -%}<span class="essay-toc-num">{{ e.chapter }}</span>{%- endif -%}
+                    <span class="essay-toc-title">{{ e.title }}</span>
+                </a>
+                {%- endif -%}
+                {%- endunless -%}
+            {%- endfor -%}
+        {%- else -%}
+            {%- for e in ordered_essays -%}
+            {%- if e.title and e.order -%}
+            <a class="essay-toc-link{% if page.url == e.url %} is-current{% endif %}" href="{{ e.url | relative_url }}">
+                {%- if e.chapter -%}<span class="essay-toc-num">{{ e.chapter }}</span>{%- endif -%}
+                <span class="essay-toc-title">{{ e.title }}</span>
+            </a>
+            {%- endif -%}
+            {%- endfor -%}
+        {%- endif -%}
     </div>
 </div>

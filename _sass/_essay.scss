@@ -445,6 +445,18 @@ video::cue {
     .offcanvas-body { padding: 0; }
 }
 
+
+.essay-toc-part-label {
+    font-size: 0.7rem;
+    font-weight: normal;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cb-text-600);
+    padding: 0.75rem 1rem 0.25rem;
+    border-bottom: 1px solid var(--cb-border-200);
+    margin-bottom: 0.25rem;
+}
+
 .essay-toc-link {
     display: block;
     padding: 0.875rem 1.5rem;

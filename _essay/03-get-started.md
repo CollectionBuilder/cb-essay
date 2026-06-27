@@ -1,6 +1,6 @@
 ---
 title: Get Started with CB-Essay
-order: 20
+order: 30
 part: Documentation
 ---
 
