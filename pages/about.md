@@ -3,7 +3,7 @@ title: About
 layout: about
 permalink: /about.html
 credits: true
-text-search:true
+text-search: true
 # Edit the markdown in this file to describe your project
 ---
 
