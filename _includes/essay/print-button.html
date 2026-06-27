@@ -3,7 +3,7 @@
   var pathParts = window.location.pathname.split('/').filter(Boolean);
   var essayIndex = pathParts.indexOf('essay');
   var rawSlug = essayIndex >= 0 ? pathParts[essayIndex + 1] : null;
-  var essaySlug = rawSlug ? rawSlug.replace(/\.html$/, '') : null;
+  var essaySlug = rawSlug ? rawSlug.replace(/\.html$/, '') : ('{{ include.essay_slug }}' || null);
   if (!essaySlug) return;
 
   var printBase = '{{ "/print/" | relative_url }}';
@@ -18,8 +18,12 @@
     + '</svg><span>Print</span></a>'
     + '<a href="' + searchBase + '?essay=' + essaySlug + '" aria-label="Search this essay" title="Search">'
     + '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">'
-    + '<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.44 0a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>'
+    + '<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>'
     + '</svg><span>Search</span></a>';
   document.body.appendChild(bar);
+
+  window.addEventListener('scroll', function() {
+    bar.classList.toggle('scrolled', window.scrollY > 80);
+  }, { passive: true });
 })();
 </script>

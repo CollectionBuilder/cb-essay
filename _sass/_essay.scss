@@ -1391,6 +1391,20 @@ mark.essay-result-mark {
 
     &:hover { color: var(--cb-text-900); }
     svg { flex-shrink: 0; }
+
+    span {
+      display: inline-block;
+      max-width: 4em;
+      overflow: hidden;
+      white-space: nowrap;
+      opacity: 1;
+      transition: max-width 300ms ease, opacity 250ms ease;
+    }
+  }
+
+  &.scrolled a span {
+    max-width: 0;
+    opacity: 0;
   }
 }
 
