@@ -6,6 +6,7 @@ header-info: "Written 1875-75 | First published 1918"
 permalink: /essay/wreck-of-the-deutschland.html 
 featured-image: "/assets/img/deutschland.jpg"
 show-section-nav: false
+text-search: false
 ---
 
 {% include essay/new-section.html font-size="3" %}
