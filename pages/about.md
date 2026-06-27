@@ -1,13 +1,111 @@
 ---
-title: "Little Women; Or, Meg, Jo, Beth, and Amy — About"
+title: About
 layout: about
 permalink: /about.html
 credits: true
-text-search: false
+text-search:true
+# Edit the markdown in this file to describe your project
 ---
 
-{% include essay/feature/catalog-card.html %}
+## About CB-Essay
 
-## About This Edition
+**CB-Essay** combines long-form essay writing with digital collection features, enabling you to create multimodal scholarly narratives that seamlessly integrate primary sources, archival materials, and multimedia items directly into your writing.
 
-This edition of Little Women; Or, Meg, Jo, Beth, and Amy by Alcott, Louisa May, 1832-1888 was automatically generated from Project Gutenberg. [Project Gutenberg](https://www.gutenberg.org/about/) is the preeminent online library of public domain ebooks on the internet. The site offers more than 75,000 free eBooks. The edition is published using [CB-Essay](https://collectionbuilder.github.io/cb-essay/), an open source, static site framework, and the text used for this edition was extracted via its [Gutenberg Extraction Script](https://github.com/CollectionBuilder/cb-essay/blob/main/gutenberg-extraction.py).
+Built on [CollectionBuilder](https://collectionbuilder.github.io/), CB-Essay extends the CollectionBuilder-CSV framework to support essay and monograph publishing alongside traditional digital collection capabilities. 
+
+{% include feature/alert.html color="info" text="Have a question? Check out our [docs](https://collectionbuilder.github.io/cb-essay/docs.html)." %}
+
+### What Makes CB-Essay Different?
+
+Traditional digital publishing tools treat essays and collections as separate entities. CB-Essay unifies them, allowing you to:
+
+- Write in **simple Markdown** with specialized features for scholarly work
+- **Reference collection items** using simple includes
+- Create **asides and margin notes** that link to primary sources
+- Build **interactive timelines, maps, and visualizations** from your metadata
+- Publish beautiful, accessible sites with **zero JavaScript complexity**
+
+### Perfect For
+
+- **Digital humanities projects** and digital editions
+- **Annotated texts** with primary source integration
+- **Scholarly essays** that incorporate archival materials
+- **Multimodal monographs** combining narrative and collection items
+- **Publishing public domain texts** with scholarly apparatus
+
+### Key Features
+
+**Essay Writing:**
+- Sequential essay navigation with prev/next buttons
+- Flexible themes: traditional essay or book-style monograph
+- Support for long-form scholarship with chapter-like organization
+
+**CollectionBuilder Integration:**
+- All standard CB-CSV features: Browse, Map, Timeline, Subjects, Data downloads
+- Seamless integration of collection items within essays
+- Dual-collection workflow: essays + metadata-driven object pages
+
+**Essay-Specific Includes:**
+- **Blockquotes** - Styled quotations with attribution
+- **Asides** - Margin notes with optional collection items
+- **Image galleries** - Inline image displays
+- **Maps** - Embedded mini-maps with custom coordinates
+- **Section transitions** - Scrollama-powered visual breaks
+
+**Customizable Design:**
+- **8 built-in color themes** inspired by historical printing, designed for accessibility
+- **Coordinated typography** - each theme includes recommended font pairings
+- **Custom color support** - generate accessible palettes from any hex color
+- **Print/PDF output** - generate publication-ready PDFs with Paged.js
+
+**Bonus Feature: Project Gutenberg Extractor**
+
+Extract **60,000+ public domain books** from Project Gutenberg as ready-to-publish essays using our GitHub Action workflow. The script automatically downloads, cleans, and formats books into chapter files - perfect for creating annotated editions or scholarly apparatus.
+
+### Learn By Example
+
+This demo site is self-documenting. Each essay teaches you how to use CB-Essay while demonstrating the features:
+
+1. **Welcome to CB-Essay** - Overview and introduction
+2. **Getting Started** - Your first essay walkthrough
+3. **Essay Features** - All includes with copy-paste examples
+4. **Collection Integration** - Blending essays with collection items
+
+**Copy and replace:** Every feature you see can be copied directly into your own essays. Just replace the demo content with yours.
+
+### Example Projects
+
+- **[Frankenstein](https://dcnb.github.io/frankenstein/)** - Demonstrates monograph theme with chapter navigation
+- **[Wreck of the Deutschland](https://dcnb.github.io/wreck-of-the-deutschland/)** - Essay theme featuring poetry with visual transitions
+
+### Heavily Customized Examples
+
+- **[Sedimentation](https://cdil.lib.uidaho.edu/sedimentation/)** - Connected, sectioned essays on the history of Glen Canyon and the Glen Canyon Dam 
+- **[Tender Spaces](https://cdil.lib.uidaho.edu/tender-spaces/)** - A multi-lingual, multimodal essay on Gaëtane Buttigieg's life, art, and forced institutionalization in the 1970s.
+
+
+### Get Started
+
+Ready to create your essay?
+
+1. [Use this template](https://github.com/CollectionBuilder/cb-essay/generate)
+2. Check out the [Getting Started Guide](/essay/03-get-started.html)
+3. Explore the [documentation]({{ '/docs.html' | relative_url }})
+
+Questions? See our [documentation]({{ '/docs.html' | relative_url }}) or [open an issue](https://github.com/CollectionBuilder/cb-essay/issues).
+
+---
+
+### Credits & License
+
+**CB-Essay** is developed by the [Center for Digital Inquiry and Learning (CDIL)](https://cdil.lib.uidaho.edu/) at the University of Idaho Library.
+
+Built on [CollectionBuilder-CSV](https://github.com/CollectionBuilder/collectionbuilder-csv).
+
+- **Code:** MIT License
+- **Documentation:** CC-BY
+- Demo content includes items from CDIL collections and essays in the public domain
+
+### CollectionBuilder
+
+[CollectionBuilder](https://collectionbuilder.github.io/) is an open source framework for creating digital collection and exhibit websites that are driven by metadata and powered by modern static web technology. Learn more at [collectionbuilder.github.io](https://collectionbuilder.github.io/).
