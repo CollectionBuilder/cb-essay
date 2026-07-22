@@ -1,0 +1,11 @@
+{% assign _layout = include.layout | default: 'immersive' %}{% assign _position = include.position | default: 'left' %}{% assign _text_bg = include.text-background | default: 'light' %}{% if include.objectid %}{% assign _item = site.data[site.metadata] | where: 'objectid', include.objectid | first %}{% assign _src = _item.image_small | default: _item.object_download %}{% assign _alt = include.alt | default: _item.image_alt_text | default: _item.title %}{% else %}{% assign _src = include.src %}{% assign _alt = include.alt | default: '' %}{% endif %}
+{::nomarkdown}
+</div></div>
+<div class="scrolly-section scrolly-{{ _layout }}"{% if include.step-height %} style="--scrolly-step-height: {{ include.step-height }}"{% endif %}>
+  <div class="scrolly-sticky">
+    <img src="{{ _src | relative_url }}" alt="{{ _alt }}" class="scrolly-sticky__img">{% if include.caption %}<p class="scrolly-caption">{{ include.caption }}</p>{% endif %}
+  </div>
+  <div class="scrolly-steps">
+    <div class="step scrolly-step step-{{ _position }} {{ _text_bg }}-panel visible-step">
+      <div class="scrolly-step-content">
+{:/nomarkdown}

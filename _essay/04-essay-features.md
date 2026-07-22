@@ -239,6 +239,106 @@ Content continues here...{% endraw %}
 
 ---
 
+## Scrollytelling Blocks
+
+Pin an image (or series of images) while multiple narrative text panels scroll over it — the StoryMaps / scrolly-explainer pattern. Great for manuscript walkthroughs, archival photo essays, site surveys, or any story where you want an image to anchor the reader while text builds around it.
+
+### Immersive layout (image fills viewport)
+
+Below is a live demo. Scroll through the panels to see the image swap:
+
+{% include essay/feature/scrolly-media.html objectid="demo_001" alt="Administration Building, University of Idaho, ca. 1910" %}
+
+**Panel 1.** An archival postcard of the University of Idaho's Administration Building, taken around 1910. The image fills the screen while your text scrolls over it — no JavaScript wiring required on your end.
+
+{% include essay/feature/scrolly-step.html objectid="demo_009" %}
+
+**Panel 2.** When this panel scrolls into view, the image cross-fades to a different collection item. You can keep adding panels, each optionally swapping to a new image.
+
+{% include essay/feature/scrolly-step.html objectid="demo_031" position="right" text-background="dark" %}
+
+**Panel 3.** Panels can appear on the `left` (default), `center`, or `right`. Use `text-background="dark"` for a dark semi-transparent card instead of white.
+
+{% include essay/feature/scrolly-end.html %}
+
+**Copy this:**
+```liquid
+{% raw %}{% include essay/feature/scrolly-media.html objectid="your_first_image" alt="Description" %}
+
+First panel text. Explains the pinned image.
+
+{% include essay/feature/scrolly-step.html objectid="your_second_image" %}
+
+Second panel text. Image swaps when this enters view.
+
+{% include essay/feature/scrolly-step.html position="right" text-background="dark" %}
+
+Third panel — dark card, no image swap, image stays as second image.
+
+{% include essay/feature/scrolly-end.html %}{% endraw %}
+```
+
+Scrolling back up restores the correct image automatically — each panel tracks which image it belongs to in both scroll directions.
+
+### Sidecar layout (image right, text left)
+
+The `sidecar` layout keeps the image fixed on the right while text panels scroll on the left — good for comparing visuals to detailed analysis. Collapses to the stacked style on mobile.
+
+{% include essay/feature/scrolly-media.html objectid="demo_019" layout="sidecar" %}
+
+This is the front of the postcard. The image is pinned on the right while this text panel scrolls on the left.
+
+{% include essay/feature/scrolly-step.html objectid="demo_020" %}
+
+This is the back of the postcard. When this panel scrolls into view, the image on the right swaps to the reverse side.
+
+{% include essay/feature/scrolly-end.html %}
+
+```liquid
+{% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" layout="sidecar" %}
+
+Text panel beside the image.
+
+{% include essay/feature/scrolly-step.html objectid="another_image" %}
+
+Second panel; image swaps on the right.
+
+{% include essay/feature/scrolly-end.html %}{% endraw %}
+```
+
+### Controlling scroll speed with `step-height`
+
+The `step-height` parameter sets the minimum scroll distance for each panel — how long a reader must scroll before the next panel triggers. The default is `70vh`. Set it on `scrolly-media.html` to apply across the whole block, or on individual `scrolly-step.html` calls to control specific panels.
+
+```liquid
+{% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" step-height="100vh" %}
+
+Slow panel — reader scrolls a full screen before anything changes.
+
+{% include essay/feature/scrolly-step.html objectid="another_image" step-height="50vh" %}
+
+Quick transition — this panel triggers after half a screen of scrolling.
+
+{% include essay/feature/scrolly-end.html %}{% endraw %}
+```
+
+**`scrolly-media.html` parameters:**
+
+| Param | Default | Description |
+|-------|---------|-------------|
+| `objectid` | — | Collection item ID (resolves to its display image) |
+| `src` | — | Direct image path, e.g. `/assets/img/photo.jpg` |
+| `alt` | — | Image alt text |
+| `caption` | — | Small credit line overlaid bottom-right |
+| `layout` | `immersive` | `immersive` (full-screen overlay) or `sidecar` (image right, text left) |
+| `position` | `left` | Default panel position: `left`, `center`, `right` |
+| `text-background` | `light` | Panel style: `light` or `dark` |
+| `step-height` | `70vh` | Minimum scroll height per panel for the whole block |
+
+**`scrolly-step.html` parameters:** same as above except `layout` (inherits from block) — plus `step-height` overrides the block default for that panel only.
+
+---
+
 ## CollectionBuilder Features
 
 Beyond essay-specific includes, you can use any standard CollectionBuilder feature:

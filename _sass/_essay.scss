@@ -103,6 +103,221 @@ a {
     }
 }
 
+// The step emitted by scrolly-end.html acts as a white curtain that scrolls up
+// over the sticky image. visible-step keeps it opaque immediately so there's no
+// invisible gap; z-index:1 ensures it paints above the sticky (z-index:0).
+.scrolly-exit {
+    position: relative;
+    z-index: 1;
+    background: var(--bs-body-bg, white);
+    padding-top: 3rem !important;
+    padding-bottom: 1rem;
+
+    @media print {
+        padding-top: 0 !important;
+        background: transparent;
+    }
+}
+
+// ── Scrollytelling sections (scrolly-media / scrolly-step / scrolly-end) ──
+
+.scrolly-section {
+    position: relative;
+
+    .scrolly-sticky {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        margin-bottom: -100vh; // overlap trick: steps render in front of sticky image
+        overflow: hidden;
+        z-index: 0;
+
+        .scrolly-sticky__img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.4s ease;
+        }
+
+        .scrolly-caption {
+            position: absolute;
+            bottom: 0.75rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+            margin: 0;
+        }
+    }
+
+    .scrolly-steps {
+        position: relative;
+        z-index: 10;
+        padding-top: 15vh;
+        padding-bottom: 50vh; // scrolly-exit (white bg, visible-step) acts as curtain over the remaining sticky
+    }
+
+    // Override default .step {opacity:0} — outer step is always visible;
+    // the inner .scrolly-step-content handles its own fade.
+    .scrolly-step.step {
+        opacity: 1 !important;
+        padding: 0 !important;
+        margin-top: 0;
+        min-height: var(--scrolly-step-height, 70vh);
+        display: flex;
+        align-items: center;
+
+        &.step-left   { justify-content: flex-start; padding-left: 2rem !important; }
+        &.step-center { justify-content: center; }
+        &.step-right  { justify-content: flex-end; padding-right: 2rem !important; }
+
+        .scrolly-step-content {
+            max-width: min(420px, 90vw);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        &.fade-in .scrolly-step-content,
+        &.visible-step .scrolly-step-content { opacity: 1; }
+
+        &.light-panel .scrolly-step-content {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+            padding: 1.5rem;
+            border-radius: 4px;
+        }
+
+        &.dark-panel .scrolly-step-content {
+            background: rgba(20, 20, 20, 0.88);
+            color: #f0f0f0;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+            padding: 1.5rem;
+            border-radius: 4px;
+        }
+    }
+}
+
+// Sidecar: text left, image right — CSS Grid for reliable sticky
+.scrolly-section.scrolly-sidecar {
+    display: grid;
+    grid-template-columns: 45% 55%;
+    align-items: start;
+
+    // Sticky must NOT use margin-bottom:-100vh here; instead the padding-bottom
+    // on .scrolly-steps (inherited from the base rule, 100vh) keeps the grid row
+    // tall enough for sticky to stay active through all steps.
+    .scrolly-sticky {
+        grid-column: 2;
+        grid-row: 1;
+        margin-bottom: 0;
+        align-self: start;
+        background: var(--cb-surface-200, #f0f0f0); // bg fills bars when image is contained
+
+        .scrolly-sticky__img {
+            object-fit: contain; // show full image — sidecar is for archival/document detail
+        }
+    }
+
+    .scrolly-steps {
+        grid-column: 1;
+        grid-row: 1;
+        padding-top: 20vh;
+        // padding-bottom: 100vh is inherited from .scrolly-section .scrolly-steps
+        background: var(--bs-body-bg);
+    }
+
+    .scrolly-step.step {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+        justify-content: flex-start;
+
+        .scrolly-step-content {
+            max-width: 100%;
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            box-shadow: none !important;
+            padding: 1.5rem 0;
+        }
+    }
+}
+
+// Mobile: immersive — show full landscape image, not just the center strip
+@media (max-width: 768px) {
+    .scrolly-section:not(.scrolly-sidecar) .scrolly-sticky {
+        background: #111;
+
+        .scrolly-sticky__img {
+            object-fit: contain;
+        }
+    }
+}
+
+// Mobile: sidecar collapses to stacked/overlay
+@media (max-width: 768px) {
+    .scrolly-section.scrolly-sidecar {
+        display: block;
+
+        .scrolly-sticky {
+            position: sticky;
+            top: 0;
+            height: 55vh;
+            width: 100%;
+            margin-bottom: -55vh;
+            background: #111;
+
+            .scrolly-sticky__img {
+                object-fit: contain;
+            }
+        }
+
+        .scrolly-steps {
+            position: relative;
+            z-index: 10;
+            padding-top: 10vh;
+            background: transparent; // FIX: desktop sidecar sets solid bg; must clear it so sticky image shows through
+        }
+
+        .scrolly-step.step .scrolly-step-content {
+            background: rgba(255, 255, 255, 0.88) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12) !important;
+        }
+    }
+}
+
+// Print: unstack scrolly sections, show image once, all panels fully readable
+@media print {
+    .scrolly-section {
+        .scrolly-sticky {
+            position: relative !important;
+            height: 50vh !important;
+            margin-bottom: 0 !important;
+            break-inside: avoid;
+        }
+
+        .scrolly-step.step {
+            display: block !important;
+            min-height: 0 !important;
+
+            .scrolly-step-content {
+                opacity: 1 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                max-width: 100% !important;
+                padding: 0.25rem 0 !important;
+            }
+        }
+
+        .scrolly-steps { padding: 0 !important; }
+    }
+}
+
 .essay-main {
     max-width: 633px;
     width: 60%;
