@@ -291,7 +291,9 @@ Second panel; image swaps on the right.
 | `layout` | `immersive` | `immersive` (full-screen) or `sidecar` (side-by-side, image right) |
 | `position` | `left` | First panel position: `left`, `center`, or `right` |
 | `text-background` | `light` | First panel card style: `light` or `dark` |
-| `step-height` | `70vh` | Minimum scroll height per panel — controls how long each panel stays in view before the next triggers. Set on `scrolly-media.html` to apply to all steps in the block; override on individual `scrolly-step.html` calls for finer control. Accepts any CSS length: `80vh`, `600px`, etc. |
+| `step-height` | `300vh` | Minimum scroll height per panel — controls how long each panel stays in view before the next triggers. Set on `scrolly-media.html` to apply to all steps in the block; override on individual `scrolly-step.html` calls for finer control. Accepts any CSS length: `80vh`, `600px`, etc. |
+| `image-focus` | `center` | Any CSS `object-position` value (`"top"`, `"80% 30%"`, `"left center"`). Controls which part of the image is visible in `cover` mode and sets the zoom target for `zoom-in`/`zoom-out` animations. |
+| `animate` | — | Slow CSS animation on the sticky image. Options: `zoom-in`, `zoom-out`, `pan-left`, `pan-right`, `ken-burns`. See below. |
 
 ### `scrolly-step.html` parameters
 
@@ -305,14 +307,67 @@ Same as `scrolly-media.html` except `layout` (set once on the opening include).
 | `position` | `left` | Panel position for this step |
 | `text-background` | `light` | Panel card style for this step |
 | `step-height` | *(inherits)* | Per-step height override; overrides the block-level `step-height` for this panel only |
+| `image-focus` | — | Override focus point for this step (applied when panel enters view) |
+| `animate` | — | Start or change the animation when this panel enters view; restarts on every entry |
 
 ### `scrolly-end.html` parameters
 
 None. Just closes the block.
 
+### Image focus and animation
+
+**`image-focus`** sets `object-position` on the sticky image, controlling which part of the image fills the frame in `cover` mode. It also sets the `transform-origin` so zoom animations pull toward that point.
+
+```liquid
+{% include essay/feature/scrolly-media.html
+   objectid="photo_001"
+   image-focus="80% 30%" %}
+```
+
+Any CSS `object-position` value works: `"top"`, `"center"`, `"left center"`, `"80% 30%"`.
+
+**`animate`** applies a slow CSS animation (20 seconds, plays once) to the sticky image. The animation restarts each time a panel with `animate` set enters the viewport — whether scrolling forward or back.
+
+| Value | Effect |
+|-------|--------|
+| `zoom-in` | Slowly zooms toward the `image-focus` point (default: center) |
+| `zoom-out` | Starts zoomed in, slowly pulls back |
+| `pan-left` | Pans from right edge to left edge |
+| `pan-right` | Pans from left edge to right edge |
+| `ken-burns` | Diagonal zoom + gentle drift (preset, ignores `image-focus`) |
+
+```liquid
+{% include essay/feature/scrolly-media.html
+   objectid="photo_001"
+   animate="ken-burns" %}
+
+Opening panel — image slowly drifts and zooms.
+
+{% include essay/feature/scrolly-step.html
+   objectid="detail_001"
+   image-focus="75% 40%"
+   animate="zoom-in" %}
+
+Image swaps; new image zooms toward the upper-right subject.
+
+{% include essay/feature/scrolly-step.html
+   objectid="wide_001"
+   animate="pan-right" %}
+
+Pans across the full width of a wide archival photograph.
+
+{% include essay/feature/scrolly-end.html %}
+```
+
+**Notes:**
+- `image-focus` on a `scrolly-step.html` is applied when that step enters view. Steps without `image-focus` keep the previously set focus.
+- Pan animations (`pan-left`, `pan-right`) sweep the full horizontal range of the image; `image-focus` is ignored for panning but still affects the static position on adjacent steps.
+- On image swap, the animation always restarts on the new image (gives each image a clean start). Steps without `animate` that trigger a swap will restart the current animation.
+- All animations are suppressed in print/PDF output.
+
 ### Controlling step duration
 
-By default each panel is `70vh` tall, giving a comfortable scroll distance before the next panel triggers. Increase `step-height` for longer dwell time on an image, decrease it for a faster pace:
+By default each panel is `300vh` tall, giving a comfortable scroll distance before the next panel triggers. Increase `step-height` for longer dwell time on an image, decrease it for a faster pace:
 
 ```liquid
 {% comment %} Slow, meditative — linger on each image {% endcomment %}
@@ -452,9 +507,12 @@ See [CollectionBuilder documentation](../index.md) for complete feature referenc
 - Always close with `scrolly-end.html` — unclosed blocks break the essay layout
 - Use landscape-oriented images (16:9 or wider) for best results in immersive; portrait works well in sidecar
 - Keep panel text concise (2-4 sentences); readers are processing the image at the same time
-- Default `step-height` is `70vh`; increase to `90vh`–`100vh` for a slower, more meditative pace or decrease to `50vh` for quick transitions
+- Default `step-height` is `300vh`; increase to `90vh`–`100vh` for a slower, more meditative pace or decrease to `50vh` for quick transitions
 - Test on mobile: both layouts collapse to the same stacked style (image above, text below)
 - Avoid nesting scrolly blocks
+- Use `image-focus` to keep the subject of an image in frame when using `cover` mode
+- Keep animations subtle — `zoom-in` and `ken-burns` work well for archival images; `pan-left`/`pan-right` suit wide panoramas
+- Don't apply `animate` to every step; reserve it for panels where movement adds meaning
 
 ### Maps
 - Verify coordinates are correct

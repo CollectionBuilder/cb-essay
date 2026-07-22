@@ -1,7 +1,7 @@
-{% assign _position = include.position | default: 'left' %}{% assign _text_bg = include.text-background | default: 'light' %}{% if include.objectid %}{% assign _item = site.data[site.metadata] | where: 'objectid', include.objectid | first %}{% assign _swap_src = _item.image_small | default: _item.object_download %}{% assign _swap_alt = include.alt | default: _item.image_alt_text | default: _item.title %}{% elsif include.src %}{% assign _swap_src = include.src %}{% assign _swap_alt = include.alt | default: '' %}{% endif %}
+{% assign _position = include.position | default: 'left' %}{% assign _text_bg = include.text-background | default: 'light' %}{% assign _focus = include.image-focus %}{% assign _animate = include.animate %}{% if include.objectid %}{% assign _item = site.data[site.metadata] | where: 'objectid', include.objectid | first %}{% assign _swap_src = _item.image_small | default: _item.object_download %}{% assign _swap_alt = include.alt | default: _item.image_alt_text | default: _item.title %}{% elsif include.src %}{% assign _swap_src = include.src %}{% assign _swap_alt = include.alt | default: '' %}{% endif %}
 {::nomarkdown}
       </div>
     </div>
-    <div class="step scrolly-step step-{{ _position }} {{ _text_bg }}-panel"{% if _swap_src %} data-src="{{ _swap_src | relative_url }}"{% if _swap_alt %} data-alt="{{ _swap_alt }}"{% endif %}{% endif %}{% if include.step-height %} style="min-height: {{ include.step-height }}"{% endif %}>
+    <div class="step scrolly-step step-{{ _position }} {{ _text_bg }}-panel"{% if _swap_src %} data-src="{{ _swap_src | relative_url }}"{% if _swap_alt %} data-alt="{{ _swap_alt }}"{% endif %}{% endif %}{% if _focus %} data-focus="{{ _focus }}"{% endif %}{% if _animate %} data-animate="{{ _animate }}"{% endif %}{% if include.step-height %} style="min-height: {{ include.step-height }}"{% endif %}>
       <div class="scrolly-step-content">
 {:/nomarkdown}

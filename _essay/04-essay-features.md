@@ -10,7 +10,7 @@ CB-Essay provides specialized includes that extend Markdown for scholarly writin
 
 ## Basic Markdown
 
-Start with standard Markdown formatting:
+Like all CollectionBuilder content pages, CB-Essay uses markdown for basic writing options: 
 
 ### Headings
 
@@ -32,38 +32,73 @@ Start with standard Markdown formatting:
 
 [Link text](https://example.com) with `[text](url)`
 
-### Images
+Check out CB's [Markdown glossary entry](https://collectionbuilder.github.io/cb-docs/docs/glossary/#markdown) for resources and tutorials!
 
-```markdown
-![Alt text](/assets/img/image.jpg)
+
+
+## Asides (Margin Notes)
+
+Margin notes appear beside your text on desktop, inline on mobile.
+
+### Text-Only Aside
+
+Here's a paragraph with a margin note.{% include essay/feature/aside.html text="This is a margin note providing additional context or commentary." %} The text continues naturally, and the aside appears in the margin.
+
+**Copy this:**
+```liquid
+{% raw %}{% include essay/feature/aside.html
+   text="Your margin note text here" %}{% endraw %}
 ```
 
-### Lists
+### Aside with Collection Item
 
-**Bulleted:**
-- Item one
-- Item two
-  - Nested item
+Collection items can appear in asides with thumbnails.{% include essay/feature/aside.html objectid="demo_001" text="This manuscript shows early draft revisions." %} The aside shows a preview of the item with a link to view it.
 
-**Numbered:**
-1. First item
-2. Second item
-3. Third item
-
-### Code Blocks
-
-Use triple backticks for code:
-
-````markdown
-```yaml
----
-title: Your Essay
-order: 1
----
+**Copy this:**
+```liquid
+{% raw %}{% include essay/feature/aside.html
+   objectid="demo_001"
+   text="Context about this item" %}{% endraw %}
 ```
-````
+
+**Note:** The `objectid` must exist in your collection metadata CSV file.
 
 ---
+
+## Media Galleries
+
+Display collection items that, when clicked, appear in modal galleries.
+
+{% include essay/feature/image-gallery.html
+   objectid="demo_033;demo_031;demo_017" caption=false%}
+
+**Copy this:**
+```liquid
+{% raw %}{% include essay/feature/image-gallery.html
+   objectid="item1;item2;item3" %}{% endraw %}
+```
+
+Separate multiple object IDs with semicolons. Items must exist in your metadata.
+
+## Filtered Collection Galleries
+
+Below is another type of gallery, one that is filtered from the collection based on liquid logic (here it is `item.format contains 'image' and item.date > '1920'`) with an optional header.
+
+{% include feature/gallery.html 
+   heading="Items Dated after 1920"  
+   captions=false 
+   filter="item.date > '1920'" %}
+
+**Copy this:**
+```liquid
+{% raw %}{% include feature/gallery.html 
+   heading="Items Dated after 1920"  
+   captions=false 
+   filter="item.date > '1920'" %}{% endraw %}
+```
+
+---
+
 
 ## Blockquotes
 
@@ -122,99 +157,6 @@ Styled quotations with optional attribution and source links.
 
 ---
 
-## Asides (Margin Notes)
-
-Margin notes appear beside your text on desktop, inline on mobile.
-
-### Text-Only Aside
-
-Here's a paragraph with a margin note.{% include essay/feature/aside.html text="This is a margin note providing additional context or commentary." %} The text continues naturally, and the aside appears in the margin.
-
-**Copy this:**
-```liquid
-{% raw %}{% include essay/feature/aside.html
-   text="Your margin note text here" %}{% endraw %}
-```
-
-### Aside with Collection Item
-
-Collection items can appear in asides with thumbnails.{% include essay/feature/aside.html objectid="demo_001" text="This manuscript shows early draft revisions." %} The aside shows a preview of the item with a link to view it.
-
-**Copy this:**
-```liquid
-{% raw %}{% include essay/feature/aside.html
-   objectid="demo_001"
-   text="Context about this item" %}{% endraw %}
-```
-
-**Note:** The `objectid` must exist in your collection metadata CSV file.
-
----
-
-## Image Galleries
-
-Display multiple collection items as inline galleries.
-
-{% include essay/feature/image-gallery.html
-   objectid="demo_033;demo_031;demo_017" caption=false%}
-
-**Copy this:**
-```liquid
-{% raw %}{% include essay/feature/image-gallery.html
-   objectid="item1;item2;item3" %}{% endraw %}
-```
-
-Separate multiple object IDs with semicolons. Items must exist in your metadata.
-
-## Filtered Collection Galleries
-
-Below is another type of gallery, one that is filtered from the collection based on liquid logic (here it is `item.format contains 'image' and item.date > '1920'`) with an optional header.
-
-{% include feature/gallery.html 
-   heading="Items Dated after 1920"  
-   captions=false 
-   filter="item.date > '1920'" %}
-
-**Copy this:**
-```liquid
-{% raw %}{% include feature/gallery.html 
-   heading="Items Dated after 1920"  
-   captions=false 
-   filter="item.date > '1920'" %}{% endraw %}
-```
-
-
-
-
-
----
-
-## Mini Maps
-
-Embed small maps at specific coordinates.
-
-{% include feature/mini-map.html
-   latitude="46.727485"
-   longitude="-117.014185"
-   map-zoom="18" 
-   caption="This is the library where I work!" %}
-
-**Copy this:**
-```liquid
-{% raw %}{% include feature/mini-map.html
-   latitude="46.727485"
-   longitude="-117.014185"
-   map-zoom="18" 
-   caption="This is the library where I work!" %}{% endraw %}
-```
-
-**Finding coordinates:**
-- Right-click location on Google Maps → Click coordinates to copy
-- Or use [LatLong.net](https://www.latlong.net/)
-
-**Zoom levels:** 1 (world) to 18 (street level)
-
----
 
 ## Section Transitions
 
@@ -255,9 +197,13 @@ Below is a live demo. Scroll through the panels to see the image swap:
 
 **Panel 2.** When this panel scrolls into view, the image cross-fades to a different collection item. You can keep adding panels, each optionally swapping to a new image.
 
-{% include essay/feature/scrolly-step.html objectid="demo_031" position="right" text-background="dark" %}
+{% include essay/feature/scrolly-step.html objectid="demo_031" position="right" text-background="dark"  %}
 
 **Panel 3.** Panels can appear on the `left` (default), `center`, or `right`. Use `text-background="dark"` for a dark semi-transparent card instead of white.
+
+{% include essay/feature/scrolly-step.html objectid="demo_011" animate="ken-burns" image-focus="75% 40%" %}
+
+**Panel 4.** This panel swaps to a new image and starts a slow zoom toward its center. Add `animate="zoom-in"` to any step to trigger the effect when that panel enters view. Pair with `image-focus` to zoom toward a specific part of the image instead of the center.
 
 {% include essay/feature/scrolly-end.html %}
 
@@ -275,10 +221,40 @@ Second panel text. Image swaps when this enters view.
 
 Third panel — dark card, no image swap, image stays as second image.
 
+{% include essay/feature/scrolly-step.html objectid="your_third_image" animate="zoom-in" %}
+
+Fourth panel — image swaps and zooms slowly toward the center.
+
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
 
 Scrolling back up restores the correct image automatically — each panel tracks which image it belongs to in both scroll directions.
+
+### Image focus and animation
+
+Use `image-focus` to control which part of the image stays in view when using `cover` mode, and `animate` to add slow motion to the pinned image.
+
+**`image-focus`** — any CSS `object-position` value. Also sets the zoom target for `zoom-in` / `zoom-out`.
+
+```liquid
+{% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" image-focus="80% 30%" %}{% endraw %}
+```
+
+**`animate`** options: `zoom-in`, `zoom-out`, `pan-left`, `pan-right`, `ken-burns`
+
+```liquid
+{% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" animate="ken-burns" %}
+
+Opening panel with a slow diagonal zoom and drift.
+
+{% include essay/feature/scrolly-step.html objectid="detail_image" image-focus="75% 40%" animate="zoom-in" %}
+
+This panel swaps to a detail image and zooms toward the upper-right subject.
+
+{% include essay/feature/scrolly-end.html %}{% endraw %}
+```
+
+Animations restart fresh each time a panel enters view. Pan animations (`pan-left`, `pan-right`) sweep the full width of the image; `image-focus` controls the zoom target for `zoom-in` and `zoom-out`. `ken-burns` uses a preset diagonal drift.
 
 ### Sidecar layout (image right, text left)
 
@@ -308,7 +284,7 @@ Second panel; image swaps on the right.
 
 ### Controlling scroll speed with `step-height`
 
-The `step-height` parameter sets the minimum scroll distance for each panel — how long a reader must scroll before the next panel triggers. The default is `70vh`. Set it on `scrolly-media.html` to apply across the whole block, or on individual `scrolly-step.html` calls to control specific panels.
+The `step-height` parameter sets the minimum scroll distance for each panel — how long a reader must scroll before the next panel triggers. The default is `300vh`. Set it on `scrolly-media.html` to apply across the whole block, or on individual `scrolly-step.html` calls to control specific panels.
 
 ```liquid
 {% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" step-height="100vh" %}
@@ -333,7 +309,7 @@ Quick transition — this panel triggers after half a screen of scrolling.
 | `layout` | `immersive` | `immersive` (full-screen overlay) or `sidecar` (image right, text left) |
 | `position` | `left` | Default panel position: `left`, `center`, `right` |
 | `text-background` | `light` | Panel style: `light` or `dark` |
-| `step-height` | `70vh` | Minimum scroll height per panel for the whole block |
+| `step-height` | `300vh` | Minimum scroll height per panel for the whole block |
 
 **`scrolly-step.html` parameters:** same as above except `layout` (inherits from block) — plus `step-height` overrides the block default for that panel only.
 
@@ -383,6 +359,35 @@ Visualize subject keywords from your collection:
 ```
 
 ---
+
+
+## Mini Maps
+
+Embed small maps at specific coordinates.
+
+{% include feature/mini-map.html
+   latitude="46.727485"
+   longitude="-117.014185"
+   map-zoom="18" 
+   caption="This is the library where I work!" %}
+
+**Copy this:**
+```liquid
+{% raw %}{% include feature/mini-map.html
+   latitude="46.727485"
+   longitude="-117.014185"
+   map-zoom="18" 
+   caption="This is the library where I work!" %}{% endraw %}
+```
+
+**Finding coordinates:**
+- Right-click location on Google Maps → Click coordinates to copy
+- Or use [LatLong.net](https://www.latlong.net/)
+
+**Zoom levels:** 1 (world) to 18 (street level)
+
+---
+
 
 ## Combining Features
 

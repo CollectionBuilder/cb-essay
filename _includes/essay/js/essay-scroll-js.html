@@ -8,23 +8,46 @@
             var scroller = scrollama();
     
         // scrollama event handlers
-    // scrollama event handlers
+    // Removes any scrolly-animate-* class, then re-adds it after a reflow to restart the CSS animation.
+    function scrollyRestartAnimation(imgEl, animate) {
+        Array.from(imgEl.classList)
+            .filter(function(c) { return c.startsWith('scrolly-animate-'); })
+            .forEach(function(c) { imgEl.classList.remove(c); });
+        if (animate) {
+            void imgEl.offsetWidth; // force reflow so the removed class is flushed before re-adding
+            imgEl.classList.add('scrolly-animate-' + animate);
+        }
+    }
+
     function handleStepEnter(response) {
         var stepIndex = response.index;
 
         // Add fade-in effect to the current step
         response.element.classList.add("fade-in");
 
-        // Scrolly steps: swap sticky image using pre-computed lookup (handles both directions)
+        // Scrolly steps: swap sticky image + apply focus/animate using pre-computed src lookup
         if (response.element.classList.contains('scrolly-step')) {
             var section = response.element.closest('.scrolly-section');
             var imgEl = section ? section.querySelector('.scrolly-sticky__img') : null;
             if (imgEl && section._scrollySrcs) {
                 var idx = section._scrollySteps.indexOf(response.element);
                 var targetSrc = section._scrollySrcs[idx];
+                var stepFocus   = response.element.getAttribute('data-focus');   // null if not set
+                var stepAnimate = response.element.getAttribute('data-animate'); // null if not set
                 if (targetSrc && imgEl.getAttribute('src') !== targetSrc) {
                     imgEl.style.opacity = '0';
-                    setTimeout(function() { imgEl.src = targetSrc; imgEl.style.opacity = '1'; }, 380);
+                    setTimeout(function() {
+                        imgEl.src = targetSrc;
+                        if (stepFocus !== null) { imgEl.style.objectPosition = stepFocus; imgEl.style.transformOrigin = stepFocus; }
+                        // On image swap always restart animation; use step's animate if given, else the current one
+                        var curAnimate = (Array.from(imgEl.classList).find(function(c) { return c.startsWith('scrolly-animate-'); }) || '').replace('scrolly-animate-', '') || null;
+                        scrollyRestartAnimation(imgEl, stepAnimate !== null ? stepAnimate : curAnimate);
+                        imgEl.style.opacity = '1';
+                    }, 380);
+                } else {
+                    // No src swap — only update focus/animate if explicitly specified on this step
+                    if (stepFocus   !== null) { imgEl.style.objectPosition = stepFocus; imgEl.style.transformOrigin = stepFocus; }
+                    if (stepAnimate !== null) { scrollyRestartAnimation(imgEl, stepAnimate); }
                 }
             }
             response.element.classList.remove("fade-out");

@@ -318,6 +318,48 @@ a {
     }
 }
 
+// ── Scrolly image animations ─────────────────────────────────────────────────
+// Triggered by adding scrolly-animate-* class to .scrolly-sticky__img.
+// JS restarts them (removes class, forces reflow, re-adds) when image swaps
+// or when a step with data-animate enters the viewport.
+
+@keyframes scrolly-zoom-in {
+    from { transform: scale(1); }
+    to   { transform: scale(1.35); }
+}
+
+@keyframes scrolly-zoom-out {
+    from { transform: scale(1.4); }
+    to   { transform: scale(1); }
+}
+
+@keyframes scrolly-pan-right {
+    from { object-position: 0%   50%; }
+    to   { object-position: 100% 50%; }
+}
+
+@keyframes scrolly-pan-left {
+    from { object-position: 100% 50%; }
+    to   { object-position: 0%   50%; }
+}
+
+@keyframes scrolly-ken-burns {
+    0%   { transform: scale(1);    object-position: 30% 60%; }
+    100% { transform: scale(1.25); object-position: 65% 35%; }
+}
+
+.scrolly-sticky__img {
+    &.scrolly-animate-zoom-in   { animation: scrolly-zoom-in   2s ease-in-out forwards; }
+    &.scrolly-animate-zoom-out  { animation: scrolly-zoom-out  2s ease-in-out forwards; }
+    &.scrolly-animate-pan-right { animation: scrolly-pan-right 2s linear      forwards; }
+    &.scrolly-animate-pan-left  { animation: scrolly-pan-left  2s linear      forwards; }
+    &.scrolly-animate-ken-burns { animation: scrolly-ken-burns 2s ease-in-out forwards; }
+
+    @media print {
+        &[class*="scrolly-animate-"] { animation: none !important; }
+    }
+}
+
 .essay-main {
     max-width: 633px;
     width: 60%;
