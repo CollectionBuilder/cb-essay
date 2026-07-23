@@ -38,6 +38,7 @@ Each step on a map block can declare a `map-lat`/`map-lng`/`map-zoom` to fly to.
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 
@@ -75,6 +76,7 @@ Each step on a map block can declare a `map-lat`/`map-lng`/`map-zoom` to fly to.
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 
@@ -104,6 +106,7 @@ Each step on a map block can declare a `map-lat`/`map-lng`/`map-zoom` to fly to.
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 
@@ -133,6 +136,7 @@ Each step on a map block can declare a `map-lat`/`map-lng`/`map-zoom` to fly to.
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 
@@ -170,6 +174,7 @@ Each step on a map block can declare a `map-lat`/`map-lng`/`map-zoom` to fly to.
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 
@@ -199,6 +204,7 @@ Each step on a map block can declare a `map-lat`/`map-lng`/`map-zoom` to fly to.
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 
@@ -228,6 +234,7 @@ Each step on a map block can declare a `map-lat`/`map-lng`/`map-zoom` to fly to.
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 
@@ -257,6 +264,7 @@ Instead of raw coordinates, `scrolly-map.html` can seed its center and an initia
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 

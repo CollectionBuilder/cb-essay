@@ -51,6 +51,7 @@ Here's a paragraph with a margin note.{% include essay/feature/aside.html text="
 {% raw %}{% include essay/feature/aside.html
    text="Your margin note text here" %}{% endraw %}
 ```
+{: .copy-code}
 
 ### Aside with Collection Item
 
@@ -62,6 +63,7 @@ Collection items can appear in asides with thumbnails.{% include essay/feature/a
    objectid="demo_001"
    text="Context about this item" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Note:** The `objectid` must exist in your collection metadata CSV file.
 
@@ -79,6 +81,7 @@ Display collection items that, when clicked, open in a full-screen modal viewer.
 {% raw %}{% include essay/feature/image-gallery.html
    objectid="item1;item2;item3" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Gathering multiple pieces:** Separate object IDs with semicolons (`objectid="item1;item2;item3"`) to pull several items from your metadata into one gallery — the viewer lets readers step through all of them in sequence.
 
@@ -95,6 +98,7 @@ The gallery isn't limited to images — give it objectids for video, audio, or P
 {% raw %}{% include essay/feature/image-gallery.html
    objectid="image_item;video_item;audio_item;pdf_item" %}{% endraw %}
 ```
+{: .copy-code}
 
 Items without a thumbnail (video, audio, PDF) render as a labeled placeholder; clicking opens the correct player — an HTML5 video/audio player or embedded PDF viewer — right in the modal. No separate include per media type needed.
 
@@ -136,6 +140,7 @@ Styled quotations with optional attribution and source links.
    quote="One begins as a student but becomes a friend of clouds"
    speaker="Lyn Hejinian" %}{% endraw %}
 ```
+{: .copy-code}
 
 ### With Source Citation
 
@@ -151,6 +156,7 @@ Styled quotations with optional attribution and source links.
    speaker="W. H. Auden"
    source="Musée des Beaux Arts" %}{% endraw %}
 ```
+{: .copy-code}
 
 ### Large Centered Quote with No Border
 
@@ -171,6 +177,7 @@ Styled quotations with optional attribution and source links.
    border=false %}
 {% endraw %}
 ```
+{: .copy-code}
 
 **Size options:** `sm`, `md`, `lg`, `xl`, `xxl`
 
@@ -197,6 +204,7 @@ The section break above creates a visual pause and scroll-triggered transition e
 
 Content continues here...{% endraw %}
 ```
+{: .copy-code}
 
 **Use sparingly** - 3-4 sections per essay maximum for best effect.
 
@@ -275,6 +283,7 @@ Embed small maps at specific coordinates.
    map-zoom="18" 
    caption="This is the library where I work!" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Finding coordinates:**
 - Right-click location on Google Maps → Click coordinates to copy
@@ -298,6 +307,7 @@ Here's Hell's Half Acre Lookout.{% include essay/feature/aside-map.html latitude
    location="Hell's Half Acre Lookout"
    map-zoom="12" %}{% endraw %}
 ```
+{: .copy-code}
 
 You can also seed it from a collection item's coordinates with `objectid`, customize the trigger with `button` and `color`, and add a **"View on Full Map"** link with `map-link=true`:
 

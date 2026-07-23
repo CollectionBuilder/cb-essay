@@ -54,6 +54,7 @@ I can add blockquotes:
 
 And margin notes:{% raw %}{% include essay/feature/aside.html text="This is a margin note!" %}{% endraw %}
 ```
+{: .copy-code}
 
 5. **Commit changes** and wait for GitHub Pages to rebuild (2-3 minutes)
 
@@ -85,6 +86,7 @@ title: Your Essay Title
 order: 1
 ---
 ```
+{: .copy-code}
 
 - **`title`**: Appears in navigation and page header
 - **`order`**: Controls display sequence (1, 2, 3...)
@@ -99,6 +101,7 @@ byline: Michel de Montaigne
 featured-image: /assets/img/chapter-image.jpg
 ---
 ```
+{: .copy-code}
 
 - **`byline`**: Author attribution
 - **`featured-image`**: Header image for this essay
@@ -137,6 +140,7 @@ Styled quotations with attribution and source links.
    quote="Knowledge comes, but wisdom lingers"
    speaker="Alfred Lord Tennyson" %}{% endraw %}
 ```
+{: .copy-code}
 
 **With source:**
 ```liquid
@@ -145,6 +149,7 @@ Styled quotations with attribution and source links.
    speaker="Jane Austen"
    source="Pride and Prejudice" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Large centered quote:**
 ```liquid
@@ -153,6 +158,7 @@ Styled quotations with attribution and source links.
    size="xl"
    align="center" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Parameters:**
 - `quote` - Quote text (required)
@@ -170,6 +176,7 @@ Margin notes appear beside text on desktop, inline on mobile.
 ```liquid
 {% raw %}Here's text with a margin note.{% include essay/feature/aside.html text="This is a margin note!" %} Text continues.{% endraw %}
 ```
+{: .copy-code}
 
 **Aside with collection item:**
 ```liquid
@@ -177,6 +184,7 @@ Margin notes appear beside text on desktop, inline on mobile.
    objectid="demo_001"
    text="Context about this item" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Parameters:**
 - `text` - Margin note text (supports Markdown)
@@ -193,6 +201,7 @@ Display multiple collection items — images, video, audio, or PDFs — in an in
 {% raw %}{% include essay/feature/image-gallery.html
    objectid="item1;item2;item3" %}{% endraw %}
 ```
+{: .copy-code}
 
 ### Mini Maps
 
@@ -204,6 +213,7 @@ Embed maps at specific coordinates:
    longitude="-117.014185"
    zoom="10" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Parameters:**
 - `latitude` - Center latitude (required)
@@ -222,6 +232,7 @@ Create visual breaks with scroll transitions:
 
 Content continues...{% endraw %}
 ```
+{: .copy-code}
 
 ### Complete Feature Reference
 
@@ -248,6 +259,7 @@ Second panel text.
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 Every animation, layout, and map-transition variant — zoom, pan, Ken Burns, sidecar, video backgrounds, flyTo/pan/basemap-switching maps — is demonstrated live with copy-paste code in the [Scrolly Media Gallery](/essay/scrolly-media-gallery.html) and [Scrolly Map Gallery](/essay/scrolly-map-gallery.html). The tables below are the condensed parameter reference.
 
@@ -307,6 +319,7 @@ Reference items from your metadata CSV using their `objectid`:
    objectid="demo_001"
    text="This manuscript shows early revisions" %}{% endraw %}
 ```
+{: .copy-code}
 
 ### Metadata Requirements
 
@@ -324,16 +337,19 @@ All standard CollectionBuilder includes work in essays:
 ```liquid
 {% raw %}{% include feature/card.html objectid="demo_001" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Timeline:**
 ```liquid
 {% raw %}{% include feature/timelinejs.html %}{% endraw %}
 ```
+{: .copy-code}
 
 **Subject cloud:**
 ```liquid
 {% raw %}{% include feature/cloud.html fields="subject" %}{% endraw %}
 ```
+{: .copy-code}
 
 For complete CollectionBuilder documentation, see [CollectionBuilder Docs](https://collectionbuilder.github.io/cb-docs/).
 
@@ -354,17 +370,20 @@ image-style: full-image
 featured-image: /assets/img/banner.jpg
 home-banner-image-position: center
 ```
+{: .copy-code}
 
 **Half image:**
 ```yaml
 image-style: half-image
 featured-image: /assets/img/cover.jpg
 ```
+{: .copy-code}
 
 **No image:**
 ```yaml
 image-style: no-image
 ```
+{: .copy-code}
 
 ### Navigation and Homepage Layout Options
 
@@ -374,6 +393,7 @@ show-contents-nav: true    # "Contents" button in navbar opens chapter list pane
 show-homepage-toc: true    # chapter table of contents on the homepage
 show-section-nav: false    # floating sidebar TOC built from H2s on each essay page
 ```
+{: .copy-code}
 
 **Common configurations:**
 
@@ -383,6 +403,7 @@ show-contents-nav: false
 show-homepage-toc: false
 show-section-nav: false
 ```
+{: .copy-code}
 
 Multi-chapter monograph:
 ```yaml
@@ -390,6 +411,7 @@ show-contents-nav: true
 show-homepage-toc: true
 show-section-nav: false
 ```
+{: .copy-code}
 
 Long single essay with in-page navigation:
 ```yaml
@@ -397,6 +419,7 @@ show-contents-nav: false
 show-homepage-toc: false
 show-section-nav: true
 ```
+{: .copy-code}
 
 
 ### Color Themes
@@ -406,6 +429,7 @@ CB-Essay includes 8 built-in color themes inspired by historical printing presse
 ```yaml
 color-theme: aldine  # default, idaho, lyre, nonesuch, aldine, doves, kelmscott, gregynog, ashendene
 ```
+{: .copy-code}
 
 **Built-in themes:**
 - `default` - Warm cream neutral
@@ -426,6 +450,7 @@ color-theme: custom
 custom-color: "#8B4513"
 navbar-style: dark  # dark or light
 ```
+{: .copy-code}
 
 The system automatically generates an accessible color palette from your hex color.
 
@@ -438,12 +463,14 @@ CB-Essay offers three font options:
 base-font-family: theme
 display-font-family: theme
 ```
+{: .copy-code}
 
 **2. Georgia (no CDN)** - Works offline, no external requests:
 ```yaml
 base-font-family: Georgia
 display-font-family: Georgia
 ```
+{: .copy-code}
 
 **3. Custom Google Font:**
 ```yaml
@@ -451,6 +478,7 @@ base-font-family: "'Literata', Georgia, serif"
 display-font-family: "'Literata', Georgia, serif"
 font-cdn: "https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap"
 ```
+{: .copy-code}
 
 You can mix options - for example, use theme fonts for body text with a custom display font for headings.
 
@@ -458,6 +486,7 @@ You can mix options - for example, use theme fonts for body text with a custom d
 ```yaml
 base-font-size: 1.2em  # 1.2em - 1.4em recommended for long-form reading
 ```
+{: .copy-code}
 
 ### Creating Your Own Theme
 
@@ -550,6 +579,7 @@ print:
   institution: "Your Org" # Institution on cover
   aside-style: margin     # margin (floats into gutter) or inline (callout blocks)
 ```
+{: .copy-code}
 
 ### What Works in Print
 
@@ -650,6 +680,7 @@ CB-Essay is a static site with no dependency on GitHub. Run a production build a
 ```bash
 JEKYLL_ENV=production bundle exec jekyll build
 ```
+{: .copy-code}
 
 Upload the resulting `_site/` folder to any web host, institutional server, or storage bucket.
 
@@ -658,6 +689,7 @@ Upload the resulting `_site/` folder to any web host, institutional server, or s
 ```bash
 bundle exec jekyll s
 ```
+{: .copy-code}
 
 Visit `http://localhost:4000` to preview changes before pushing.
 
@@ -666,6 +698,7 @@ Visit `http://localhost:4000` to preview changes before pushing.
 ```bash
 JEKYLL_ENV=production bundle exec jekyll build
 ```
+{: .copy-code}
 
 Outputs to `_site/` directory with full meta tags and analytics.
 

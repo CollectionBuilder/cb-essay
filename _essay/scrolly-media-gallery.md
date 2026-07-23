@@ -34,6 +34,7 @@ A new image, with `image-focus="60% 30%"` added. The zoom now targets the upper 
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 
@@ -55,6 +56,7 @@ The image begins close and expands outward. This reversal creates a sense of rev
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 
@@ -84,6 +86,7 @@ Pan animations sweep the image horizontally as you scroll. Best suited to wide p
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 
@@ -113,6 +116,7 @@ Each panel with `animate="ken-burns"` resets to the start of the diagonal drift 
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 
@@ -150,6 +154,7 @@ Each panel with `animate="ken-burns"` resets to the start of the diagonal drift 
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 
@@ -179,6 +184,7 @@ The reverse side. Swapping images in sidecar feels like turning a page — the t
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 Sidecar also accepts `animate` parameters — `animate="zoom-in"` on a sidecar step zooms into the pinned image on the right while the text scrolls on the left.
 
@@ -220,6 +226,7 @@ A working video background — give it a moment to start playing. Use this featu
 
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
+{: .copy-code}
 
 ---
 

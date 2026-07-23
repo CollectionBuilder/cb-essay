@@ -1894,10 +1894,9 @@ mark.essay-result-mark {
     margin: 0 0 0.75rem 0;
   }
 }
-
-// Copy-to-clipboard button injected onto fenced code blocks in essays and docs (helpers/copy-code-js.html)
-#scrolly div.highlighter-rouge,
-.docs-content div.highlighter-rouge {
+// Copy-to-clipboard button, opt-in per code block via the `.copy-code` class
+// (add `{: .copy-code}` on the line right after a fenced code block; see helpers/copy-code-js.html)
+div.highlighter-rouge.copy-code {
     position: relative;
 
     pre {
@@ -1912,8 +1911,8 @@ mark.essay-result-mark {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 1rem;
-        height: 1rem;
+        width: 2rem;
+        height: 2rem;
         padding: 0;
         line-height: 1;
     }
