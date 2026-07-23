@@ -2,3 +2,27 @@
     Put your custom SCSS here!
     This allows you to override any CollectionBuilder or Bootstrap CSS without modifying the base theme files directly.
 */
+
+// Copy-to-clipboard button injected onto fenced code blocks in essays and docs (helpers/copy-code-js.html)
+#scrolly div.highlighter-rouge,
+.docs-content div.highlighter-rouge {
+    position: relative;
+
+    pre {
+        padding-top: 2.75rem;
+    }
+
+    .copy-code-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        line-height: 1;
+    }
+}

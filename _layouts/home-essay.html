@@ -459,7 +459,7 @@ Only show if multiple essays exist
                 <h3 class="toc-part-heading">{{ part }}</h3>
                 <div class="list-group list-group-flush mb-2">
                     {%- for item in essays -%}
-                    {%- if item.part == part and item.part_divider != true -%}
+                    {%- if item.part == part and item.part_divider != true and item.hide_from_nav != true -%}
                     <a href="{{ item.url | relative_url }}" class="list-group-item list-group-item-action py-4 px-4">
                         <div class="d-flex flex-column align-items-start text-start">
                             <h3 class="chapter-title mb-0">{%- if item.chapter -%}<span class="chapter-num">{{ item.chapter }}. </span>{%- endif -%}{{ item.title }}</h3>
@@ -475,12 +475,12 @@ Only show if multiple essays exist
             {%- endfor -%}
             {%- comment -%} Essays without a part, shown ungrouped at the end {%- endcomment -%}
             {%- assign has_unparted = false -%}
-            {%- for item in essays -%}{%- unless item.part -%}{%- assign has_unparted = true -%}{%- endunless -%}{%- endfor -%}
+            {%- for item in essays -%}{%- unless item.part -%}{%- if item.hide_from_nav != true -%}{%- assign has_unparted = true -%}{%- endif -%}{%- endunless -%}{%- endfor -%}
             {%- if has_unparted -%}
             <div class="list-group list-group-flush mt-3">
                 {%- for item in essays -%}
                 {%- unless item.part -%}
-                {%- if item.part_divider != true -%}
+                {%- if item.part_divider != true and item.hide_from_nav != true -%}
                 <a href="{{ item.url | relative_url }}" class="list-group-item list-group-item-action py-4 px-4">
                     <div class="d-flex flex-column align-items-start text-start">
                         {%- if item.chapter -%}<span class="chapter-num">{{ item.chapter }}</span>{%- endif -%}
@@ -499,7 +499,7 @@ Only show if multiple essays exist
             {%- comment -%} Flat TOC (default, no part fields present) {%- endcomment -%}
             <div class="list-group list-group-flush">
                 {%- for item in essays -%}
-                {%- if item.part_divider != true -%}
+                {%- if item.part_divider != true and item.hide_from_nav != true -%}
                 <a href="{{ item.url | relative_url }}" class="list-group-item list-group-item-action py-4 px-4">
                     <div class="d-flex flex-column align-items-start text-start">
                         {%- if item.chapter -%}<span class="chapter-num">{{ item.chapter }}</span>{%- endif -%}

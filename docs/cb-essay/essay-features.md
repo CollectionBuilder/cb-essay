@@ -2,6 +2,8 @@
 
 CB-Essay provides specialized Liquid includes for enhanced essay features. These includes extend standard Markdown to create rich, interactive scholarly content.
 
+Includes below come in two flavors, and the path tells you which: `feature/...` includes are core CollectionBuilder features that work on any page across your site, while `essay/feature/...` includes are built specifically for essay content.
+
 ## Quick Reference
 
 | Feature | Include | Purpose |
@@ -9,7 +11,7 @@ CB-Essay provides specialized Liquid includes for enhanced essay features. These
 | Blockquote | `essay/feature/blockquote.html` | Styled quotations with attribution |
 | Aside | `essay/feature/aside.html` | Margin notes (text or collection items) |
 | Image Aside | `essay/feature/image-aside.html` | Images in margins |
-| Image Gallery | `essay/feature/image-gallery.html` | Multi-image displays |
+| Image Gallery | `essay/feature/image-gallery.html` | Multi-image, video, audio & PDF galleries |
 | Section Break | `essay/new-section.html` | Scrollama transitions |
 | **Scrolly Block** | `essay/feature/scrolly-media.html` + `scrolly-step.html` + `scrolly-end.html` | **Sticky image + scrolling text panels** |
 | **Scrolly Map Block** | `essay/feature/scrolly-map.html` + `scrolly-step.html` + `scrolly-end.html` | **Sticky Leaflet map + scrolling location narration** |
@@ -161,7 +163,7 @@ Specialized aside for displaying collection images in margins.
 
 ## Image Gallery
 
-Display multiple collection items as an inline gallery.
+Display one or more items — images, video, audio, or PDFs — as an inline gallery that opens in a full-screen Spotlight viewer. `objectid` accepts collection items, external URLs, or relative paths; mix as many as you like with semicolons.
 
 ### Usage
 
@@ -174,8 +176,16 @@ Display multiple collection items as an inline gallery.
 
 | Parameter | Required | Description | Values |
 |-----------|----------|-------------|--------|
-| `objectid` | **Yes** | Semicolon-separated list of objectids | `id1;id2;id3` |
-| `caption` | No | Gallery caption | Any text |
+| `objectid` | **Yes** | Semicolon-separated list: collection objectids, external URLs, and/or relative paths | `id1;id2;id3`, `https://...`, `/assets/img/x.jpg` |
+| `alt` | Conditional | Alt text; required for external/relative sources, optional for collection items (falls back to metadata) | Any text, `;`-separated |
+| `caption` | No | Caption below each item; defaults to item title for collection items. Set `caption=false` (no quotes) to hide all captions | Any text, `;`-separated, or `false` |
+| `title` | No | Title shown in the Spotlight viewer | Any text, `;`-separated |
+| `source` | No | Source attribution in the Spotlight viewer; defaults to metadata `source` for collection items | Any text, `;`-separated |
+| `sourcelink` | No | URL for the source attribution link; defaults to metadata `source_identifier` for collection items | Any URL, `;`-separated |
+| `link` | No | Overrides where the item links; defaults to the item page (collection items) or the file itself (external/relative) | Any URL, `;`-separated |
+| `width` | No | Desktop width as a percentage of the container (always 100% on mobile) | `25`, `50`, `75`, `100` |
+
+Non-image items (video, audio, PDF) render as a labeled placeholder and open the matching player automatically — no separate include per media type.
 
 ### Example
 
@@ -183,6 +193,13 @@ Display multiple collection items as an inline gallery.
 {% include essay/feature/image-gallery.html
    objectid="demo_001;demo_005;demo_012"
    caption="Manuscript variations from the collection" %}
+```
+
+**Mixed media:**
+
+```liquid
+{% include essay/feature/image-gallery.html
+   objectid="image_item;video_item;audio_item;pdf_item" %}
 ```
 
 ---
@@ -531,13 +548,13 @@ Beyond essay-specific includes, you can use any standard CollectionBuilder featu
 ### Item Card
 
 ```liquid
-{% include feature/item-card.html objectid="demo_001" %}
+{% include feature/card.html objectid="demo_001" %}
 ```
 
 ### Timeline
 
 ```liquid
-{% include feature/timeline.html %}
+{% include feature/timelinejs.html %}
 ```
 
 ### Cloud Visualization

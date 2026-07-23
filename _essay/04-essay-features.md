@@ -1,5 +1,5 @@
 ---
-title: Writing Features
+title: Essay Writing Features
 order: 40
 part: Documentation
 ---
@@ -7,6 +7,8 @@ part: Documentation
 CB-Essay provides specialized includes that extend Markdown for scholarly writing. This essay **demonstrates every feature** with working examples you can copy directly into your own work.
 
 **The copy-and-replace principle:** Find a feature you like, copy the code block, paste it into your essay, and replace the content with yours. That's it!
+
+Includes below come in two flavors, and the path tells you which: `feature/...` includes are core CollectionBuilder features. Those that use `essay/feature/...` includes are built specifically for CB-Essay. Both are used the same way; the path is your only signal for where else you can reuse them.
 
 ## Basic Markdown
 
@@ -67,7 +69,7 @@ Collection items can appear in asides with thumbnails.{% include essay/feature/a
 
 ## Media Galleries
 
-Display collection items that, when clicked, appear in modal galleries.
+Display collection items that, when clicked, open in a full-screen modal viewer.
 
 {% include essay/feature/image-gallery.html
    objectid="demo_033;demo_031;demo_017" caption=false%}
@@ -78,24 +80,42 @@ Display collection items that, when clicked, appear in modal galleries.
    objectid="item1;item2;item3" %}{% endraw %}
 ```
 
-Separate multiple object IDs with semicolons. Items must exist in your metadata.
+**Gathering multiple pieces:** Separate object IDs with semicolons (`objectid="item1;item2;item3"`) to pull several items from your metadata into one gallery — the viewer lets readers step through all of them in sequence.
 
-## Filtered Collection Galleries
+### Mixed Media
 
-Below is another type of gallery, one that is filtered from the collection based on liquid logic (here it is `item.format contains 'image' and item.date > '1920'`) with an optional header.
+The gallery isn't limited to images — give it objectids for video, audio, or PDF items and it detects each one's type automatically:
 
-{% include feature/gallery.html 
-   heading="Items Dated after 1920"  
-   captions=false 
-   filter="item.date > '1920'" %}
+{% include essay/feature/image-gallery.html
+   objectid="demo_001;demo_004;demo_003;demo_002"
+   caption=false %}
 
 **Copy this:**
 ```liquid
-{% raw %}{% include feature/gallery.html 
-   heading="Items Dated after 1920"  
-   captions=false 
-   filter="item.date > '1920'" %}{% endraw %}
+{% raw %}{% include essay/feature/image-gallery.html
+   objectid="image_item;video_item;audio_item;pdf_item" %}{% endraw %}
 ```
+
+Items without a thumbnail (video, audio, PDF) render as a labeled placeholder; clicking opens the correct player — an HTML5 video/audio player or embedded PDF viewer — right in the modal. No separate include per media type needed.
+
+### External and Relative Images
+
+`objectid` doesn't have to point at your collection — a full URL or a relative path into your own `/assets/` folder works too. In that case, always set `alt` text yourself, and you can add citation details with `caption`, `title`, `source`, and `sourcelink`:
+
+```liquid
+{% raw %}{% include essay/feature/image-gallery.html
+   objectid="/assets/img/writing-plan.jpg"
+   alt="Group working on a farm plan writing project"
+   caption="Group farm plan writing meeting"
+   source="The New York Public Library Digital Collections"
+   sourcelink="https://digitalcollections.nypl.org/items/1b0a3fc0-1d42-0139-bac7-0242ac110003" %}{% endraw %}
+```
+
+### Layout and Captions
+
+- `width="25"` / `"50"` / `"75"` / `"100"` sets the item's width as a percentage of the container (always full-width on mobile).
+- `caption=false` (no quotes) hides captions entirely — the same boolean-no-quotes pattern used by `border=false` below in Blockquotes.
+- `link` overrides where an item's image links to, if you don't want the default (item page for collection items, the image file itself for external/relative ones).
 
 ---
 
@@ -107,48 +127,49 @@ Styled quotations with optional attribution and source links.
 ### Basic Blockquote
 
 {% include essay/feature/blockquote.html
-   quote="Knowledge comes, but wisdom lingers"
-   speaker="Alfred Lord Tennyson" %}
+   quote="One begins as a student but becomes a friend of clouds"
+   speaker="Lyn Hejinian" %}
 
 **Copy this:**
 ```liquid
 {% raw %}{% include essay/feature/blockquote.html
-   quote="Knowledge comes, but wisdom lingers"
-   speaker="Alfred Lord Tennyson" %}{% endraw %}
+   quote="One begins as a student but becomes a friend of clouds"
+   speaker="Lyn Hejinian" %}{% endraw %}
 ```
 
 ### With Source Citation
 
 {% include essay/feature/blockquote.html
-   quote="It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife."
-   speaker="Jane Austen"
-   source="Pride and Prejudice" %}
+   quote="About suffering they were never wrong, The Old Masters"
+   speaker="W. H. Auden"
+   source="Musée des Beaux Arts" %}
 
 **Copy this:**
 ```liquid
 {% raw %}{% include essay/feature/blockquote.html
-   quote="Your quote text here"
-   speaker="Author Name"
-   source="Book or Article Title" %}{% endraw %}
+   quote="About suffering they were never wrong, The Old Masters"
+   speaker="W. H. Auden"
+   source="Musée des Beaux Arts" %}{% endraw %}
 ```
 
-### Large Centered Quote w/ No Border
+### Large Centered Quote with No Border
 
 {% include essay/feature/blockquote.html
-   quote="The best way out is always through"
+   quote="All, all can be lost"
    size="xl"
-   speaker="Robert Frost"
+   speaker="Louise Glück"
    align="center" 
    border=false %}
 
 **Copy this:**
 ```liquid
 {% raw %}{% include essay/feature/blockquote.html
-   quote="Your dramatic quote"
-   speaker="Famous Person"
+   quote="All, all can be lost"
    size="xl"
-   align="center"
-   border=false  %}{% endraw %}
+   speaker="Louise Glück"
+   align="center" 
+   border=false %}
+{% endraw %}
 ```
 
 **Size options:** `sm`, `md`, `lg`, `xl`, `xxl`
@@ -183,170 +204,55 @@ Content continues here...{% endraw %}
 
 ## Scrollytelling Blocks
 
-Pin an image (or series of images) while multiple narrative text panels scroll over it — the StoryMaps / scrolly-explainer pattern. Great for manuscript walkthroughs, archival photo essays, site surveys, or any story where you want an image to anchor the reader while text builds around it.
-
-### Immersive layout (image fills viewport)
-
-Below is a live demo. Scroll through the panels to see the image swap:
+Pin an image while narrative text panels scroll over it — the StoryMaps / scrolly-explainer pattern. Here's a two-panel taste of it:
 
 {% include essay/feature/scrolly-media.html objectid="demo_001" alt="Administration Building, University of Idaho, ca. 1910" %}
 
-**Panel 1.** An archival postcard of the University of Idaho's Administration Building, taken around 1910. The image fills the screen while your text scrolls over it — no JavaScript wiring required on your end.
+**Panel 1.** The image fills the frame while this text scrolls over it — no JavaScript wiring required on your end.
 
 {% include essay/feature/scrolly-step.html objectid="demo_009" %}
 
-**Panel 2.** When this panel scrolls into view, the image cross-fades to a different collection item. You can keep adding panels, each optionally swapping to a new image.
-
-{% include essay/feature/scrolly-step.html objectid="demo_031" position="right" text-background="dark"  %}
-
-**Panel 3.** Panels can appear on the `left` (default), `center`, or `right`. Use `text-background="dark"` for a dark semi-transparent card instead of white.
-
-{% include essay/feature/scrolly-step.html objectid="demo_011" animate="ken-burns" image-focus="75% 40%" %}
-
-**Panel 4.** This panel swaps to a new image and starts a slow zoom toward its center. Add `animate="zoom-in"` to any step to trigger the effect when that panel enters view. Pair with `image-focus` to zoom toward a specific part of the image instead of the center.
+**Panel 2.** Scrolling into view swapped the image. You can keep adding panels, each optionally swapping to a new image.
 
 {% include essay/feature/scrolly-end.html %}
 
-**Copy this:**
 ```liquid
 {% raw %}{% include essay/feature/scrolly-media.html objectid="your_first_image" alt="Description" %}
 
-First panel text. Explains the pinned image.
+First panel text.
 
 {% include essay/feature/scrolly-step.html objectid="your_second_image" %}
 
 Second panel text. Image swaps when this enters view.
 
-{% include essay/feature/scrolly-step.html position="right" text-background="dark" %}
-
-Third panel — dark card, no image swap, image stays as second image.
-
-{% include essay/feature/scrolly-step.html objectid="your_third_image" animate="zoom-in" %}
-
-Fourth panel — image swaps and zooms slowly toward the center.
-
 {% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
 
-Scrolling back up restores the correct image automatically — each panel tracks which image it belongs to in both scroll directions.
+This is the tip of the iceberg — zoom/pan/Ken Burns animation, sidecar layout, video and interactive map backgrounds, and full parameter tables all live in the next essays:
 
-### Image focus and animation
+**[Scroll-Based Features →](05-scroll-features.html)** for a short overview, or jump straight to the **[Scrolly Media Gallery](scrolly-media-gallery.html)** and **[Scrolly Map Gallery](scrolly-map-gallery.html)** for every variant.
 
-Use `image-focus` to control which part of the image stays in view when using `cover` mode, and `animate` to add slow motion to the pinned image.
 
-**`image-focus`** — any CSS `object-position` value. Also sets the zoom target for `zoom-in` / `zoom-out`.
+## Timelines
 
-```liquid
-{% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" image-focus="80% 30%" %}{% endraw %}
-```
-
-**`animate`** options: `zoom-in`, `zoom-out`, `pan-left`, `pan-right`, `ken-burns`
+For essays with chronological elements, embed the full timeline. This will display all the items from your underlying collection as a TimelineJS feature:
 
 ```liquid
-{% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" animate="ken-burns" %}
-
-Opening panel with a slow diagonal zoom and drift.
-
-{% include essay/feature/scrolly-step.html objectid="detail_image" image-focus="75% 40%" animate="zoom-in" %}
-
-This panel swaps to a detail image and zooms toward the upper-right subject.
-
-{% include essay/feature/scrolly-end.html %}{% endraw %}
+{% raw %}{% include feature/timelinejs.html %}{% endraw %}
 ```
 
-Animations restart fresh each time a panel enters view. Pan animations (`pan-left`, `pan-right`) sweep the full width of the image; `image-focus` controls the zoom target for `zoom-in` and `zoom-out`. `ken-burns` uses a preset diagonal drift.
-
-### Sidecar layout (image right, text left)
-
-The `sidecar` layout keeps the image fixed on the right while text panels scroll on the left — good for comparing visuals to detailed analysis. Collapses to the stacked style on mobile.
-
-{% include essay/feature/scrolly-media.html objectid="demo_019" layout="sidecar" %}
-
-This is the front of the postcard. The image is pinned on the right while this text panel scrolls on the left.
-
-{% include essay/feature/scrolly-step.html objectid="demo_020" %}
-
-This is the back of the postcard. When this panel scrolls into view, the image on the right swaps to the reverse side.
-
-{% include essay/feature/scrolly-end.html %}
-
-```liquid
-{% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" layout="sidecar" %}
-
-Text panel beside the image.
-
-{% include essay/feature/scrolly-step.html objectid="another_image" %}
-
-Second panel; image swaps on the right.
-
-{% include essay/feature/scrolly-end.html %}{% endraw %}
-```
-
-### Controlling scroll speed with `step-height`
-
-The `step-height` parameter sets the minimum scroll distance for each panel — how long a reader must scroll before the next panel triggers. The default is `300vh`. Set it on `scrolly-media.html` to apply across the whole block, or on individual `scrolly-step.html` calls to control specific panels.
-
-```liquid
-{% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" step-height="100vh" %}
-
-Slow panel — reader scrolls a full screen before anything changes.
-
-{% include essay/feature/scrolly-step.html objectid="another_image" step-height="50vh" %}
-
-Quick transition — this panel triggers after half a screen of scrolling.
-
-{% include essay/feature/scrolly-end.html %}{% endraw %}
-```
-
-**`scrolly-media.html` parameters:**
-
-| Param | Default | Description |
-|-------|---------|-------------|
-| `objectid` | — | Collection item ID (resolves to its display image) |
-| `src` | — | Direct image path, e.g. `/assets/img/photo.jpg` |
-| `alt` | — | Image alt text |
-| `caption` | — | Small credit line overlaid bottom-right |
-| `layout` | `immersive` | `immersive` (full-screen overlay) or `sidecar` (image right, text left) |
-| `position` | `left` | Default panel position: `left`, `center`, `right` |
-| `text-background` | `light` | Panel style: `light` or `dark` |
-| `step-height` | `300vh` | Minimum scroll height per panel for the whole block |
-
-**`scrolly-step.html` parameters:** same as above except `layout` (inherits from block) — plus `step-height` overrides the block default for that panel only.
-
----
-
-## CollectionBuilder Features
-
-Beyond essay-specific includes, you can use any standard CollectionBuilder feature:
-
-### Item Cards
-
-**Copy this:**
-```liquid
-{% raw %}{% include feature/card.html
-   objectid="demo_001"
-   width="50"
-   centered=true %}{% endraw %}
-```
-
-Shows a card with the item image and metadata.
+For more on how to customize this feature, see [our CollectionBuilder documentation](https://collectionbuilder.github.io/cb-docs/docs/add-more/timelinejs/). 
 
 
-### Timelines
-
-For essays with chronological elements, embed the full timeline:
-
-```liquid
-{% raw %}{% include feature/timeline.html %}{% endraw %}
-```
-
-### Subject Clouds
+## Subject Clouds
 
 Visualize subject keywords from your collection:
 
 ```liquid
 {% raw %}{% include feature/cloud.html fields="subject" %}{% endraw %}
 ```
+
+For CollectionBuilder's full feature set — browse, timeline, subject clouds, and metadata configuration — see the [CollectionBuilder documentation](https://collectionbuilder.github.io/cb-docs/).
 
 ---
 
@@ -378,10 +284,37 @@ Embed small maps at specific coordinates.
 
 ---
 
+## Aside Maps
+
+A mini-map embeds inline; an **aside map** instead puts a small pin button in the margin that opens a full interactive map in a modal — useful when you want to mention a location without breaking up the page with an embedded map.
+
+Here's Hell's Half Acre Lookout.{% include essay/feature/aside-map.html latitude="45.64579" longitude="-114.62838" location="Hell's Half Acre Lookout" map-zoom="12" %} Click the pin to open the modal.
+
+**Copy this:**
+```liquid
+{% raw %}{% include essay/feature/aside-map.html
+   latitude="45.64579"
+   longitude="-114.62838"
+   location="Hell's Half Acre Lookout"
+   map-zoom="12" %}{% endraw %}
+```
+
+You can also seed it from a collection item's coordinates with `objectid`, customize the trigger with `button` and `color`, and add a **"View on Full Map"** link with `map-link=true`:
+
+```liquid
+{% raw %}{% include essay/feature/aside-map.html
+   objectid="demo_008"
+   button="View Location"
+   color="primary"
+   map-link=true %}{% endraw %}
+```
+
+---
+
 
 ## Combining Features
 
-You can combine multiple features for rich, scholarly presentations:
+You can combine multiple features for rich, scholarly presentations — mixing essay-only and site-wide includes freely:
 
 ### Example: Blockquote + Aside + Map
 
@@ -409,43 +342,14 @@ Visit the **[Print Hub](/print/)** to generate PDFs in Letter, A4, or 6×9″ fo
 
 ---
 
-## Best Practices
 
-### Blockquotes
-- Use for significant quotations only
-- Always attribute with `speaker` parameter
-- Keep quotes focused and relevant
-- Don't nest blockquotes
-
-### Asides
-- Maximum 3-4 per essay
-- Keep text brief (1-3 sentences)
-- Ensure objectids exist in metadata
-- Test display on mobile AND in print preview
-
-### Maps
-- Verify coordinates are accurate
-- Choose appropriate zoom level (12-14 for cities)
-- Add context about the location in text
-- Note: Maps won't appear in print PDFs (web-only feature)
-
-### Section Breaks
-- Use for major structural divisions
-- 3-4 maximum per essay
-- Ensure sections are substantial
-- Works best with longer essays (1000+ words)
-
----
 
 ## Next Steps
 
-To see all scroll-based effects demonstrated live — zoom, pan, ken-burns, sidecar, and focus point — scroll through the next essay:
+**[Scroll-Based Features →](05-scroll-features.html)** for scrollytelling, or skip ahead to **[Publishing, Printing & Reading →](06-publishing-reading.html)**.
 
-**[Scroll-Based Features →](05-scroll-features.html)**
+You can also get answers to your questions with our [online documentation]({{ '/docs.html' | relative_url }}).
 
-Or skip ahead to **[Collection Integration →](05-collection-integration.html)** to learn how to weave your items into the narrative.
-
-You can also get answers to your questions with our [online documentation]({{ '/docs.html' | relative_url }}) .
 ---
 
 {% include essay/feature/cta.html text="Use This Template →" link="https://github.com/new?template_name=cb-essay&template_owner=CollectionBuilder" description="Ready to put these features to use? Start your own project." %}

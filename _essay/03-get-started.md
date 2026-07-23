@@ -121,14 +121,7 @@ Notice the **front matter** (between `---` lines):
 
 ### Quick Option: Project Gutenberg
 
-Want to start with a complete book? Extract one from Project Gutenberg:
-
-1. Enable [GitHub Pages]({{ 'docs.html#2-enable-github-pages' | relative_url }})
-1. Go to your repository's **Actions** tab
-2. Click **"Extract Gutenberg Book"** workflow
-3. Click **"Run workflow"** and enter a book ID (e.g., `84` for Frankenstein)
-
-Your `_essay/` folder will be populated with chapter files automatically. Find books at [gutenberg.org](https://www.gutenberg.org/).
+Prefer to start from an existing text instead of writing from scratch? See **[Extracting a Book from Project Gutenberg](035-gutenberg-extraction.html)** for a full walkthrough.
 
 ## Step 4: Customize Configuration
 
@@ -180,6 +173,25 @@ display-font-family: theme    # theme | Georgia | custom
 **Fonts:** Set to `theme` for automatic pairing with your color theme, `Georgia` for offline use, or provide a custom Google Font with `font-cdn`.
 
 You can edit these files directly on GitHub or in any of the editors mentioned in Step 2.
+
+### Add Your First Collection Item
+
+CB-Essay manages two collections that work together: your essays in `_essay/`, and a CSV of digital items (images, PDFs, audio, video) in `_data/` that you can reference from any essay by `objectid`.
+
+To add your first item, create or edit `_data/your-metadata.csv` with at least these three columns:
+- `objectid` - Unique identifier (lowercase, no spaces)
+- `title` - Item name
+- `format` - File type (e.g. `image/jpeg`, `application/pdf`)
+
+Then reference it in any essay with an aside:
+
+```liquid
+{% raw %}{% include essay/feature/aside.html
+   objectid="your_objectid"
+   text="Context about this item" %}{% endraw %}
+```
+
+Preview your site and confirm the item resolves correctly. See [Essay Writing Features](04-essay-features.html) for every way to use collection items in your essays, and [CollectionBuilder's metadata guide](https://collectionbuilder.github.io/cb-docs/docs/metadata/csv_metadata/) for the complete field reference.
 
 ## Step 5: Add More Essays
 
@@ -237,8 +249,9 @@ For other deployment options, see [CollectionBuilder's Deployment Documentation]
 ## Next Steps
 
 Now that your site is running, explore what you can do:
-- **[Essay Features](04-essay-features.html)** - Learn all available features with copy-paste examples
-- **[Collection Integration](05-collection-integration.html)** - Add collection items to your essays
+- **[Extracting a Book from Project Gutenberg](035-gutenberg-extraction.html)** - Publish a public domain book in minutes
+- **[Essay Writing Features](04-essay-features.html)** - Learn all available features with copy-paste examples
+- **[Publishing, Printing & Reading](06-publishing-reading.html)** - Print, search, deploy, and share your work
 
 Or dive into the [documentation]({{ '/docs.html' | relative_url }}).
 

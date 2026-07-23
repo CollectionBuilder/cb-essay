@@ -16,9 +16,7 @@ We set these sites up as demonstrations of the various themes and effects of the
 
 A digital edition of Mary Shelley's classic novel demoing our Gutenberg Extractor. Features chapter-by-chapter navigation, integrated scholarly apparatus, and historical context from Project Gutenberg.
 
-You can watch me build the Frankenstein site in the video below! (***Make sure to turn on GitHub Pages first before you do this!***)
-
-{% include feature/video.html objectid="https://www.lib.uidaho.edu/collectionbuilder/cb-essay/frankenstein.mp4" caption="I go through a few simple steps to build out this site, after having made a copy of the repository and turing on GH Pages." %}
+See the full build walkthrough, before/after, and how it works in **[Extracting a Book from Project Gutenberg](035-gutenberg-extraction.html)**.
 
 **View:** [dcnb.github.io/frankenstein](https://dcnb.github.io/frankenstein) 
 
@@ -68,8 +66,9 @@ This extensively customized multimodal and multilinqual essay explores artist Ga
 Ready to get started? The remaining essays walk you through everything:
 
 - **[Get Started](03-get-started.html)** - Set up your first essay in 10 minutes
-- **[Essay Features](04-essay-features.html)** - Learn and copy all available features
-- **[Collection Integration](05-collection-integration.html)** - Blend essays with collection items
+- **[Extracting a Book from Project Gutenberg](035-gutenberg-extraction.html)** - Publish a public domain book in minutes
+- **[Essay Writing Features](04-essay-features.html)** - Learn and copy all available features
+- **[Publishing, Printing & Reading](06-publishing-reading.html)** - Print, search, deploy, and share your work
 
 Or jump straight to the [documentation]({{ '/docs.html' | relative_url }}) for reference guides.
 ---

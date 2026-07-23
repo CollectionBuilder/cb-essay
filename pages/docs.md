@@ -125,7 +125,7 @@ For detailed guidance, see [Essay Writing Guide](https://github.com/CollectionBu
 
 **When to use this section:** After you've created your first essay and want to add blockquotes, margin notes, or other specialized features.
 
-CB-Essay provides specialized includes for scholarly writing. **Copy the examples below directly into your essays.** For complete examples and best practices, see the [Writing Features essay](/_essay/04-essay-features.html).
+CB-Essay provides specialized includes for scholarly writing. **Copy the examples below directly into your essays.** For the full bonanza — every variant demonstrated live — see the [Essay Writing Features essay](/essay/04-essay-features.html).
 
 ### Blockquotes
 
@@ -187,12 +187,11 @@ Margin notes appear beside text on desktop, inline on mobile.
 
 ### Image Galleries
 
-Display multiple collection items:
+Display multiple collection items — images, video, audio, or PDFs — in an inline gallery:
 
 ```liquid
-{% raw %}{% include feature/gallery.html
-   heading="Items after 1900"
-   filter="item.format contains 'image'" %}{% endraw %}
+{% raw %}{% include essay/feature/image-gallery.html
+   objectid="item1;item2;item3" %}{% endraw %}
 ```
 
 ### Mini Maps
@@ -232,11 +231,72 @@ For all parameters and advanced usage, see:
 
 ---
 
+## Scrollytelling {#scrollytelling}
+
+**When to use this section:** To pin an image, video, or interactive map in the viewport while narrative text panels scroll over or beside it.
+
+Every scrolly block follows the same three-include pattern:
+
+```liquid
+{% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" %}
+
+First panel text.
+
+{% include essay/feature/scrolly-step.html objectid="next_image" %}
+
+Second panel text.
+
+{% include essay/feature/scrolly-end.html %}{% endraw %}
+```
+
+Every animation, layout, and map-transition variant — zoom, pan, Ken Burns, sidecar, video backgrounds, flyTo/pan/basemap-switching maps — is demonstrated live with copy-paste code in the [Scrolly Media Gallery](/essay/scrolly-media-gallery.html) and [Scrolly Map Gallery](/essay/scrolly-map-gallery.html). The tables below are the condensed parameter reference.
+
+**`scrolly-media.html`** — opens an image/video background block:
+
+{:.table .table-striped}
+| Parameter | Default | Description |
+|---|---|---|
+| `objectid` | — | Collection item ID; video detected automatically from `display_template` |
+| `src` | — | Direct path to an image or video file (`.mp4`, `.webm`, `.ogg` auto-detected) |
+| `poster` | — | Poster frame for `src`-based videos |
+| `video-start` | — | Start time in seconds for video backgrounds |
+| `alt` | — | Image alt text |
+| `caption` | — | Small credit line at bottom-right |
+| `layout` | `immersive` | `immersive` or `sidecar` |
+| `position` | `left` | First panel position: `left`, `center`, `right` |
+| `text-background` | `light` | First panel style: `light` or `dark` |
+| `step-height` | `300vh` | Minimum scroll height per panel |
+| `image-focus` | `center` | CSS `object-position` value; also sets zoom target |
+| `animate` | — | `zoom-in`, `zoom-out`, `pan-left`, `pan-right`, `ken-burns` |
+
+**`scrolly-step.html`** — adds a panel (same parameters except `layout`). Steps without `objectid`/`src` keep the current image.
+
+**`scrolly-end.html`** — no parameters; always required to close the block.
+
+**`scrolly-map.html`** — opens an interactive Leaflet map background instead of `scrolly-media.html`:
+
+{:.table .table-striped}
+| Parameter | Default | Description |
+|---|---|---|
+| `objectid` | — | Seeds center/zoom from a collection item's `latitude`/`longitude` |
+| `latitude` / `longitude` | theme.yml defaults | Initial map center |
+| `zoom` | theme.yml `zoom-level` | Initial zoom level |
+| `basemap` | theme.yml `map-base` | Tile layer name (e.g. `Esri_WorldImagery`) |
+| `interactive` | `false` (immersive) / `true` (sidecar) | Reader drag/scroll-zoom |
+| `markers` | — | Comma-separated objectids to plot |
+| `show-collection` | `false` | Plot every geo-tagged collection item |
+| `cluster` | theme.yml `map-cluster` | Cluster markers when `show-collection` is used |
+| `flyto-duration` | `2` | Default flyTo duration (seconds) |
+
+**`scrolly-step.html`** (map-specific): `map-lat`/`map-lng`, `map-zoom`, `map-objectid`, `map-transition` (`flyTo`/`setView`/`pan`), `map-basemap`, `map-open-popup`, `map-flyto-duration`.
+
+---
+
 ## Collection Integration {#collection-integration}
 
 **When to use this section:** When you want to add images, PDFs, audio, or other collection items to your essays.
 
-This section covers the basics of referencing collection items in essays. For a complete tutorial with examples, see the [Collection Integration essay](/_essay/05-collection-integration.html).
+This section covers the basics of referencing collection items in essays. For worked examples with live asides and items, see [Essay Writing Features](/essay/04-essay-features.html).
 
 ### Using Collection Items
 
@@ -262,12 +322,12 @@ All standard CollectionBuilder includes work in essays:
 
 **Item card:**
 ```liquid
-{% raw %}{% include feature/item-card.html objectid="demo_001" %}{% endraw %}
+{% raw %}{% include feature/card.html objectid="demo_001" %}{% endraw %}
 ```
 
 **Timeline:**
 ```liquid
-{% raw %}{% include feature/timeline.html %}{% endraw %}
+{% raw %}{% include feature/timelinejs.html %}{% endraw %}
 ```
 
 **Subject cloud:**
@@ -530,6 +590,8 @@ For detailed, essay-specific guidance and a full resource list, see the [Accessi
 
 CB-Essay includes a GitHub Action to import **60,000+ public domain books** from Project Gutenberg directly into your `_essay/` folder.
 
+For the full story — a before/after look at what gets extracted, and a tour of the finished Frankenstein site — see the [Extracting a Book from Project Gutenberg](/essay/035-gutenberg-extraction.html) essay. The steps below are the condensed reference.
+
 ### How to Use
 
 1. First, [Setup GitHub Pages](#2-enable-github-pages) using the instructions above in the Quickstart. (5 minutes)
@@ -568,6 +630,8 @@ For technical details, see [Gutenberg Extraction Guide](https://github.com/Colle
 
 ## Publishing {#publishing}
 
+See the [Publishing, Printing & Reading essay](/essay/06-publishing-reading.html) for the full picture, including print/PDF, search, and e-reader considerations. The reference below covers deployment specifically.
+
 ### GitHub Pages (Free)
 
 1. Push changes to your main branch
@@ -578,6 +642,16 @@ For technical details, see [Gutenberg Extraction Guide](https://github.com/Colle
 1. Add `CNAME` file to repository root with your domain
 2. Configure DNS with your domain provider
 3. See [GitHub Pages custom domain docs](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site)
+
+### Your Own Server
+
+CB-Essay is a static site with no dependency on GitHub. Run a production build and upload the output anywhere that serves static files:
+
+```bash
+JEKYLL_ENV=production bundle exec jekyll build
+```
+
+Upload the resulting `_site/` folder to any web host, institutional server, or storage bucket.
 
 ### Local Preview
 
@@ -616,8 +690,8 @@ CB-Essay includes all standard CollectionBuilder pages and features. This sectio
 ### Feature Includes
 
 Available for use in essays:
-- `item-card.html` - Display individual items
-- `timeline.html` - Embed timelines
+- `card.html` - Display individual items
+- `timelinejs.html` - Embed timelines
 - `cloud.html` - Subject/location clouds
 - `image.html` - Single images
 - `pdf.html` - Embedded PDFs

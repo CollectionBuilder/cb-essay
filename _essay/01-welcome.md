@@ -55,9 +55,9 @@ If you're reading this, it's probably you! (Just make a copy of this repostory a
 
 ### Bonus: Project Gutenberg Extractor
 
-Want to publish a public domain book? Use our [**GitHub Action**](https://www.lib.uidaho.edu/collectionbuilder/cb-essay/frankenstein.mp4) to extract any of **60,000+ books** from Project Gutenberg directly into your `_essay/` folder - pre-formatted for the site. 
+Want to publish a public domain book instead of writing from scratch? Our GitHub Action extracts any of **60,000+ books** from Project Gutenberg directly into your `_essay/` folder, pre-formatted and ready to go.
 
-See our [docs]({{ 'docs.html#gutenberg' | relative_url }}) for step by step instructions!
+See **[Extracting a Book from Project Gutenberg](035-gutenberg-extraction.html)** for a full before/after walkthrough.
 
 
 ## Next Steps
@@ -66,8 +66,9 @@ Check out some examples sites, then get started. The remaining essays show off C
 
 - **[See Examples](02-examples.html)** - See CB-Essay as used for DH projects and in demonstration 
 - **[Get Started](03-get-started.html)** - Set up your first essay in 10 minutes
-- **[Essay Features](04-essay-features.html)** - Learn and copy all available features
-- **[Collection Integration](05-collection-integration.html)** - Blend essays with collection items
+- **[Extracting a Book from Project Gutenberg](035-gutenberg-extraction.html)** - Publish a public domain book in minutes
+- **[Essay Writing Features](04-essay-features.html)** - Learn and copy all available features
+- **[Publishing, Printing & Reading](06-publishing-reading.html)** - Print, search, deploy, and share your work
 
 Or jump straight to the [documentation]({{ '/docs.html' | relative_url }}) for reference guides.
 
