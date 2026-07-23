@@ -12,6 +12,7 @@ CB-Essay provides specialized Liquid includes for enhanced essay features. These
 | Image Gallery | `essay/feature/image-gallery.html` | Multi-image displays |
 | Section Break | `essay/new-section.html` | Scrollama transitions |
 | **Scrolly Block** | `essay/feature/scrolly-media.html` + `scrolly-step.html` + `scrolly-end.html` | **Sticky image + scrolling text panels** |
+| **Scrolly Map Block** | `essay/feature/scrolly-map.html` + `scrolly-step.html` + `scrolly-end.html` | **Sticky Leaflet map + scrolling location narration** |
 | Mini Map | `feature/mini-map.html` | Embedded maps |
 
 ---
@@ -403,6 +404,78 @@ Scrolling back up restores the correct image automatically — each panel's "eff
 - Multiple scrolly blocks on one page work independently.
 - Print output renders the initial image once, then all panel text inline beneath it.
 - Disable Scrollama on an essay page with `scrollama: false` in front matter — scrolly blocks won't animate but render as readable static content.
+
+---
+
+## Scrollytelling Map Backgrounds
+
+A scrolly block can use an interactive Leaflet map as its pinned background instead of an image or video — for narrating a journey between locations, or detailing a single site as the reader scrolls. Swap `scrolly-media.html` for `scrolly-map.html`; `scrolly-step.html` and `scrolly-end.html` are shared with the image/video blocks — call `scrolly-step.html` with `map-*` parameters instead of `objectid`/`src`, and close with the same `scrolly-end.html`.
+
+Basemaps, center/zoom defaults, and clustering reuse the same `_data/theme.yml` and `_data/config-map.csv` settings as the full [collection map](maps.md) — see that page for basemap options and popup field configuration.
+
+### Basic usage
+
+```liquid
+{% include essay/feature/scrolly-map.html latitude="46.727485" longitude="-117.014185" zoom="5" %}
+
+The map starts centered on the region.
+
+{% include essay/feature/scrolly-step.html map-lat="46.7304" map-lng="-117.0198" map-zoom="15" %}
+
+This panel flies the map to a specific location as it enters view.
+
+{% include essay/feature/scrolly-end.html %}
+```
+
+### `scrolly-map.html` parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `objectid` | — | Seeds center/zoom from a collection item's `latitude`/`longitude`; also plots a marker for it |
+| `latitude` / `longitude` | `theme.yml` site defaults | Initial map center (required unless using `objectid`) |
+| `zoom` | `theme.yml` `zoom-level` (5) | Initial zoom level |
+| `basemap` | `theme.yml` `map-base` | `Esri_WorldStreetMap`, `Esri_NatGeoWorldMap`, `Esri_WorldImagery`, `OpenStreetMap_Mapnik`, `Stadia_AlidadeSmooth`, `Stadia_StamenToner` |
+| `interactive` | `false` for `immersive`, `true` for `sidecar` | Enable reader drag/scroll-zoom/touch-zoom/keyboard. Always forced off below 768px regardless of this setting. |
+| `markers` | — | Comma-separated objectids to plot as a curated marker set, each with a popup |
+| `show-collection` | `false` | Plot every geo-tagged item in your metadata CSV as markers — the same selection shown on the full collection map |
+| `cluster` | `theme.yml` `map-cluster` | Cluster markers when `show-collection` is used |
+| `flyto-duration` | `2` | Default `flyTo` animation duration (seconds) for this block's steps; overridable per step |
+| `caption` | — | Small credit/attribution line, same as `scrolly-media.html` |
+| `layout` | `immersive` | `immersive` (full-screen) or `sidecar` (side-by-side, map right — see interactivity note below) |
+| `position` | `left` | First panel position: `left`, `center`, or `right` |
+| `text-background` | `light` | First panel card style: `light` or `dark` |
+| `step-height` | `300vh` | Same pacing mechanism as `scrolly-media.html` |
+
+### `scrolly-step.html` map parameters
+
+These are additive to the existing image params on `scrolly-step.html` (`objectid`, `src`, `image-focus`, `animate`, etc.) — use whichever set matches the block type you opened. A step with none of the parameters below leaves the map exactly where it was.
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `map-lat` / `map-lng` | — | Target coordinates for this step |
+| `map-zoom` | *(keeps current zoom)* | Target zoom level |
+| `map-objectid` | — | Resolve the target from a collection item instead of raw coordinates; also the marker featured by `map-open-popup` |
+| `map-transition` | `flyTo` | `flyTo` (animated), `setView` (instant), or `pan` (moves center only, no zoom change) |
+| `map-basemap` | — | Swap the basemap tile layer on this step |
+| `map-open-popup` | — | objectid of a marker to open (or `true` when paired with `map-objectid`) — closes any previously open popup first |
+| `map-flyto-duration` | *(inherits block default)* | Per-step override of `flyto-duration` |
+
+### Markers and the full collection
+
+`markers="obj1,obj2"` plots a curated set of collection items as markers with popups (title, thumbnail, and any `_data/config-map.csv` fields, same as the full collection map's popups). `show-collection="true"` instead plots every geo-tagged item in your metadata CSV, respecting `theme.yml`'s `map-child-objects` setting, and can be clustered via `cluster="true"` (or the `theme.yml` `map-cluster` default).
+
+Pairing a step's `map-objectid` with `map-open-popup="true"` flies to that marker and opens its popup automatically — a way to "feature" a specific collection item as the reader scrolls, rather than requiring a click.
+
+### Interactivity
+
+Immersive (full-bleed) map backgrounds default to `interactive="false"` — dragging and scroll-zoom are disabled so the reader's scroll gesture always scrolls the page, not the map. Sidecar map backgrounds default to `interactive="true"` instead, since the pinned map only occupies part of the viewport there and behaves more like an inset, explorable map. Either can be overridden explicitly with `interactive="true"`/`interactive="false"`; interactivity is always disabled below a 768px viewport regardless of this setting, since sidecar collapses to a stacked overlay on mobile.
+
+### Notes
+
+- No RAF-driven continuous scroll-scrubbed panning — map movement is discrete per step (`flyTo`/`setView`/`pan`), triggered when a step enters view, since Leaflet's `flyTo` owns its own animation loop and isn't built to be scrubbed frame-by-frame the way image `animate` zoom/pan is.
+- Missing coordinates or a failed Leaflet load render a visible fallback message in place of the map rather than a blank or broken frame.
+- Print/PDF output hides the map and shows a "view online" note in its place — Leaflet tiles won't load reliably in the print pipeline.
+- Leaflet's CSS/JS are loaded by `scrolly-map.html` itself, only on pages that use it — not on every essay page.
 
 ---
 

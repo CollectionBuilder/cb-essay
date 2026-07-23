@@ -35,6 +35,140 @@
         }
     }
 
+    // ---- Scrollytelling map backgrounds ----
+
+    // Leaflet layers can't be shared across map instances, so this is rebuilt per scrolly-map.
+    function buildScrollyMapBasemaps() {
+        return {
+            Esri_WorldStreetMap: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+            }),
+            Esri_NatGeoWorldMap: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
+                maxZoom: 16
+            }),
+            Esri_WorldImagery: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            }),
+            OpenStreetMap_Mapnik: L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }),
+            Stadia_AlidadeSmooth: L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.{ext}', {
+                minZoom: 0, maxZoom: 20, ext: 'png',
+                attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }),
+            Stadia_StamenToner: L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.{ext}', {
+                minZoom: 0, maxZoom: 20, ext: 'png',
+                attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            })
+        };
+    }
+
+    /* get icons function, shared with the full collection map */
+    {% include helpers/get-icon.js %}
+
+    /* build popup HTML for a scrolly-map marker, shared with the full collection map's field config */
+    {% include helpers/get-map-popup.js %}
+
+    // Initialize one scrolly-map background: instantiate Leaflet, load its basemap and any
+    // curated/collection markers, and stash state on the section for handleStepEnter to use.
+    function initScrollyMap(section, mapEl) {
+        if (typeof L === 'undefined') {
+            mapEl.outerHTML = '<div class="scrolly-map-error">Map failed to load.</div>';
+            return;
+        }
+        var lat = parseFloat(mapEl.getAttribute('data-lat'));
+        var lng = parseFloat(mapEl.getAttribute('data-lng'));
+        if (isNaN(lat) || isNaN(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+            mapEl.outerHTML = '<div class="scrolly-map-error">Map unavailable — invalid coordinates.</div>';
+            return;
+        }
+        var zoom = parseInt(mapEl.getAttribute('data-zoom'), 10);
+        if (isNaN(zoom)) zoom = 5;
+        var basemapKey = mapEl.getAttribute('data-basemap') || 'Esri_WorldStreetMap';
+        var flytoDuration = parseFloat(mapEl.getAttribute('data-flyto-duration'));
+        if (isNaN(flytoDuration)) flytoDuration = 2;
+        var isMobile = window.matchMedia('(max-width: 768px)').matches;
+        var interactive = mapEl.getAttribute('data-interactive') === 'true' && !isMobile;
+
+        var map = L.map(mapEl.id, {
+            dragging: interactive,
+            scrollWheelZoom: interactive,
+            touchZoom: interactive,
+            doubleClickZoom: interactive,
+            boxZoom: interactive,
+            keyboard: interactive,
+            zoomControl: interactive
+        }).setView([lat, lng], zoom);
+
+        var basemaps = buildScrollyMapBasemaps();
+        section._scrollyMapBasemaps = basemaps;
+        (basemaps[basemapKey] || basemaps.Esri_WorldStreetMap).addTo(map);
+        section._scrollyMapActiveBasemap = basemaps[basemapKey] ? basemapKey : 'Esri_WorldStreetMap';
+
+        if (interactive) {
+            map.addControl(new L.Control.Fullscreen());
+        }
+
+        section._scrollyMap = map;
+        section._scrollyMapDefaultDuration = flytoDuration;
+        section._scrollyMapSteps = Array.from(section.querySelectorAll('.scrolly-step'));
+        section._scrollyMapMarkerIndex = {};
+        section._scrollyMapOpenLayer = null;
+        section._activeScrollyStepIdx = undefined;
+
+        // Pre-compute the effective lat/lng/zoom/basemap at each step, carrying forward from
+        // the previous step (seeded by the block's own initial view) when a step doesn't set
+        // its own — same principle as the image system's _scrollySrcs carry-forward, so that
+        // scrolling back up past a step with no map-* params, or all the way to the first step,
+        // restores the correct view instead of leaving the map wherever the last flyTo left it.
+        var effLat = lat, effLng = lng, effZoom = zoom, effBasemap = section._scrollyMapActiveBasemap;
+        section._scrollyMapViews = section._scrollyMapSteps.map(function(s) {
+            var sLat = s.getAttribute('data-map-lat');
+            var sLng = s.getAttribute('data-map-lng');
+            var sZoom = s.getAttribute('data-map-zoom');
+            var sBasemap = s.getAttribute('data-map-basemap');
+            if (sLat !== null) { var pLat = parseFloat(sLat); if (!isNaN(pLat)) effLat = pLat; }
+            if (sLng !== null) { var pLng = parseFloat(sLng); if (!isNaN(pLng)) effLng = pLng; }
+            if (sZoom !== null) { var pZoom = parseInt(sZoom, 10); if (!isNaN(pZoom)) effZoom = pZoom; }
+            if (sBasemap !== null && basemaps[sBasemap]) effBasemap = sBasemap;
+            return { lat: effLat, lng: effLng, zoom: effZoom, basemap: effBasemap };
+        });
+
+        var markersId = mapEl.getAttribute('data-markers');
+        if (markersId) {
+            var dataEl = document.getElementById(markersId);
+            if (dataEl) {
+                try {
+                    var geodata = JSON.parse(dataEl.textContent);
+                    var cluster = mapEl.getAttribute('data-cluster') === 'true' && typeof L.markerClusterGroup === 'function';
+                    var markerLayer = cluster ? L.markerClusterGroup({ maxClusterRadius: 25, singleMarkerMode: true }) : null;
+                    var mapFeatures = L.geoJson(geodata, {
+                        pointToLayer: function(feature, latlng) {
+                            var marker = L.marker(latlng, { alt: feature.properties.title });
+                            marker.bindPopup(getMapPopup(feature));
+                            section._scrollyMapMarkerIndex[feature.properties.id] = marker;
+                            if (markerLayer) markerLayer.addLayer(marker);
+                            return marker;
+                        }
+                    });
+                    if (markerLayer) {
+                        map.addLayer(markerLayer);
+                    } else {
+                        mapFeatures.addTo(map);
+                    }
+                } catch (e) {
+                    console.warn('Scrolly map: could not parse marker data for', markersId, e);
+                }
+            }
+        }
+
+        // Defensive resize: the sticky container is visible on load here (unlike a Bootstrap
+        // modal map), but a post-layout invalidateSize is cheap insurance against grid reflow.
+        setTimeout(function() { map.invalidateSize(); }, 50);
+    }
+
     // scrollama event handlers
     function handleStepEnter(response) {
         var stepIndex = response.index;
@@ -45,6 +179,55 @@
         // Scrolly steps: swap sticky image + apply focus/animate using pre-computed src lookup
         if (response.element.classList.contains('scrolly-step')) {
             var section = response.element.closest('.scrolly-section');
+
+            // Map backgrounds: fly/pan/jump to this step's declared view, swap basemap, open popup.
+            if (section && section._scrollyMap) {
+                var idx = section._scrollyMapSteps ? section._scrollyMapSteps.indexOf(response.element) : -1;
+                section._activeScrollyStepIdx = idx;
+
+                var map = section._scrollyMap;
+                // Effective view (lat/lng/zoom/basemap) carries forward from earlier steps —
+                // correct regardless of scroll direction — while transition/duration/popup are
+                // read live off the entered step since they're per-entry instructions, not state.
+                var view = (idx >= 0 && section._scrollyMapViews) ? section._scrollyMapViews[idx] : null;
+                var mTransition = response.element.getAttribute('data-map-transition') || 'flyTo';
+                var mPopupId = response.element.getAttribute('data-map-open-popup');
+                var mDuration = parseFloat(response.element.getAttribute('data-map-flyto-duration'));
+                if (isNaN(mDuration)) mDuration = section._scrollyMapDefaultDuration;
+
+                if (view) {
+                    var target = [view.lat, view.lng];
+                    if (mTransition === 'setView') {
+                        map.setView(target, view.zoom);
+                    } else if (mTransition === 'pan') {
+                        map.panTo(target);
+                    } else {
+                        map.flyTo(target, view.zoom, { duration: mDuration });
+                    }
+
+                    if (view.basemap && section._scrollyMapBasemaps && view.basemap !== section._scrollyMapActiveBasemap && section._scrollyMapBasemaps[view.basemap]) {
+                        var basemaps = section._scrollyMapBasemaps;
+                        var currentLayer = basemaps[section._scrollyMapActiveBasemap];
+                        if (currentLayer) map.removeLayer(currentLayer);
+                        basemaps[view.basemap].addTo(map);
+                        section._scrollyMapActiveBasemap = view.basemap;
+                    }
+                }
+
+                if (section._scrollyMapOpenLayer) {
+                    section._scrollyMapOpenLayer.closePopup();
+                    section._scrollyMapOpenLayer = null;
+                }
+                if (mPopupId && section._scrollyMapMarkerIndex[mPopupId]) {
+                    var layer = section._scrollyMapMarkerIndex[mPopupId];
+                    layer.openPopup();
+                    section._scrollyMapOpenLayer = layer;
+                }
+
+                response.element.classList.remove("fade-out");
+                return;
+            }
+
             var imgEl = section ? section.querySelector('.scrolly-sticky__img') : null;
             if (imgEl && section._scrollySrcs) {
                 var idx = section._scrollySteps.indexOf(response.element);
@@ -114,6 +297,11 @@
         // Pre-compute effective image for each scrolly-step so scroll-up works correctly.
         // Each step's "effective image" is the last data-src seen at or before that step.
         document.querySelectorAll('.scrolly-section').forEach(function(section) {
+            var mapEl = section.querySelector('.scrolly-map');
+            if (mapEl) {
+                initScrollyMap(section, mapEl);
+                return;
+            }
             var img = section.querySelector('.scrolly-sticky__img');
             if (!img) return;
             var isVideo = img.tagName === 'VIDEO';

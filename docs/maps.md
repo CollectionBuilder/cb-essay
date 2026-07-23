@@ -40,12 +40,12 @@ Because of the way markers are handled, for larger collections it is strongly su
 The `map-cluster-radius` sets the maximum radius a cluster can cover in pixels on the map.
 A smaller radius will create more, smaller clusters, and increasing will create fewer, larger clusters on the map.
 
-## map-config.csv Options
+## config-map.csv Options
 
-The metadata displayed on object popups and included in search is configured using using "_data/map-config.csv":
+The metadata displayed on object popups and included in search is configured using "_data/config-map.csv":
 
 - `field`: matches a column name in the metadata csv that will be displayed in object popups.
-- `display`: display name for the field to appear on popup. if blank, field will not be displayed (but could be used in search)
+- `display_name`: display name for the field to appear on popup. if blank, field will not be displayed (but could be used in search)
 - `search`: `true` or `false`/blank. If theme has `map-search` as `true`, then fields with true in this column will be indexed and displayed on the map search feature.
 
 ## URL parameters 
@@ -74,3 +74,9 @@ There is three parts to add a new one:
 
 Keep in mind that some of the base maps in the free [Leaflet Providers Preview](https://leaflet-extras.github.io/leaflet-providers/preview/) may have usage limitations--check the [Leaflet Providers readme for notes](https://github.com/leaflet-extras/leaflet-providers).
 If you want to do more customization, check the [Leaflet docs](https://leafletjs.com/reference.html), and [Leaflet basemap providers plugins](https://leafletjs.com/plugins.html#basemap-providers).
+
+## Using Maps in Scrollytelling Essays
+
+Essays can also use a Leaflet map as a scrollytelling background — a pinned map that flies/pans/zooms as the reader scrolls, with optional markers and popups. See [Scrollytelling Map Backgrounds](essay-features.md#scrollytelling-map-backgrounds) in the Essay Features reference for the `scrolly-map.html` / `scrolly-step.html` / `scrolly-end.html` includes and their parameters.
+
+These blocks reuse the same `theme.yml` map defaults (`latitude`, `longitude`, `zoom-level`, `map-base`, `map-cluster`) and the same `_data/config-map.csv` popup field configuration documented above, so basemap and popup customization applies equally to the full collection map and to scrolly map backgrounds in essays.

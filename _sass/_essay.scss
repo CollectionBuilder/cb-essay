@@ -150,6 +150,32 @@ a {
             transition: opacity 0.4s ease;
         }
 
+        // Leaflet needs an explicitly sized container; the grid row already provides
+        // height (100vh here, 55vh on the mobile-collapsed sidecar variant below).
+        .scrolly-map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .scrolly-map-error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 1.5rem;
+            text-align: center;
+            color: #999;
+            background: #111;
+        }
+
+        // Attribution stays on for tile-provider ToS compliance even when non-interactive;
+        // keep it legible over varied map imagery without dominating the frame.
+        .leaflet-control-attribution {
+            font-size: 0.65rem;
+            background: rgba(255, 255, 255, 0.75);
+        }
+
         .scrolly-caption {
             position: absolute;
             bottom: 0.75rem;
@@ -321,6 +347,24 @@ a {
             height: 50vh !important;
             margin-bottom: 0 !important;
             break-inside: avoid;
+        }
+
+        // Leaflet won't render reliably in print (no network/tile loading in the print
+        // context); show a static note instead of an interactive map or a blank frame.
+        .scrolly-sticky--map {
+            .scrolly-map,
+            .scrolly-map-error {
+                display: none !important;
+            }
+
+            &::after {
+                content: "Interactive map \2014 view online";
+                display: block;
+                padding: 1rem;
+                text-align: center;
+                font-style: italic;
+                color: #666;
+            }
         }
 
         .scrolly-step.step {
