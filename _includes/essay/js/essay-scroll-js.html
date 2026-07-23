@@ -235,16 +235,19 @@
                 var targetSrc = section._scrollySrcs[idx];
                 var stepFocus   = response.element.getAttribute('data-focus');   // null if not set
                 var stepAnimate = response.element.getAttribute('data-animate'); // null if not set
+                var stepAlt     = response.element.getAttribute('data-alt');     // null if not set
                 var isVideoEl = imgEl.tagName === 'VIDEO';
                 if (!isVideoEl && targetSrc && imgEl.getAttribute('src') !== targetSrc) {
                     imgEl.style.opacity = '0';
                     setTimeout(function() {
                         imgEl.src = targetSrc;
+                        if (stepAlt !== null && !isVideoEl) { imgEl.setAttribute('alt', stepAlt); }
                         if (stepFocus !== null) { imgEl.style.objectPosition = stepFocus; imgEl.style.transformOrigin = stepFocus; }
                         if (stepAnimate) { applyProgressTransform(imgEl, stepAnimate, 0); }
                         imgEl.style.opacity = '1';
                     }, 380);
                 } else {
+                    if (stepAlt !== null && !isVideoEl) { imgEl.setAttribute('alt', stepAlt); }
                     if (stepFocus   !== null) { imgEl.style.objectPosition = stepFocus; imgEl.style.transformOrigin = stepFocus; }
                     if (stepAnimate !== null) { applyProgressTransform(imgEl, stepAnimate, 0); }
                 }
