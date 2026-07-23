@@ -26,19 +26,45 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         btn.addEventListener('click', function () {
-            navigator.clipboard.writeText(codeEl.textContent).then(function () {
+            var text = codeEl.textContent;
+
+            function onSuccess() {
                 btn.setAttribute('aria-label', 'Copied to clipboard');
                 btn.title = 'Copied to clipboard';
                 statusEl.textContent = 'Copied to clipboard';
                 btn.classList.remove('btn-outline-secondary');
                 btn.classList.add('btn-success');
                 setTimeout(resetButton, 1500);
-            }, function () {
+            }
+
+            function onFail() {
                 btn.setAttribute('aria-label', 'Copy failed');
                 btn.title = 'Copy failed';
                 statusEl.textContent = 'Copy failed';
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-secondary');
                 setTimeout(resetButton, 1500);
-            });
+            }
+
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                navigator.clipboard.writeText(text).then(onSuccess, onFail);
+                return;
+            }
+
+            try {
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'absolute';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                var ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                if (ok) onSuccess(); else onFail();
+            } catch (e) {
+                onFail();
+            }
         });
     });
 });
