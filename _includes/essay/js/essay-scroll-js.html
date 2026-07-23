@@ -341,13 +341,14 @@
         // Scroll-driven image animation: compute progress from getBoundingClientRect
         // so it works correctly at any step height (Scrollama's intersectionRatio
         // maxes out at viewport/stepHeight, unreliable for tall steps like 300vh).
+        var scrollySections = Array.from(document.querySelectorAll('.scrolly-section'));
         var rafPending = false;
         window.addEventListener('scroll', function() {
             if (rafPending) return;
             rafPending = true;
             requestAnimationFrame(function() {
                 rafPending = false;
-                document.querySelectorAll('.scrolly-section').forEach(function(section) {
+                scrollySections.forEach(function(section) {
                     var idx = section._activeScrollyStepIdx;
                     if (idx === undefined || !section._scrollySteps) return;
                     var activeStep = section._scrollySteps[idx];
