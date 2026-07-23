@@ -331,16 +331,6 @@ Beyond essay-specific includes, you can use any standard CollectionBuilder featu
 
 Shows a card with the item image and metadata.
 
-### Item Images
-
-**Copy this:**
-```liquid
-{% raw %}{% include feature/image.html
-   objectid="demo_012"
-   width="75" %}{% endraw %}
-```
-
-Displays an item image with caption from metadata.
 
 ### Timelines
 
@@ -449,9 +439,11 @@ Visit the **[Print Hub](/print/)** to generate PDFs in Letter, A4, or 6×9″ fo
 
 ## Next Steps
 
-You now know every feature available in CB-Essay! The final essay shows how to integrate collection items more deeply:
+To see all scroll-based effects demonstrated live — zoom, pan, ken-burns, sidecar, and focus point — scroll through the next essay:
 
-**[Collection Integration →](05-collection-integration.html)**
+**[Scroll-Based Features →](05-scroll-features.html)**
+
+Or skip ahead to **[Collection Integration →](05-collection-integration.html)** to learn how to weave your items into the narrative.
 
 You can also get answers to your questions with our [online documentation]({{ '/docs.html' | relative_url }}) .
 ---

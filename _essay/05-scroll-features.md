@@ -1,0 +1,200 @@
+---
+title: Scroll-Based Features
+order: 45
+part: Documentation
+---
+
+CB-Essay's scrollytelling blocks pin an image in the viewport while narrative panels scroll over or beside it. Scroll slowly through each section below to see the effects in action — the demos are live, not screenshots.
+
+Every block follows the same three-include pattern:
+
+```liquid
+{% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" %}
+
+First panel text.
+
+{% include essay/feature/scrolly-step.html objectid="next_image" %}
+
+Second panel text.
+
+{% include essay/feature/scrolly-end.html %}{% endraw %}
+```
+
+---
+
+## Immersive Layout
+
+The **immersive layout** fills the full viewport with a pinned image. Panels float over it in frosted cards. Scroll slowly and watch the panel fade in when it crosses the trigger line.
+
+{% include essay/feature/scrolly-media.html objectid="demo_001" alt="Administration Building, University of Idaho, ca. 1910" %}
+
+**Left panel** is the default. The card appears on the left side of the frame with a light semi-transparent background.
+
+{% include essay/feature/scrolly-step.html position="center" %}
+
+**Center panel.** Add `position="center"` to center the card — useful for brief captions or dramatic statements.
+
+{% include essay/feature/scrolly-step.html objectid="demo_009" position="right" text-background="dark" %}
+
+**Right panel with dark card.** `position="right" text-background="dark"` shifts the card right and inverts it. The image swaps as this panel enters view.
+
+{% include essay/feature/scrolly-end.html %}
+
+**Parameters for panel position and style:**
+
+| `position` | `text-background` | Effect |
+|---|---|---|
+| `left` (default) | `light` (default) | White card, left side |
+| `center` | `light` | White card, centered |
+| `right` | `dark` | Dark card, right side |
+
+---
+
+## Zoom In
+
+`animate="zoom-in"` zooms the image toward a point as you scroll through the panel. The zoom amount is directly proportional to scroll position — there is no timer.
+
+{% include essay/feature/scrolly-media.html objectid="demo_031" animate="zoom-in" %}
+
+Scroll through this panel slowly and watch the image zoom in. Fast scrolling zooms fast; pausing holds the image at whatever zoom level you've reached.
+
+{% include essay/feature/scrolly-step.html objectid="demo_011" animate="zoom-in" image-focus="60% 30%" %}
+
+A new image, with `image-focus="60% 30%"` added. The zoom now targets the upper portion of the frame. Use `image-focus` with `zoom-in` to pull your reader's attention toward a specific subject in the photograph.
+
+{% include essay/feature/scrolly-end.html %}
+
+---
+
+## Zoom Out
+
+`animate="zoom-out"` starts the image zoomed in and pulls back as you scroll — useful for establishing shots that open from a close detail to wider context.
+
+{% include essay/feature/scrolly-media.html objectid="demo_033" animate="zoom-out" %}
+
+The image begins close and expands outward. This reversal creates a sense of revelation — arriving at a scene from a detail rather than entering it from a distance.
+
+{% include essay/feature/scrolly-end.html %}
+
+---
+
+## Pan Left / Pan Right
+
+Pan animations sweep the image horizontally as you scroll. Best suited to wide panoramas or long horizontal documents where content is distributed across the frame.
+
+{% include essay/feature/scrolly-media.html objectid="demo_001" animate="pan-right" %}
+
+**Pan right** — the image travels from its left edge to its right edge as you scroll. Slow your scrolling and you'll see the pan slow with you.
+
+{% include essay/feature/scrolly-step.html objectid="demo_009" animate="pan-left" %}
+
+**Pan left** — this panel swaps to a new image and pans in the opposite direction. Alternating directions between panels creates a reading rhythm that feels intentional.
+
+{% include essay/feature/scrolly-end.html %}
+
+---
+
+## Ken Burns
+
+`animate="ken-burns"` combines a slow zoom with a diagonal pan. It uses a preset lower-left → upper-right trajectory and is the effect to reach for when you want motion without needing precise control over the direction.
+
+{% include essay/feature/scrolly-media.html objectid="demo_033" animate="ken-burns" %}
+
+The Ken Burns effect gives archival photographs a sense of life without calling attention to itself. It works best with images that have rich detail throughout the frame rather than a single focal point.
+
+{% include essay/feature/scrolly-step.html objectid="demo_001" animate="ken-burns" step-height="1150vh" %}
+
+Each panel with `animate="ken-burns"` resets to the start of the diagonal drift when it enters view. The motion always begins from the same position regardless of where the previous panel left off.
+
+{% include essay/feature/scrolly-end.html %}
+
+---
+
+## Focus Point
+
+`image-focus` controls which part of the image is visible in `cover` mode and sets the target point for zoom animations. The value is any CSS `object-position` — `"center"`, `"top"`, `"80% 30%"`, etc.
+
+{% include essay/feature/scrolly-media.html objectid="demo_031" image-focus="15% 50%" %}
+
+**Static focus.** `image-focus="15% 50%"` keeps the left portion of the image in frame. Without an animation, this is a static crop — no motion, just a different window into the image.
+
+{% include essay/feature/scrolly-step.html objectid="demo_031" animate="zoom-in" image-focus="15% 50%" %}
+
+**Zoom toward the focus.** The same focus point, now with `animate="zoom-in"`. The zoom pulls inward toward the left edge. The reader's eye is drawn to the same spot that `image-focus` framed.
+
+{% include essay/feature/scrolly-step.html objectid="demo_031" animate="zoom-in" image-focus="85% 50%" %}
+
+**Opposite corner.** The focus point flips to the right side. Each panel can redirect the zoom to a different part of the same image — a way to narrate across a photograph without swapping it.
+
+{% include essay/feature/scrolly-end.html %}
+
+---
+
+## Sidecar Layout
+
+The **sidecar layout** pins the image on the right while text panels scroll on the left. Images use `object-fit: contain` by default so the full document is always visible — no cropping. Collapses to the immersive stacked style on mobile.
+
+{% include essay/feature/scrolly-media.html objectid="demo_019" layout="sidecar" %}
+
+The front side of an archival postcard. Sidecar is well suited to objects with multiple sides, facing pages, or before/after states — the reader can follow your commentary while the relevant image holds steady.
+
+{% include essay/feature/scrolly-step.html objectid="demo_020" %}
+
+The reverse side. Swapping images in sidecar feels like turning a page — the text panel advances the story while the image on the right catches up.
+
+{% include essay/feature/scrolly-end.html %}
+
+Sidecar also accepts `animate` parameters — `animate="zoom-in"` on a sidecar step zooms into the pinned image on the right while the text scrolls on the left.
+
+---
+
+## Controlling Scroll Speed
+
+`step-height` sets the minimum height of each panel — how far the reader must scroll before the next panel triggers. The CSS default is `300vh`. Shorter values create faster pacing; longer values slow reading down.
+
+Set it on `scrolly-media.html` to apply across the whole block, or on individual `scrolly-step.html` calls to vary the pace within a block:
+
+```liquid
+{% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" step-height="150vh" %}
+
+Quick panel — moves through in half the default scroll distance.
+
+{% include essay/feature/scrolly-step.html objectid="another_image" step-height="500vh" %}
+
+Slow panel — the reader lingers before the next image enters.
+
+{% include essay/feature/scrolly-end.html %}{% endraw %}
+```
+
+For scroll-linked animations (`zoom-in`, `pan-right`, etc.), longer `step-height` means the animation plays out more gradually — the full zoom or pan happens over a greater scroll distance.
+
+---
+
+## All Parameters
+
+**`scrolly-media.html`** — opens the block:
+
+| Parameter | Default | Description |
+|---|---|---|
+| `objectid` | — | Collection item ID |
+| `src` | — | Direct image path (alternative to `objectid`) |
+| `alt` | — | Image alt text |
+| `caption` | — | Small credit line at bottom-right of image |
+| `layout` | `immersive` | `immersive` or `sidecar` |
+| `position` | `left` | First panel position: `left`, `center`, `right` |
+| `text-background` | `light` | First panel style: `light` or `dark` |
+| `step-height` | `300vh` | Minimum scroll height per panel |
+| `image-focus` | `center` | CSS `object-position` value; also sets zoom target |
+| `animate` | — | `zoom-in`, `zoom-out`, `pan-left`, `pan-right`, `ken-burns` |
+
+**`scrolly-step.html`** — adds a panel (same parameters except `layout`):
+
+`image-focus` and `animate` on a step override the opening values for that panel only. Steps without these parameters keep the current image and no animation.
+
+**`scrolly-end.html`** — no parameters. Always required to close the block.
+
+---
+
+## Next Steps
+
+**[Collection Integration →](05-collection-integration.html)**

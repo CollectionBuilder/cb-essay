@@ -121,6 +121,55 @@ a {
 
 // ── Scrollytelling sections (scrolly-media / scrolly-step / scrolly-end) ──
 
+// Dev-facing safety net: rendered only when scrolly-media/step/end.html detect a
+// mis-paired block (missing scrolly-end, orphan step, stray end, bad objectid).
+// Colors are intentionally hardcoded, not theme-driven — this must never blend in
+// with the site's own palette or it could be mistaken for real content.
+.scrolly-block-warning {
+    position: relative;
+    z-index: 20;
+    margin: 1rem;
+    padding: 0.75rem 1rem;
+    background: #fff3cd;
+    border: 2px dashed #b45309;
+    color: #7c2d12;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+
+    code {
+        background: rgba(180, 83, 9, 0.12);
+        padding: 0.1em 0.3em;
+    }
+}
+
+.scrolly-missing-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 2rem;
+    text-align: center;
+    background: #fff3cd;
+    border: 2px dashed #b45309;
+    color: #7c2d12;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 0.9rem;
+
+    code {
+        background: rgba(180, 83, 9, 0.12);
+        padding: 0.1em 0.3em;
+    }
+}
+
+@media print {
+    .scrolly-block-warning,
+    .scrolly-missing-image {
+        display: none !important;
+    }
+}
+
 .scrolly-section {
     position: relative;
 
@@ -163,7 +212,7 @@ a {
         opacity: 1 !important;
         padding: 0 !important;
         margin-top: 0;
-        min-height: var(--scrolly-step-height, 70vh);
+        min-height: var(--scrolly-step-height, 300vh);
         display: flex;
         align-items: center;
 
@@ -291,6 +340,15 @@ a {
     }
 }
 
+// When the section-nav sidebar is active (>=1200px), pull immersive sections
+// right so the sticky image starts at the same left edge as the essay text,
+// keeping the section-nav column clear.
+@media (min-width: 1200px) {
+    #scrolly.has-section-nav .scrolly-section {
+        margin-left: 16%;
+    }
+}
+
 // Print: unstack scrolly sections, show image once, all panels fully readable
 @media print {
     .scrolly-section {
@@ -318,46 +376,11 @@ a {
     }
 }
 
-// ── Scrolly image animations ─────────────────────────────────────────────────
-// Triggered by adding scrolly-animate-* class to .scrolly-sticky__img.
-// JS restarts them (removes class, forces reflow, re-adds) when image swaps
-// or when a step with data-animate enters the viewport.
-
-@keyframes scrolly-zoom-in {
-    from { transform: scale(1); }
-    to   { transform: scale(1.35); }
-}
-
-@keyframes scrolly-zoom-out {
-    from { transform: scale(1.4); }
-    to   { transform: scale(1); }
-}
-
-@keyframes scrolly-pan-right {
-    from { object-position: 0%   50%; }
-    to   { object-position: 100% 50%; }
-}
-
-@keyframes scrolly-pan-left {
-    from { object-position: 100% 50%; }
-    to   { object-position: 0%   50%; }
-}
-
-@keyframes scrolly-ken-burns {
-    0%   { transform: scale(1);    object-position: 30% 60%; }
-    100% { transform: scale(1.25); object-position: 65% 35%; }
-}
-
+// Scrolly image transforms are driven entirely by JS scroll position via
+// getBoundingClientRect — no CSS keyframes. will-change hints the browser
+// to promote the layer for GPU-composited transforms.
 .scrolly-sticky__img {
-    &.scrolly-animate-zoom-in   { animation: scrolly-zoom-in   2s ease-in-out forwards; }
-    &.scrolly-animate-zoom-out  { animation: scrolly-zoom-out  2s ease-in-out forwards; }
-    &.scrolly-animate-pan-right { animation: scrolly-pan-right 2s linear      forwards; }
-    &.scrolly-animate-pan-left  { animation: scrolly-pan-left  2s linear      forwards; }
-    &.scrolly-animate-ken-burns { animation: scrolly-ken-burns 2s ease-in-out forwards; }
-
-    @media print {
-        &[class*="scrolly-animate-"] { animation: none !important; }
-    }
+    will-change: transform;
 }
 
 .essay-main {

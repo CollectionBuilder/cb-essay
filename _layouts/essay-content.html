@@ -8,7 +8,7 @@ custom-foot: essay/js/spotlight-media-handler.html;essay/js/essay-search-highlig
 
 <div class="container my-5">
 <div class="row">
-    <div id="scrolly" class="container my-4">
+    <div id="scrolly" class="container my-4{% if site.data.theme.show-section-nav and page.show-section-nav != false %} has-section-nav{% endif %}">
         <article id="step0">
             {%- assign content_start = content | strip | slice: 0, 200 -%}
             {%- assign has_title_header = false -%}

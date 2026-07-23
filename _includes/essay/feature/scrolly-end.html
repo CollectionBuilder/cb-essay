@@ -1,7 +1,10 @@
+{% assign _was_open = _scrolly_open %}{% assign _scrolly_open = false %}
 {::nomarkdown}
-      </div>
+{% if _was_open %}      </div>
     </div>
   </div>
 </div>
 <div class="row my-4 step visible-step scrolly-exit"><div class="essay-main">
+{% else %}<div class="scrolly-block-warning">Scrolly block warning: this <code>scrolly-end.html</code> has no open scrolly block to close — ignored. Check for a duplicate include or a missing <code>scrolly-media.html</code>.</div>
+{% endif %}
 {:/nomarkdown}

@@ -3,22 +3,39 @@
     var scrolly = document.querySelector("#scrolly");
             var article = scrolly.querySelector("article");
             var step = article.querySelectorAll(".step");
-    
+
             // initialize the scrollama
             var scroller = scrollama();
-    
-        // scrollama event handlers
-    // Removes any scrolly-animate-* class, then re-adds it after a reflow to restart the CSS animation.
-    function scrollyRestartAnimation(imgEl, animate) {
-        Array.from(imgEl.classList)
-            .filter(function(c) { return c.startsWith('scrolly-animate-'); })
-            .forEach(function(c) { imgEl.classList.remove(c); });
-        if (animate) {
-            void imgEl.offsetWidth; // force reflow so the removed class is flushed before re-adding
-            imgEl.classList.add('scrolly-animate-' + animate);
+
+    // Trigger offset must match scroller.setup offset below
+    var SCROLLY_OFFSET = 0.24;
+
+    // Drive scroll-linked transforms. Called from scroll listener and on step enter.
+    // p is 0 (step just entered trigger) → 1 (step about to exit trigger).
+    function applyProgressTransform(imgEl, animate, p) {
+        switch (animate) {
+            case 'zoom-in':
+                imgEl.style.transform = 'scale(' + (1 + p * 0.7) + ')';
+                break;
+            case 'zoom-out':
+                imgEl.style.transform = 'scale(' + (1.7 - p * 0.7) + ')';
+                break;
+            case 'pan-right':
+                imgEl.style.transform = '';
+                imgEl.style.objectPosition = (p * 100) + '% 50%';
+                break;
+            case 'pan-left':
+                imgEl.style.transform = '';
+                imgEl.style.objectPosition = ((1 - p) * 100) + '% 50%';
+                break;
+            case 'ken-burns':
+                imgEl.style.transform = 'scale(' + (1 + p * 0.5) + ')';
+                imgEl.style.objectPosition = (30 + p * 35) + '% ' + (60 - p * 25) + '%';
+                break;
         }
     }
 
+    // scrollama event handlers
     function handleStepEnter(response) {
         var stepIndex = response.index;
 
@@ -31,6 +48,7 @@
             var imgEl = section ? section.querySelector('.scrolly-sticky__img') : null;
             if (imgEl && section._scrollySrcs) {
                 var idx = section._scrollySteps.indexOf(response.element);
+                section._activeScrollyStepIdx = idx; // scroll handler reads this
                 var targetSrc = section._scrollySrcs[idx];
                 var stepFocus   = response.element.getAttribute('data-focus');   // null if not set
                 var stepAnimate = response.element.getAttribute('data-animate'); // null if not set
@@ -39,15 +57,12 @@
                     setTimeout(function() {
                         imgEl.src = targetSrc;
                         if (stepFocus !== null) { imgEl.style.objectPosition = stepFocus; imgEl.style.transformOrigin = stepFocus; }
-                        // On image swap always restart animation; use step's animate if given, else the current one
-                        var curAnimate = (Array.from(imgEl.classList).find(function(c) { return c.startsWith('scrolly-animate-'); }) || '').replace('scrolly-animate-', '') || null;
-                        scrollyRestartAnimation(imgEl, stepAnimate !== null ? stepAnimate : curAnimate);
+                        if (stepAnimate) { applyProgressTransform(imgEl, stepAnimate, 0); }
                         imgEl.style.opacity = '1';
                     }, 380);
                 } else {
-                    // No src swap — only update focus/animate if explicitly specified on this step
                     if (stepFocus   !== null) { imgEl.style.objectPosition = stepFocus; imgEl.style.transformOrigin = stepFocus; }
-                    if (stepAnimate !== null) { scrollyRestartAnimation(imgEl, stepAnimate); }
+                    if (stepAnimate !== null) { applyProgressTransform(imgEl, stepAnimate, 0); }
                 }
             }
             response.element.classList.remove("fade-out");
@@ -76,11 +91,11 @@
         // Remove fade-out class if it exists
         response.element.classList.remove("fade-out");
     }
-    
+
     function handleStepExit(response) {
-        
+
     }
-    
+
     // Initialize scrollama and set up event listeners
     function init() {
         step.forEach(function(step, index) {
@@ -109,19 +124,47 @@
             });
             section._scrollySrcs = srcs;
             section._scrollySteps = sectionSteps;
+            section._activeScrollyStepIdx = undefined;
         });
 
         scroller
             .setup({
                 step: "#scrolly article .step",
                 debug: false,
-                offset: 0.24
+                offset: SCROLLY_OFFSET
             })
             .onStepEnter(handleStepEnter)
             .onStepExit(handleStepExit);
+
+        // Scroll-driven image animation: compute progress from getBoundingClientRect
+        // so it works correctly at any step height (Scrollama's intersectionRatio
+        // maxes out at viewport/stepHeight, unreliable for tall steps like 300vh).
+        var rafPending = false;
+        window.addEventListener('scroll', function() {
+            if (rafPending) return;
+            rafPending = true;
+            requestAnimationFrame(function() {
+                rafPending = false;
+                document.querySelectorAll('.scrolly-section').forEach(function(section) {
+                    var idx = section._activeScrollyStepIdx;
+                    if (idx === undefined || !section._scrollySteps) return;
+                    var activeStep = section._scrollySteps[idx];
+                    if (!activeStep) return;
+                    var animate = activeStep.getAttribute('data-animate');
+                    if (!animate) return;
+                    var imgEl = section.querySelector('.scrolly-sticky__img');
+                    if (!imgEl) return;
+                    var rect = activeStep.getBoundingClientRect();
+                    var triggerY = window.innerHeight * SCROLLY_OFFSET;
+                    // p = 0 when step top hits trigger; p = 1 when step bottom hits trigger
+                    var p = Math.max(0, Math.min(1, (triggerY - rect.top) / rect.height));
+                    applyProgressTransform(imgEl, animate, p);
+                });
+            });
+        }, { passive: true });
     }
 
     // Kick things off
     init();
-    
+
 </script>

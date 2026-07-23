@@ -404,6 +404,15 @@ Scrolling back up restores the correct image automatically — each panel's "eff
 - Print output renders the initial image once, then all panel text inline beneath it.
 - Disable Scrollama on an essay page with `scrollama: false` in front matter — scrolly blocks won't animate but render as readable static content.
 
+### If something looks broken
+
+The includes detect and flag the most common mistakes instead of silently corrupting the page:
+
+- **A `scrolly-media.html` opened before the previous block was closed**, **a `scrolly-step.html` used with no block open**, **a stray/duplicate `scrolly-end.html`**, or **a `scrolly-media.html`/`scrolly-step.html` image that fails to resolve** (missing or mistyped `objectid`, no `src`) each render a small dashed amber banner right at the point of the mistake, explaining what to fix. It's intentionally styled to look out of place — it should never be mistaken for real essay content, and it's hidden from print output.
+- **A block that's never closed at all** (no `scrolly-end.html` anywhere after it) can't be flagged inline — there's no later include to catch it — but `bundle exec jekyll build`/`serve` prints a console warning naming the file, and a production build (`JEKYLL_ENV=production`) fails outright rather than shipping the broken page.
+
+If you see a warning banner or a build error, check that every `scrolly-media.html` in the essay has a matching `scrolly-end.html`, and that every `scrolly-step.html` sits between them.
+
 ---
 
 ## Mini Map
