@@ -103,6 +103,294 @@ a {
     }
 }
 
+// The step emitted by scrolly-end.html acts as a white curtain that scrolls up
+// over the sticky image. visible-step keeps it opaque immediately so there's no
+// invisible gap; z-index:1 ensures it paints above the sticky (z-index:0).
+.scrolly-exit {
+    position: relative;
+    z-index: 1;
+    background: var(--bs-body-bg, white);
+    padding-top: 3rem !important;
+    padding-bottom: 1rem;
+
+    @media print {
+        padding-top: 0 !important;
+        background: transparent;
+    }
+}
+
+// ── Scrollytelling sections (scrolly-media / scrolly-step / scrolly-end) ──
+
+.scrolly-section {
+    position: relative;
+    // Sticky + steps share a single grid cell so steps render in front of the
+    // sticky image. A negative-margin overlap trick was used here previously,
+    // but browsers size the sticky element's scroll range against its
+    // pre-collapse box, so it stayed pinned to the viewport top for a full
+    // extra 100vh after the section visually ended, bleeding into whatever
+    // came next. Grid stacking (already used by .scrolly-sidecar below)
+    // doesn't have that mismatch.
+    display: grid;
+    grid-template-columns: 1fr;
+
+    .scrolly-sticky {
+        grid-column: 1;
+        grid-row: 1;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        align-self: start;
+        overflow: hidden;
+        z-index: 0;
+
+        .scrolly-sticky__img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.4s ease;
+        }
+
+        // Leaflet needs an explicitly sized container; the grid row already provides
+        // height (100vh here, 55vh on the mobile-collapsed sidecar variant below).
+        .scrolly-map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .scrolly-map-error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 1.5rem;
+            text-align: center;
+            color: #999;
+            background: #111;
+        }
+
+        // Attribution stays on for tile-provider ToS compliance even when non-interactive;
+        // keep it legible over varied map imagery without dominating the frame.
+        .leaflet-control-attribution {
+            font-size: 0.65rem;
+            background: rgba(255, 255, 255, 0.75);
+        }
+
+        .scrolly-caption {
+            position: absolute;
+            bottom: 0.75rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+            margin: 0;
+        }
+    }
+
+    .scrolly-steps {
+        grid-column: 1;
+        grid-row: 1;
+        position: relative;
+        z-index: 10;
+        padding-top: 15vh;
+        padding-bottom: 50vh; // scrolly-exit (white bg, visible-step) acts as curtain over the remaining sticky
+    }
+
+    // Override default .step {opacity:0} — outer step is always visible;
+    // the inner .scrolly-step-content handles its own fade.
+    .scrolly-step.step {
+        opacity: 1 !important;
+        padding: 0 !important;
+        margin-top: 0;
+        min-height: var(--scrolly-step-height, 300vh);
+        display: flex;
+        align-items: center;
+
+        &.step-left   { justify-content: flex-start; padding-left: 2rem !important; }
+        &.step-center { justify-content: center; }
+        &.step-right  { justify-content: flex-end; padding-right: 2rem !important; }
+
+        .scrolly-step-content {
+            max-width: min(420px, 90vw);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        &.fade-in .scrolly-step-content,
+        &.visible-step .scrolly-step-content { opacity: 1; }
+
+        &.light-panel .scrolly-step-content {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+            padding: 1.5rem;
+            border-radius: 4px;
+        }
+
+        &.dark-panel .scrolly-step-content {
+            background: rgba(20, 20, 20, 0.88);
+            color: #f0f0f0;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+            padding: 1.5rem;
+            border-radius: 4px;
+        }
+    }
+}
+
+// Sidecar: text left, image right — CSS Grid for reliable sticky
+.scrolly-section.scrolly-sidecar {
+    display: grid;
+    grid-template-columns: 45% 55%;
+    align-items: start;
+
+    // Sticky must NOT use margin-bottom:-100vh here; instead the padding-bottom
+    // on .scrolly-steps (inherited from the base rule, 100vh) keeps the grid row
+    // tall enough for sticky to stay active through all steps.
+    .scrolly-sticky {
+        grid-column: 2;
+        grid-row: 1;
+        margin-bottom: 0;
+        align-self: start;
+        background: var(--cb-surface-200, #f0f0f0); // bg fills bars when image is contained
+
+        .scrolly-sticky__img {
+            object-fit: contain; // show full image — sidecar is for archival/document detail
+        }
+    }
+
+    .scrolly-steps {
+        grid-column: 1;
+        grid-row: 1;
+        padding-top: 20vh;
+        // padding-bottom: 100vh is inherited from .scrolly-section .scrolly-steps
+        background: var(--bs-body-bg);
+    }
+
+    .scrolly-step.step {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+        justify-content: flex-start;
+
+        .scrolly-step-content {
+            max-width: 100%;
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            box-shadow: none !important;
+            padding: 1.5rem 0;
+        }
+    }
+}
+
+// Mobile: immersive — show full landscape image, not just the center strip
+@media (max-width: 768px) {
+    .scrolly-section:not(.scrolly-sidecar) .scrolly-sticky {
+        background: #111;
+
+        .scrolly-sticky__img {
+            object-fit: contain;
+        }
+    }
+}
+
+// Mobile: sidecar collapses to stacked/overlay
+@media (max-width: 768px) {
+    .scrolly-section.scrolly-sidecar {
+        display: block;
+
+        .scrolly-sticky {
+            position: sticky;
+            top: 0;
+            height: 55vh;
+            width: 100%;
+            margin-bottom: -55vh;
+            background: #111;
+
+            .scrolly-sticky__img {
+                object-fit: contain;
+            }
+        }
+
+        .scrolly-steps {
+            position: relative;
+            z-index: 10;
+            padding-top: 10vh;
+            background: transparent; // FIX: desktop sidecar sets solid bg; must clear it so sticky image shows through
+        }
+
+        .scrolly-step.step .scrolly-step-content {
+            background: rgba(255, 255, 255, 0.88) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12) !important;
+        }
+    }
+}
+
+// When the section-nav sidebar is active (>=1200px), pull immersive sections
+// right so the sticky image starts at the same left edge as the essay text,
+// keeping the section-nav column clear.
+@media (min-width: 1200px) {
+    #scrolly.has-section-nav .scrolly-section {
+        margin-left: 16%;
+    }
+}
+
+// Print: unstack scrolly sections, show image once, all panels fully readable
+@media print {
+    .scrolly-section {
+        .scrolly-sticky {
+            position: relative !important;
+            height: 50vh !important;
+            margin-bottom: 0 !important;
+            break-inside: avoid;
+        }
+
+        // Leaflet won't render reliably in print (no network/tile loading in the print
+        // context); show a static note instead of an interactive map or a blank frame.
+        .scrolly-sticky--map {
+            .scrolly-map,
+            .scrolly-map-error {
+                display: none !important;
+            }
+
+            &::after {
+                content: "Interactive map \2014 view online";
+                display: block;
+                padding: 1rem;
+                text-align: center;
+                font-style: italic;
+                color: #666;
+            }
+        }
+
+        .scrolly-step.step {
+            display: block !important;
+            min-height: 0 !important;
+
+            .scrolly-step-content {
+                opacity: 1 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                max-width: 100% !important;
+                padding: 0.25rem 0 !important;
+            }
+        }
+
+        .scrolly-steps { padding: 0 !important; }
+    }
+}
+
+// Scrolly image transforms are driven entirely by JS scroll position via
+// getBoundingClientRect — no CSS keyframes. will-change hints the browser
+// to promote the layer for GPU-composited transforms.
+.scrolly-sticky__img {
+    will-change: transform;
+}
+
 .essay-main {
     max-width: 633px;
     width: 60%;
@@ -1605,4 +1893,27 @@ mark.essay-result-mark {
     float: none;
     margin: 0 0 0.75rem 0;
   }
+}
+// Copy-to-clipboard button, opt-in per code block via the `.copy-code` class
+// (add `{: .copy-code}` on the line right after a fenced code block; see helpers/copy-code-js.html)
+div.highlighter-rouge.copy-code {
+    position: relative;
+
+    pre {
+        padding-top: 2.75rem;
+    }
+
+    .copy-code-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        line-height: 1;
+    }
 }

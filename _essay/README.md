@@ -118,6 +118,20 @@ order: 30  # Instead of 3
 
 This makes it easy to insert essays later without renumbering everything.
 
+## Reference Pages (Hidden from Navigation)
+
+Not every file in this folder needs to be part of the sequential teaching flow. A deep-reference page — a big gallery of examples for one feature, like `scrolly-media-gallery.md` — can live here too, using the same layout, styling, and scripts as any other essay, but excluded from the homepage table of contents, the off-canvas "Contents" panel, and prev/next navigation. Give it a high `order` value (so it sorts harmlessly at the end of the collection) and set `hide_from_nav: true`:
+
+```yaml
+---
+title: Your Reference Gallery
+order: 1000
+hide_from_nav: true
+---
+```
+
+Link to it explicitly from wherever it's relevant (a teaching-sequence essay, or `/docs.html`) instead of relying on it to appear in navigation.
+
 ## Learn More
 
 - Read the demo essays in this folder for examples

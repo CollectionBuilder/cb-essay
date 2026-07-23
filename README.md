@@ -41,7 +41,7 @@ Essays appear in sequential order based on the `order` field, with automatic pre
 
 ### Essay Writing
 - Sequential essay navigation with prev/next buttons
-- Flexible themes: traditional essay or book-style monograph
+- Independent navigation flags for a single linear essay or a book-style multi-chapter monograph
 - Support for long-form scholarship with chapter-like organization
 
 ### CollectionBuilder Integration
@@ -75,7 +75,7 @@ The script automatically:
 - Extracts metadata to `_data/book.yml`
 - Stores cover image URLs
 
-[Learn more about the Gutenberg workflow →](docs/cb-essay/gutenberg-extraction.md)
+See it in action: [Extracting a Book from Project Gutenberg](_essay/035-gutenberg-extraction.md) (end-user walkthrough) or [the technical extraction reference](docs/cb-essay/gutenberg-extraction.md) (maintainer-level).
 
 ---
 
@@ -84,9 +84,12 @@ The script automatically:
 The demo site is **self-documenting** - each essay teaches you how to use CB-Essay while demonstrating the features:
 
 1. **Welcome to CB-Essay** - Overview and introduction
-2. **Getting Started** - Your first essay walkthrough
-3. **Essay Features** - All includes with copy-paste examples
-4. **Collection Integration** - Blending essays with collection items
+2. **CB-Essay in the Wild** - Live example sites
+3. **Get Started** - Your first essay walkthrough
+4. **Extracting a Book from Project Gutenberg** - Publish a public domain book in minutes
+5. **Essay Writing Features** - All includes with copy-paste examples
+6. **Scroll-Based Features** - Scrollytelling overview, with dedicated Scrolly Media and Scrolly Map galleries for deep reference
+7. **Publishing, Printing & Reading** - Print, search, deployment, and sharing
 
 **Copy and replace:** Every feature you see can be copied directly into your own essays. Just replace the demo content with yours.
 
@@ -97,7 +100,7 @@ The demo site is **self-documenting** - each essay teaches you how to use CB-Ess
 - [**Essay Writing Guide**](docs/cb-essay/essay-writing.md) - Front matter, navigation, workflow
 - [**Essay Features Reference**](docs/cb-essay/essay-features.md) - Complete guide to all essay includes
 - [**Gutenberg Extraction**](docs/cb-essay/gutenberg-extraction.md) - Detailed extraction workflow
-- [**Theme Options**](docs/cb-essay/theme-options.md) - Essay vs. monograph themes
+- [**Theme Options**](docs/cb-essay/theme-options.md) - Color theme, fonts, homepage layout, and navigation flags
 - [**Accessibility**](docs/cb-essay/accessibility.md) - WCAG 2.1 out of the box, and testing after you customize
 - [**Working with AI**](HUMANS.md) - Prompting and reviewing AI coding assistants (`AGENTS.md` carries the rules)
 - [**CollectionBuilder Docs**](docs/index.md) - Full CB-CSV documentation

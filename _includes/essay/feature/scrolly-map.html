@@ -1,0 +1,97 @@
+{% comment %}
+
+    Scrollytelling Map Background
+    Opens a scrolly block whose pinned background is an interactive Leaflet map instead of an
+    image or video. Pair with scrolly-step.html (using its map-* parameters) and close with the
+    shared scrolly-end.html, exactly like an image/video scrolly block.
+
+    E.G. --> {% include essay/feature/scrolly-map.html latitude="46.727485" longitude="-117.014185" zoom="5" %}
+    E.G. --> {% include essay/feature/scrolly-map.html objectid="demo_001" %}
+    E.G. --> {% include essay/feature/scrolly-map.html latitude="46.7" longitude="-117.0" markers="demo_001,demo_002" %}
+    E.G. --> {% include essay/feature/scrolly-map.html latitude="46.7" longitude="-117.0" show-collection=true %}
+    E.G. --> {% include essay/feature/scrolly-map.html latitude="46.7" longitude="-117.0" layout="sidecar" %}
+
+    Options:
+    - "objectid" = seed center/zoom from a collection item's latitude/longitude; also plots a marker for it (optional, provide this OR latitude/longitude)
+    - "latitude" / "longitude" = initial map center (required unless using objectid; falls back to theme.yml site defaults)
+    - "zoom" = initial zoom level, default theme.yml zoom-level (5)
+    - "basemap" = Esri_WorldStreetMap, Esri_NatGeoWorldMap, Esri_WorldImagery, OpenStreetMap_Mapnik, Stadia_AlidadeSmooth, Stadia_StamenToner. Default theme.yml map-base
+    - "interactive" = true/false, enable reader drag/scroll-zoom/touch-zoom. Default false for layout="immersive", true for layout="sidecar" (always forced off on mobile)
+    - "markers" = comma-separated objectids to plot as a curated marker set, each with a popup
+    - "show-collection" = true/false, plot every geo-tagged collection item as markers (same selection as the full collection map)
+    - "cluster" = true/false, cluster markers when show-collection is used. Default theme.yml map-cluster
+    - "flyto-duration" = default flyTo animation duration in seconds for this block's steps, default 2 (overridable per step)
+    - "caption" = small credit/attribution line, same as scrolly-media.html
+    - "layout" = immersive (default, full-bleed) or sidecar (text left, map pinned right)
+    - "position" = left (default) / center / right — first panel alignment
+    - "text-background" = light (default) / dark — first panel style
+    - "step-height" = minimum scroll height per panel, default 300vh
+
+    Pair with scrolly-step.html's map-lat / map-lng / map-zoom / map-objectid / map-transition /
+    map-basemap / map-open-popup / map-flyto-duration parameters to move the map as steps scroll
+    into view, then close with scrolly-end.html (shared, unchanged, with image/video blocks).
+
+{% endcomment %}
+{% assign _layout = include.layout | default: 'immersive' %}{% assign _position = include.position | default: 'left' %}{% assign _text_bg = include.text-background | default: 'light' %}{% assign _zoom = include.zoom | default: site.data.theme.zoom-level | default: 5 %}{% assign _basemap = include.basemap | default: site.data.theme.map-base | default: 'Esri_WorldStreetMap' %}{% assign _flyto_duration = include.flyto-duration | default: 2 %}{% assign _interactive = false %}{% if _layout == 'sidecar' %}{% assign _interactive = true %}{% endif %}{% if include.interactive == false or include.interactive == 'false' %}{% assign _interactive = false %}{% elsif include.interactive == true or include.interactive == 'true' %}{% assign _interactive = true %}{% endif %}{% assign _cluster = site.data.theme.map-cluster %}{% if include.cluster == false or include.cluster == 'false' %}{% assign _cluster = false %}{% elsif include.cluster == true or include.cluster == 'true' %}{% assign _cluster = true %}{% endif %}{% if include.objectid %}{% assign _item = site.data[site.metadata] | where: 'objectid', include.objectid | first %}{% assign _lat = include.latitude | default: _item.latitude %}{% assign _lng = include.longitude | default: _item.longitude %}{% else %}{% assign _lat = include.latitude | default: site.data.theme.latitude %}{% assign _lng = include.longitude | default: site.data.theme.longitude %}{% endif %}
+{%- assign _marker_items = "" | split: "" -%}
+{%- if include.objectid and _item -%}{%- assign _marker_items = _marker_items | push: _item -%}{%- endif -%}
+{%- if include.markers -%}
+  {%- assign _marker_ids = include.markers | split: "," -%}
+  {%- for _mid in _marker_ids -%}
+    {%- assign _mid = _mid | strip -%}
+    {%- assign _mitem = site.data[site.metadata] | where: "objectid", _mid | first -%}
+    {%- if _mitem and _mitem.latitude and _mitem.longitude -%}{%- assign _marker_items = _marker_items | push: _mitem -%}{%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+{%- if include.show-collection == true or include.show-collection == "true" -%}
+  {%- if site.data.theme.map-child-objects == true -%}
+    {%- assign _collection_items = site.data[site.metadata] | where_exp: "item","item.objectid" -%}
+  {%- else -%}
+    {%- assign _collection_items = site.data[site.metadata] | where_exp: "item","item.objectid and item.parentid == nil" -%}
+  {%- endif -%}
+  {%- assign _collection_items = _collection_items | where_exp: "item","item.latitude != nil and item.longitude != nil" -%}
+  {%- assign _marker_items = _marker_items | concat: _collection_items -%}
+{%- endif -%}
+{%- assign _map_fields = site.data.config-map -%}
+{%- capture _uid_raw -%}{{ include.objectid | default: _lat }}_{{ _lng }}-{% increment _scrolly_map_uid %}{%- endcapture -%}
+{%- assign _uid = _uid_raw | slugify -%}
+{::nomarkdown}
+</div></div>
+<div class="scrolly-section scrolly-{{ _layout }}"{% if include.step-height %} style="--scrolly-step-height: {{ include.step-height }}"{% endif %}>
+  <div class="scrolly-sticky scrolly-sticky--map">
+    {% if _lat and _lng %}<!-- load leaflet dependencies -->
+    <link rel="stylesheet" href="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/leaflet.css">
+    <link rel="stylesheet" href="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/leaflet.fullscreen.css">
+    {% if _cluster == true %}<link rel="stylesheet" href="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/MarkerCluster.css">
+    <link rel="stylesheet" href="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/MarkerCluster.Default.css">{% endif %}
+    <script src="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/leaflet.js"></script>
+    <script src="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/Leaflet.fullscreen.min.js"></script>
+    {% if _cluster == true %}<script src="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/leaflet.markercluster.js"></script>{% endif %}
+    <div id="scrolly-map_{{ _uid }}" class="scrolly-map"
+         data-lat="{{ _lat }}" data-lng="{{ _lng }}" data-zoom="{{ _zoom }}"
+         data-basemap="{{ _basemap }}" data-interactive="{{ _interactive }}"
+         data-flyto-duration="{{ _flyto_duration }}"
+         {% if _marker_items.size > 0 %}data-markers="scrolly-map-markers_{{ _uid }}"{% endif %}
+         data-cluster="{{ _cluster }}"></div>
+    {% if _marker_items.size > 0 %}<script type="application/json" id="scrolly-map-markers_{{ _uid }}">
+    { "type": "FeatureCollection", "features": [
+    {% for item in _marker_items %}
+    { "type":"Feature", "geometry":{ "type":"Point", "coordinates":[{{ item.longitude | strip }},{{ item.latitude | strip }}] }, "properties":
+    {
+        {% for f in _map_fields %}{% if item[f.field] %}{{ f.field | escape | jsonify }}:{{ item[f.field] | strip | escape | jsonify }}, {%- endif -%}{%- endfor -%}
+        {% if item.image_thumb %}"img": {{ item.image_thumb | relative_url | jsonify }},{% endif %}
+        {% if item.display_template %}"template": {{ item.display_template | escape | jsonify }}, {%- endif -%}
+        {% if item.format %}"format": {{ item.format | escape | jsonify }}, {%- endif -%}
+        {% if item.image_alt_text %}"alt": {{ item.image_alt_text | escape | jsonify }}, {%- endif -%}
+        {% if item.parentid %}"parent": {{ item.parentid | jsonify }}, {%- endif -%}
+        "title": {{ item.title | escape | jsonify }},
+        "id": {{ item.objectid | jsonify }}
+    } }{% unless forloop.last %}, {% endunless %}{% endfor %}
+    ] }
+    </script>{% endif %}{% else %}<div class="scrolly-map-error">Map background requires <code>latitude</code>/<code>longitude</code> or an <code>objectid</code> with coordinates.</div>{% endif %}
+    {% if include.caption %}<p class="scrolly-caption">{{ include.caption }}</p>{% endif %}
+  </div>
+  <div class="scrolly-steps">
+    <div class="step scrolly-step step-{{ _position }} {{ _text_bg }}-panel visible-step">
+      <div class="scrolly-step-content">
+{:/nomarkdown}

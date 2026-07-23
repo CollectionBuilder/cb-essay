@@ -327,8 +327,8 @@
         el.style.display = 'none';
       });
 
-      // 0c. Hide Leaflet mini-maps and iframes (JS-only, not printable).
-      document.querySelectorAll('[id^="mini-map"]').forEach(function(el) {
+      // 0c. Hide Leaflet mini-maps, scrolly-map backgrounds, and iframes (JS-only, not printable).
+      document.querySelectorAll('[id^="mini-map"], [id^="scrolly-map"], .scrolly-map').forEach(function(el) {
         el.style.display = 'none';
       });
       document.querySelectorAll('iframe').forEach(function(el) {

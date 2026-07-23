@@ -8,7 +8,8 @@
 # 1. Create .md files in _essay/ with front matter (title, order, optional byline)
 # 2. Essays appear in sequential order based on the "order" field
 # 3. Automatic prev/next navigation between essays
-# 4. Choose essay or monograph theme in _data/theme.yml
+# 4. Configure navigation and homepage display via independent flags in _data/theme.yml
+#    (show-contents-nav, show-homepage-toc, show-section-nav)
 #
 # Learn more: docs/cb-essay/essay-writing.md
 

@@ -1,0 +1,71 @@
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var blocks = document.querySelectorAll('div.highlighter-rouge.copy-code');
+    var copyIconSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>';
+
+    blocks.forEach(function (block) {
+        var codeEl = block.querySelector('code');
+        if (!codeEl) return;
+
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-sm btn-outline-secondary copy-code-btn';
+        btn.setAttribute('aria-label', 'Copy code to clipboard');
+        btn.title = 'Copy code to clipboard';
+        btn.innerHTML = copyIconSVG + '<span class="visually-hidden copy-code-status" aria-live="polite"></span>';
+        block.prepend(btn);
+
+        var statusEl = btn.querySelector('.copy-code-status');
+
+        function resetButton() {
+            btn.setAttribute('aria-label', 'Copy code to clipboard');
+            btn.title = 'Copy code to clipboard';
+            statusEl.textContent = '';
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-secondary');
+        }
+
+        btn.addEventListener('click', function () {
+            var text = codeEl.textContent;
+
+            function onSuccess() {
+                btn.setAttribute('aria-label', 'Copied to clipboard');
+                btn.title = 'Copied to clipboard';
+                statusEl.textContent = 'Copied to clipboard';
+                btn.classList.remove('btn-outline-secondary');
+                btn.classList.add('btn-success');
+                setTimeout(resetButton, 1500);
+            }
+
+            function onFail() {
+                btn.setAttribute('aria-label', 'Copy failed');
+                btn.title = 'Copy failed';
+                statusEl.textContent = 'Copy failed';
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-secondary');
+                setTimeout(resetButton, 1500);
+            }
+
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                navigator.clipboard.writeText(text).then(onSuccess, onFail);
+                return;
+            }
+
+            try {
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'absolute';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                var ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                if (ok) onSuccess(); else onFail();
+            } catch (e) {
+                onFail();
+            }
+        });
+    });
+});
+</script>

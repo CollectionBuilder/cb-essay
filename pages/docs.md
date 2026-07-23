@@ -54,6 +54,7 @@ I can add blockquotes:
 
 And margin notes:{% raw %}{% include essay/feature/aside.html text="This is a margin note!" %}{% endraw %}
 ```
+{: .copy-code}
 
 5. **Commit changes** and wait for GitHub Pages to rebuild (2-3 minutes)
 
@@ -85,6 +86,7 @@ title: Your Essay Title
 order: 1
 ---
 ```
+{: .copy-code}
 
 - **`title`**: Appears in navigation and page header
 - **`order`**: Controls display sequence (1, 2, 3...)
@@ -99,6 +101,7 @@ byline: Michel de Montaigne
 featured-image: /assets/img/chapter-image.jpg
 ---
 ```
+{: .copy-code}
 
 - **`byline`**: Author attribution
 - **`featured-image`**: Header image for this essay
@@ -125,7 +128,7 @@ For detailed guidance, see [Essay Writing Guide](https://github.com/CollectionBu
 
 **When to use this section:** After you've created your first essay and want to add blockquotes, margin notes, or other specialized features.
 
-CB-Essay provides specialized includes for scholarly writing. **Copy the examples below directly into your essays.** For complete examples and best practices, see the [Writing Features essay](/_essay/04-essay-features.html).
+CB-Essay provides specialized includes for scholarly writing. **Copy the examples below directly into your essays.** For the full bonanza — every variant demonstrated live — see the [Essay Writing Features essay](/essay/04-essay-features.html).
 
 ### Blockquotes
 
@@ -137,6 +140,7 @@ Styled quotations with attribution and source links.
    quote="Knowledge comes, but wisdom lingers"
    speaker="Alfred Lord Tennyson" %}{% endraw %}
 ```
+{: .copy-code}
 
 **With source:**
 ```liquid
@@ -145,6 +149,7 @@ Styled quotations with attribution and source links.
    speaker="Jane Austen"
    source="Pride and Prejudice" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Large centered quote:**
 ```liquid
@@ -153,6 +158,7 @@ Styled quotations with attribution and source links.
    size="xl"
    align="center" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Parameters:**
 - `quote` - Quote text (required)
@@ -170,6 +176,7 @@ Margin notes appear beside text on desktop, inline on mobile.
 ```liquid
 {% raw %}Here's text with a margin note.{% include essay/feature/aside.html text="This is a margin note!" %} Text continues.{% endraw %}
 ```
+{: .copy-code}
 
 **Aside with collection item:**
 ```liquid
@@ -177,6 +184,7 @@ Margin notes appear beside text on desktop, inline on mobile.
    objectid="demo_001"
    text="Context about this item" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Parameters:**
 - `text` - Margin note text (supports Markdown)
@@ -187,13 +195,13 @@ Margin notes appear beside text on desktop, inline on mobile.
 
 ### Image Galleries
 
-Display multiple collection items:
+Display multiple collection items — images, video, audio, or PDFs — in an inline gallery:
 
 ```liquid
-{% raw %}{% include feature/gallery.html
-   heading="Items after 1900"
-   filter="item.format contains 'image'" %}{% endraw %}
+{% raw %}{% include essay/feature/image-gallery.html
+   objectid="item1;item2;item3" %}{% endraw %}
 ```
+{: .copy-code}
 
 ### Mini Maps
 
@@ -205,6 +213,7 @@ Embed maps at specific coordinates:
    longitude="-117.014185"
    zoom="10" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Parameters:**
 - `latitude` - Center latitude (required)
@@ -223,6 +232,7 @@ Create visual breaks with scroll transitions:
 
 Content continues...{% endraw %}
 ```
+{: .copy-code}
 
 ### Complete Feature Reference
 
@@ -232,11 +242,73 @@ For all parameters and advanced usage, see:
 
 ---
 
+## Scrollytelling {#scrollytelling}
+
+**When to use this section:** To pin an image, video, or interactive map in the viewport while narrative text panels scroll over or beside it.
+
+Every scrolly block follows the same three-include pattern:
+
+```liquid
+{% raw %}{% include essay/feature/scrolly-media.html objectid="your_image" %}
+
+First panel text.
+
+{% include essay/feature/scrolly-step.html objectid="next_image" %}
+
+Second panel text.
+
+{% include essay/feature/scrolly-end.html %}{% endraw %}
+```
+{: .copy-code}
+
+Every animation, layout, and map-transition variant — zoom, pan, Ken Burns, sidecar, video backgrounds, flyTo/pan/basemap-switching maps — is demonstrated live with copy-paste code in the [Scrolly Media Gallery](/essay/scrolly-media-gallery.html) and [Scrolly Map Gallery](/essay/scrolly-map-gallery.html). The tables below are the condensed parameter reference.
+
+**`scrolly-media.html`** — opens an image/video background block:
+
+{:.table .table-striped}
+| Parameter | Default | Description |
+|---|---|---|
+| `objectid` | — | Collection item ID; video detected automatically from `display_template` |
+| `src` | — | Direct path to an image or video file (`.mp4`, `.webm`, `.ogg` auto-detected) |
+| `poster` | — | Poster frame for `src`-based videos |
+| `video-start` | — | Start time in seconds for video backgrounds |
+| `alt` | — | Image alt text |
+| `caption` | — | Small credit line at bottom-right |
+| `layout` | `immersive` | `immersive` or `sidecar` |
+| `position` | `left` | First panel position: `left`, `center`, `right` |
+| `text-background` | `light` | First panel style: `light` or `dark` |
+| `step-height` | `300vh` | Minimum scroll height per panel |
+| `image-focus` | `center` | CSS `object-position` value; also sets zoom target |
+| `animate` | — | `zoom-in`, `zoom-out`, `pan-left`, `pan-right`, `ken-burns` |
+
+**`scrolly-step.html`** — adds a panel (same parameters except `layout`). Steps without `objectid`/`src` keep the current image.
+
+**`scrolly-end.html`** — no parameters; always required to close the block.
+
+**`scrolly-map.html`** — opens an interactive Leaflet map background instead of `scrolly-media.html`:
+
+{:.table .table-striped}
+| Parameter | Default | Description |
+|---|---|---|
+| `objectid` | — | Seeds center/zoom from a collection item's `latitude`/`longitude` |
+| `latitude` / `longitude` | theme.yml defaults | Initial map center |
+| `zoom` | theme.yml `zoom-level` | Initial zoom level |
+| `basemap` | theme.yml `map-base` | Tile layer name (e.g. `Esri_WorldImagery`) |
+| `interactive` | `false` (immersive) / `true` (sidecar) | Reader drag/scroll-zoom |
+| `markers` | — | Comma-separated objectids to plot |
+| `show-collection` | `false` | Plot every geo-tagged collection item |
+| `cluster` | theme.yml `map-cluster` | Cluster markers when `show-collection` is used |
+| `flyto-duration` | `2` | Default flyTo duration (seconds) |
+
+**`scrolly-step.html`** (map-specific): `map-lat`/`map-lng`, `map-zoom`, `map-objectid`, `map-transition` (`flyTo`/`setView`/`pan`), `map-basemap`, `map-open-popup`, `map-flyto-duration`.
+
+---
+
 ## Collection Integration {#collection-integration}
 
 **When to use this section:** When you want to add images, PDFs, audio, or other collection items to your essays.
 
-This section covers the basics of referencing collection items in essays. For a complete tutorial with examples, see the [Collection Integration essay](/_essay/05-collection-integration.html).
+This section covers the basics of referencing collection items in essays. For worked examples with live asides and items, see [Essay Writing Features](/essay/04-essay-features.html).
 
 ### Using Collection Items
 
@@ -247,6 +319,7 @@ Reference items from your metadata CSV using their `objectid`:
    objectid="demo_001"
    text="This manuscript shows early revisions" %}{% endraw %}
 ```
+{: .copy-code}
 
 ### Metadata Requirements
 
@@ -262,18 +335,21 @@ All standard CollectionBuilder includes work in essays:
 
 **Item card:**
 ```liquid
-{% raw %}{% include feature/item-card.html objectid="demo_001" %}{% endraw %}
+{% raw %}{% include feature/card.html objectid="demo_001" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Timeline:**
 ```liquid
-{% raw %}{% include feature/timeline.html %}{% endraw %}
+{% raw %}{% include feature/timelinejs.html %}{% endraw %}
 ```
+{: .copy-code}
 
 **Subject cloud:**
 ```liquid
 {% raw %}{% include feature/cloud.html fields="subject" %}{% endraw %}
 ```
+{: .copy-code}
 
 For complete CollectionBuilder documentation, see [CollectionBuilder Docs](https://collectionbuilder.github.io/cb-docs/).
 
@@ -294,17 +370,20 @@ image-style: full-image
 featured-image: /assets/img/banner.jpg
 home-banner-image-position: center
 ```
+{: .copy-code}
 
 **Half image:**
 ```yaml
 image-style: half-image
 featured-image: /assets/img/cover.jpg
 ```
+{: .copy-code}
 
 **No image:**
 ```yaml
 image-style: no-image
 ```
+{: .copy-code}
 
 ### Navigation and Homepage Layout Options
 
@@ -314,6 +393,7 @@ show-contents-nav: true    # "Contents" button in navbar opens chapter list pane
 show-homepage-toc: true    # chapter table of contents on the homepage
 show-section-nav: false    # floating sidebar TOC built from H2s on each essay page
 ```
+{: .copy-code}
 
 **Common configurations:**
 
@@ -323,6 +403,7 @@ show-contents-nav: false
 show-homepage-toc: false
 show-section-nav: false
 ```
+{: .copy-code}
 
 Multi-chapter monograph:
 ```yaml
@@ -330,6 +411,7 @@ show-contents-nav: true
 show-homepage-toc: true
 show-section-nav: false
 ```
+{: .copy-code}
 
 Long single essay with in-page navigation:
 ```yaml
@@ -337,6 +419,7 @@ show-contents-nav: false
 show-homepage-toc: false
 show-section-nav: true
 ```
+{: .copy-code}
 
 
 ### Color Themes
@@ -346,6 +429,7 @@ CB-Essay includes 8 built-in color themes inspired by historical printing presse
 ```yaml
 color-theme: aldine  # default, idaho, lyre, nonesuch, aldine, doves, kelmscott, gregynog, ashendene
 ```
+{: .copy-code}
 
 **Built-in themes:**
 - `default` - Warm cream neutral
@@ -366,6 +450,7 @@ color-theme: custom
 custom-color: "#8B4513"
 navbar-style: dark  # dark or light
 ```
+{: .copy-code}
 
 The system automatically generates an accessible color palette from your hex color.
 
@@ -378,12 +463,14 @@ CB-Essay offers three font options:
 base-font-family: theme
 display-font-family: theme
 ```
+{: .copy-code}
 
 **2. Georgia (no CDN)** - Works offline, no external requests:
 ```yaml
 base-font-family: Georgia
 display-font-family: Georgia
 ```
+{: .copy-code}
 
 **3. Custom Google Font:**
 ```yaml
@@ -391,6 +478,7 @@ base-font-family: "'Literata', Georgia, serif"
 display-font-family: "'Literata', Georgia, serif"
 font-cdn: "https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap"
 ```
+{: .copy-code}
 
 You can mix options - for example, use theme fonts for body text with a custom display font for headings.
 
@@ -398,6 +486,7 @@ You can mix options - for example, use theme fonts for body text with a custom d
 ```yaml
 base-font-size: 1.2em  # 1.2em - 1.4em recommended for long-form reading
 ```
+{: .copy-code}
 
 ### Creating Your Own Theme
 
@@ -490,6 +579,7 @@ print:
   institution: "Your Org" # Institution on cover
   aside-style: margin     # margin (floats into gutter) or inline (callout blocks)
 ```
+{: .copy-code}
 
 ### What Works in Print
 
@@ -530,6 +620,8 @@ For detailed, essay-specific guidance and a full resource list, see the [Accessi
 
 CB-Essay includes a GitHub Action to import **60,000+ public domain books** from Project Gutenberg directly into your `_essay/` folder.
 
+For the full story — a before/after look at what gets extracted, and a tour of the finished Frankenstein site — see the [Extracting a Book from Project Gutenberg](/essay/035-gutenberg-extraction.html) essay. The steps below are the condensed reference.
+
 ### How to Use
 
 1. First, [Setup GitHub Pages](#2-enable-github-pages) using the instructions above in the Quickstart. (5 minutes)
@@ -568,6 +660,8 @@ For technical details, see [Gutenberg Extraction Guide](https://github.com/Colle
 
 ## Publishing {#publishing}
 
+See the [Publishing, Printing & Reading essay](/essay/06-publishing-reading.html) for the full picture, including print/PDF, search, and e-reader considerations. The reference below covers deployment specifically.
+
 ### GitHub Pages (Free)
 
 1. Push changes to your main branch
@@ -579,11 +673,23 @@ For technical details, see [Gutenberg Extraction Guide](https://github.com/Colle
 2. Configure DNS with your domain provider
 3. See [GitHub Pages custom domain docs](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site)
 
+### Your Own Server
+
+CB-Essay is a static site with no dependency on GitHub. Run a production build and upload the output anywhere that serves static files:
+
+```bash
+JEKYLL_ENV=production bundle exec jekyll build
+```
+{: .copy-code}
+
+Upload the resulting `_site/` folder to any web host, institutional server, or storage bucket.
+
 ### Local Preview
 
 ```bash
 bundle exec jekyll s
 ```
+{: .copy-code}
 
 Visit `http://localhost:4000` to preview changes before pushing.
 
@@ -592,6 +698,7 @@ Visit `http://localhost:4000` to preview changes before pushing.
 ```bash
 JEKYLL_ENV=production bundle exec jekyll build
 ```
+{: .copy-code}
 
 Outputs to `_site/` directory with full meta tags and analytics.
 
@@ -616,8 +723,8 @@ CB-Essay includes all standard CollectionBuilder pages and features. This sectio
 ### Feature Includes
 
 Available for use in essays:
-- `item-card.html` - Display individual items
-- `timeline.html` - Embed timelines
+- `card.html` - Display individual items
+- `timelinejs.html` - Embed timelines
 - `cloud.html` - Subject/location clouds
 - `image.html` - Single images
 - `pdf.html` - Embedded PDFs

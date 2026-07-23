@@ -1,5 +1,5 @@
 ---
-title: Writing Features
+title: Essay Writing Features
 order: 40
 part: Documentation
 ---
@@ -8,9 +8,11 @@ CB-Essay provides specialized includes that extend Markdown for scholarly writin
 
 **The copy-and-replace principle:** Find a feature you like, copy the code block, paste it into your essay, and replace the content with yours. That's it!
 
+Includes below come in two flavors, and the path tells you which: `feature/...` includes are core CollectionBuilder features. Those that use `essay/feature/...` includes are built specifically for CB-Essay. Both are used the same way; the path is your only signal for where else you can reuse them.
+
 ## Basic Markdown
 
-Start with standard Markdown formatting:
+Like all CollectionBuilder content pages, CB-Essay uses markdown for basic writing options: 
 
 ### Headings
 
@@ -32,95 +34,9 @@ Start with standard Markdown formatting:
 
 [Link text](https://example.com) with `[text](url)`
 
-### Images
+Check out CB's [Markdown glossary entry](https://collectionbuilder.github.io/cb-docs/docs/glossary/#markdown) for resources and tutorials!
 
-```markdown
-![Alt text](/assets/img/image.jpg)
-```
 
-### Lists
-
-**Bulleted:**
-- Item one
-- Item two
-  - Nested item
-
-**Numbered:**
-1. First item
-2. Second item
-3. Third item
-
-### Code Blocks
-
-Use triple backticks for code:
-
-````markdown
-```yaml
----
-title: Your Essay
-order: 1
----
-```
-````
-
----
-
-## Blockquotes
-
-Styled quotations with optional attribution and source links.
-
-### Basic Blockquote
-
-{% include essay/feature/blockquote.html
-   quote="Knowledge comes, but wisdom lingers"
-   speaker="Alfred Lord Tennyson" %}
-
-**Copy this:**
-```liquid
-{% raw %}{% include essay/feature/blockquote.html
-   quote="Knowledge comes, but wisdom lingers"
-   speaker="Alfred Lord Tennyson" %}{% endraw %}
-```
-
-### With Source Citation
-
-{% include essay/feature/blockquote.html
-   quote="It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife."
-   speaker="Jane Austen"
-   source="Pride and Prejudice" %}
-
-**Copy this:**
-```liquid
-{% raw %}{% include essay/feature/blockquote.html
-   quote="Your quote text here"
-   speaker="Author Name"
-   source="Book or Article Title" %}{% endraw %}
-```
-
-### Large Centered Quote w/ No Border
-
-{% include essay/feature/blockquote.html
-   quote="The best way out is always through"
-   size="xl"
-   speaker="Robert Frost"
-   align="center" 
-   border=false %}
-
-**Copy this:**
-```liquid
-{% raw %}{% include essay/feature/blockquote.html
-   quote="Your dramatic quote"
-   speaker="Famous Person"
-   size="xl"
-   align="center"
-   border=false  %}{% endraw %}
-```
-
-**Size options:** `sm`, `md`, `lg`, `xl`, `xxl`
-
-**Align options:** `left`, `center`, `right`
-
----
 
 ## Asides (Margin Notes)
 
@@ -135,6 +51,7 @@ Here's a paragraph with a margin note.{% include essay/feature/aside.html text="
 {% raw %}{% include essay/feature/aside.html
    text="Your margin note text here" %}{% endraw %}
 ```
+{: .copy-code}
 
 ### Aside with Collection Item
 
@@ -146,14 +63,15 @@ Collection items can appear in asides with thumbnails.{% include essay/feature/a
    objectid="demo_001"
    text="Context about this item" %}{% endraw %}
 ```
+{: .copy-code}
 
 **Note:** The `objectid` must exist in your collection metadata CSV file.
 
 ---
 
-## Image Galleries
+## Media Galleries
 
-Display multiple collection items as inline galleries.
+Display collection items that, when clicked, open in a full-screen modal viewer.
 
 {% include essay/feature/image-gallery.html
    objectid="demo_033;demo_031;demo_017" caption=false%}
@@ -163,58 +81,110 @@ Display multiple collection items as inline galleries.
 {% raw %}{% include essay/feature/image-gallery.html
    objectid="item1;item2;item3" %}{% endraw %}
 ```
+{: .copy-code}
 
-Separate multiple object IDs with semicolons. Items must exist in your metadata.
+**Gathering multiple pieces:** Separate object IDs with semicolons (`objectid="item1;item2;item3"`) to pull several items from your metadata into one gallery — the viewer lets readers step through all of them in sequence.
 
-## Filtered Collection Galleries
+### Mixed Media
 
-Below is another type of gallery, one that is filtered from the collection based on liquid logic (here it is `item.format contains 'image' and item.date > '1920'`) with an optional header.
+The gallery isn't limited to images — give it objectids for video, audio, or PDF items and it detects each one's type automatically:
 
-{% include feature/gallery.html 
-   heading="Items Dated after 1920"  
-   captions=false 
-   filter="item.date > '1920'" %}
-
-**Copy this:**
-```liquid
-{% raw %}{% include feature/gallery.html 
-   heading="Items Dated after 1920"  
-   captions=false 
-   filter="item.date > '1920'" %}{% endraw %}
-```
-
-
-
-
-
----
-
-## Mini Maps
-
-Embed small maps at specific coordinates.
-
-{% include feature/mini-map.html
-   latitude="46.727485"
-   longitude="-117.014185"
-   map-zoom="18" 
-   caption="This is the library where I work!" %}
+{% include essay/feature/image-gallery.html
+   objectid="demo_001;demo_004;demo_003;demo_002"
+   caption=false %}
 
 **Copy this:**
 ```liquid
-{% raw %}{% include feature/mini-map.html
-   latitude="46.727485"
-   longitude="-117.014185"
-   map-zoom="18" 
-   caption="This is the library where I work!" %}{% endraw %}
+{% raw %}{% include essay/feature/image-gallery.html
+   objectid="image_item;video_item;audio_item;pdf_item" %}{% endraw %}
+```
+{: .copy-code}
+
+Items without a thumbnail (video, audio, PDF) render as a labeled placeholder; clicking opens the correct player — an HTML5 video/audio player or embedded PDF viewer — right in the modal. No separate include per media type needed.
+
+### External and Relative Images
+
+`objectid` doesn't have to point at your collection — a full URL or a relative path into your own `/assets/` folder works too. In that case, always set `alt` text yourself, and you can add citation details with `caption`, `title`, `source`, and `sourcelink`:
+
+```liquid
+{% raw %}{% include essay/feature/image-gallery.html
+   objectid="/assets/img/writing-plan.jpg"
+   alt="Group working on a farm plan writing project"
+   caption="Group farm plan writing meeting"
+   source="The New York Public Library Digital Collections"
+   sourcelink="https://digitalcollections.nypl.org/items/1b0a3fc0-1d42-0139-bac7-0242ac110003" %}{% endraw %}
 ```
 
-**Finding coordinates:**
-- Right-click location on Google Maps → Click coordinates to copy
-- Or use [LatLong.net](https://www.latlong.net/)
+### Layout and Captions
 
-**Zoom levels:** 1 (world) to 18 (street level)
+- `width="25"` / `"50"` / `"75"` / `"100"` sets the item's width as a percentage of the container (always full-width on mobile).
+- `caption=false` (no quotes) hides captions entirely — the same boolean-no-quotes pattern used by `border=false` below in Blockquotes.
+- `link` overrides where an item's image links to, if you don't want the default (item page for collection items, the image file itself for external/relative ones).
 
 ---
+
+
+## Blockquotes
+
+Styled quotations with optional attribution and source links.
+
+### Basic Blockquote
+
+{% include essay/feature/blockquote.html
+   quote="One begins as a student but becomes a friend of clouds"
+   speaker="Lyn Hejinian" %}
+
+**Copy this:**
+```liquid
+{% raw %}{% include essay/feature/blockquote.html
+   quote="One begins as a student but becomes a friend of clouds"
+   speaker="Lyn Hejinian" %}{% endraw %}
+```
+{: .copy-code}
+
+### With Source Citation
+
+{% include essay/feature/blockquote.html
+   quote="About suffering they were never wrong, The Old Masters"
+   speaker="W. H. Auden"
+   source="Musée des Beaux Arts" %}
+
+**Copy this:**
+```liquid
+{% raw %}{% include essay/feature/blockquote.html
+   quote="About suffering they were never wrong, The Old Masters"
+   speaker="W. H. Auden"
+   source="Musée des Beaux Arts" %}{% endraw %}
+```
+{: .copy-code}
+
+### Large Centered Quote with No Border
+
+{% include essay/feature/blockquote.html
+   quote="All, all can be lost"
+   size="xl"
+   speaker="Louise Glück"
+   align="center" 
+   border=false %}
+
+**Copy this:**
+```liquid
+{% raw %}{% include essay/feature/blockquote.html
+   quote="All, all can be lost"
+   size="xl"
+   speaker="Louise Glück"
+   align="center" 
+   border=false %}
+{% endraw %}
+```
+{: .copy-code}
+
+**Size options:** `sm`, `md`, `lg`, `xl`, `xxl`
+
+**Align options:** `left`, `center`, `right`
+
+---
+
 
 ## Section Transitions
 
@@ -234,47 +204,55 @@ The section break above creates a visual pause and scroll-triggered transition e
 
 Content continues here...{% endraw %}
 ```
+{: .copy-code}
 
 **Use sparingly** - 3-4 sections per essay maximum for best effect.
 
 ---
 
-## CollectionBuilder Features
+## Scrollytelling Blocks
 
-Beyond essay-specific includes, you can use any standard CollectionBuilder feature:
+Pin an image while narrative text panels scroll over it — the StoryMaps / scrolly-explainer pattern. Here's a two-panel taste of it:
 
-### Item Cards
+{% include essay/feature/scrolly-media.html objectid="demo_001" alt="Administration Building, University of Idaho, ca. 1910" %}
 
-**Copy this:**
-```liquid
-{% raw %}{% include feature/card.html
-   objectid="demo_001"
-   width="50"
-   centered=true %}{% endraw %}
-```
+**Panel 1.** The image fills the frame while this text scrolls over it — no JavaScript wiring required on your end.
 
-Shows a card with the item image and metadata.
+{% include essay/feature/scrolly-step.html objectid="demo_009" %}
 
-### Item Images
+**Panel 2.** Scrolling into view swapped the image. You can keep adding panels, each optionally swapping to a new image.
 
-**Copy this:**
-```liquid
-{% raw %}{% include feature/image.html
-   objectid="demo_012"
-   width="75" %}{% endraw %}
-```
-
-Displays an item image with caption from metadata.
-
-### Timelines
-
-For essays with chronological elements, embed the full timeline:
+{% include essay/feature/scrolly-end.html %}
 
 ```liquid
-{% raw %}{% include feature/timeline.html %}{% endraw %}
+{% raw %}{% include essay/feature/scrolly-media.html objectid="your_first_image" alt="Description" %}
+
+First panel text.
+
+{% include essay/feature/scrolly-step.html objectid="your_second_image" %}
+
+Second panel text. Image swaps when this enters view.
+
+{% include essay/feature/scrolly-end.html %}{% endraw %}
 ```
 
-### Subject Clouds
+This is the tip of the iceberg — zoom/pan/Ken Burns animation, sidecar layout, video and interactive map backgrounds, and full parameter tables all live in the next essays:
+
+**[Scroll-Based Features →](05-scroll-features.html)** for a short overview, or jump straight to the **[Scrolly Media Gallery](scrolly-media-gallery.html)** and **[Scrolly Map Gallery](scrolly-map-gallery.html)** for every variant.
+
+
+## Timelines
+
+For essays with chronological elements, embed the full timeline. This will display all the items from your underlying collection as a TimelineJS feature:
+
+```liquid
+{% raw %}{% include feature/timelinejs.html %}{% endraw %}
+```
+
+For more on how to customize this feature, see [our CollectionBuilder documentation](https://collectionbuilder.github.io/cb-docs/docs/add-more/timelinejs/). 
+
+
+## Subject Clouds
 
 Visualize subject keywords from your collection:
 
@@ -282,11 +260,71 @@ Visualize subject keywords from your collection:
 {% raw %}{% include feature/cloud.html fields="subject" %}{% endraw %}
 ```
 
+For CollectionBuilder's full feature set — browse, timeline, subject clouds, and metadata configuration — see the [CollectionBuilder documentation](https://collectionbuilder.github.io/cb-docs/).
+
 ---
+
+
+## Mini Maps
+
+Embed small maps at specific coordinates.
+
+{% include feature/mini-map.html
+   latitude="46.727485"
+   longitude="-117.014185"
+   map-zoom="18" 
+   caption="This is the library where I work!" %}
+
+**Copy this:**
+```liquid
+{% raw %}{% include feature/mini-map.html
+   latitude="46.727485"
+   longitude="-117.014185"
+   map-zoom="18" 
+   caption="This is the library where I work!" %}{% endraw %}
+```
+{: .copy-code}
+
+**Finding coordinates:**
+- Right-click location on Google Maps → Click coordinates to copy
+- Or use [LatLong.net](https://www.latlong.net/)
+
+**Zoom levels:** 1 (world) to 18 (street level)
+
+---
+
+## Aside Maps
+
+A mini-map embeds inline; an **aside map** instead puts a small pin button in the margin that opens a full interactive map in a modal — useful when you want to mention a location without breaking up the page with an embedded map.
+
+Here's Hell's Half Acre Lookout.{% include essay/feature/aside-map.html latitude="45.64579" longitude="-114.62838" location="Hell's Half Acre Lookout" map-zoom="12" %} Click the pin to open the modal.
+
+**Copy this:**
+```liquid
+{% raw %}{% include essay/feature/aside-map.html
+   latitude="45.64579"
+   longitude="-114.62838"
+   location="Hell's Half Acre Lookout"
+   map-zoom="12" %}{% endraw %}
+```
+{: .copy-code}
+
+You can also seed it from a collection item's coordinates with `objectid`, customize the trigger with `button` and `color`, and add a **"View on Full Map"** link with `map-link=true`:
+
+```liquid
+{% raw %}{% include essay/feature/aside-map.html
+   objectid="demo_008"
+   button="View Location"
+   color="primary"
+   map-link=true %}{% endraw %}
+```
+
+---
+
 
 ## Combining Features
 
-You can combine multiple features for rich, scholarly presentations:
+You can combine multiple features for rich, scholarly presentations — mixing essay-only and site-wide includes freely:
 
 ### Example: Blockquote + Aside + Map
 
@@ -314,41 +352,14 @@ Visit the **[Print Hub](/print/)** to generate PDFs in Letter, A4, or 6×9″ fo
 
 ---
 
-## Best Practices
 
-### Blockquotes
-- Use for significant quotations only
-- Always attribute with `speaker` parameter
-- Keep quotes focused and relevant
-- Don't nest blockquotes
-
-### Asides
-- Maximum 3-4 per essay
-- Keep text brief (1-3 sentences)
-- Ensure objectids exist in metadata
-- Test display on mobile AND in print preview
-
-### Maps
-- Verify coordinates are accurate
-- Choose appropriate zoom level (12-14 for cities)
-- Add context about the location in text
-- Note: Maps won't appear in print PDFs (web-only feature)
-
-### Section Breaks
-- Use for major structural divisions
-- 3-4 maximum per essay
-- Ensure sections are substantial
-- Works best with longer essays (1000+ words)
-
----
 
 ## Next Steps
 
-You now know every feature available in CB-Essay! The final essay shows how to integrate collection items more deeply:
+**[Scroll-Based Features →](05-scroll-features.html)** for scrollytelling, or skip ahead to **[Publishing, Printing & Reading →](06-publishing-reading.html)**.
 
-**[Collection Integration →](05-collection-integration.html)**
+You can also get answers to your questions with our [online documentation]({{ '/docs.html' | relative_url }}).
 
-You can also get answers to your questions with our [online documentation]({{ '/docs.html' | relative_url }}) .
 ---
 
 {% include essay/feature/cta.html text="Use This Template →" link="https://github.com/new?template_name=cb-essay&template_owner=CollectionBuilder" description="Ready to put these features to use? Start your own project." %}

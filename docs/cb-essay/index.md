@@ -17,22 +17,25 @@ CB-Essay is a Jekyll-based static site generator that extends [CollectionBuilder
 
 ### Getting Started
 - **[Essay Writing Guide](essay-writing.md)** - Learn how to create and organize essays
-- **[Getting Started Essay](../../_essay/02-getting-started.md)** - Step-by-step walkthrough
+- **[Get Started Essay](../../_essay/03-get-started.md)** - Step-by-step walkthrough
 
 ### Features & Customization
 - **[Essay Features Reference](essay-features.md)** - Complete guide to blockquotes, asides, galleries, maps, and more
-- **[Theme Options](theme-options.md)** - Choose between essay and monograph themes, customize appearance
+- **[Theme Options](theme-options.md)** - Configure color theme, fonts, homepage layout, and navigation, all via independent flags in `_data/theme.yml`
 - **[Accessibility](accessibility.md)** - WCAG 2.1 out of the box, plus how to keep your site accessible after customizing
 
 ### Advanced Workflows
-- **[Gutenberg Extraction](gutenberg-extraction.md)** - Import 60,000+ public domain books from Project Gutenberg
+- **[Gutenberg Extraction](gutenberg-extraction.md)** - Technical/maintainer reference for the extraction patterns. For the end-user walkthrough, see the [Extracting a Book from Project Gutenberg essay](../../_essay/035-gutenberg-extraction.md).
 
 ### Example Essays
 The demo site includes self-documenting essays that teach while demonstrating features:
 1. [Welcome to CB-Essay](../../_essay/01-welcome.md) - Overview and examples
-2. [Getting Started](../../_essay/02-getting-started.md) - Setup walkthrough
-3. [Essay Features](../../_essay/03-essay-features.md) - All features with copy-paste examples
-4. [Collection Integration](../../_essay/04-collection-integration.md) - Blending essays with collection items
+2. [CB-Essay in the Wild](../../_essay/02-examples.md) - Live example sites
+3. [Get Started](../../_essay/03-get-started.md) - Setup walkthrough
+4. [Extracting a Book from Project Gutenberg](../../_essay/035-gutenberg-extraction.md) - Publish a public domain book in minutes
+5. [Essay Writing Features](../../_essay/04-essay-features.md) - All features with copy-paste examples
+6. [Scroll-Based Features](../../_essay/05-scroll-features.md) - Scrollytelling overview, with the [Scrolly Media Gallery](../../_essay/scrolly-media-gallery.md) and [Scrolly Map Gallery](../../_essay/scrolly-map-gallery.md) as deep reference
+7. [Publishing, Printing & Reading](../../_essay/06-publishing-reading.md) - Print, search, deployment, and sharing
 
 ## Core Concepts
 
@@ -68,10 +71,13 @@ Essays display in sequential order based on the `order` value.
 
 ### Theme Options
 
-Choose your presentation style in `_data/theme.yml`:
+CB-Essay's navigation and homepage behavior are independent flags in `_data/theme.yml`, not a single essay-vs-monograph switch:
 
-- **`essay`** - Linear reading, simple navigation
-- **`monograph`** - Table of contents on homepage, book-like structure
+- **`show-contents-nav`** - Adds a "Contents" button to the navbar that opens the essay chapter list
+- **`show-homepage-toc`** - Displays a table of contents on the homepage
+- **`show-section-nav`** - Adds a floating H2-based sidebar on essay pages (wide screens)
+
+Turn all three off for a single linear essay, or on for a book-like multi-chapter monograph. See [Theme Options](theme-options.md) for common configurations.
 
 ## Essential Features
 
@@ -93,7 +99,7 @@ All standard CB features work in essays:
 - Subject clouds
 - Search and browse
 
-Learn more in [Collection Integration](../../_essay/04-collection-integration.md).
+See [Essay Writing Features](../../_essay/04-essay-features.md) for essay-embeddable examples, or [CollectionBuilder's documentation](https://collectionbuilder.github.io/cb-docs/) for the full feature set.
 
 ## Workflow Options
 
@@ -169,9 +175,8 @@ See [Essay Features Reference](essay-features.md) for all options.
 Includes helpful comments explaining essay-specific options.
 
 ### `_data/theme.yml`
-- Theme choice (essay vs monograph)
-- Typography and colors
-- Homepage image settings
+- Navigation flags (`show-contents-nav`, `show-homepage-toc`, `show-section-nav`)
+- Color theme, typography, and homepage image settings
 
 Includes detailed comments for each option.
 
@@ -210,4 +215,4 @@ No need to understand technical details - just copy and adapt!
 
 ---
 
-**Ready to start?** Check out the [Getting Started Essay](../../_essay/02-getting-started.md) or create your first essay file in `_essay/`.
+**Ready to start?** Check out the [Get Started Essay](../../_essay/03-get-started.md) or create your first essay file in `_essay/`.

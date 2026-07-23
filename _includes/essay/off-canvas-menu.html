@@ -53,6 +53,11 @@
                     {%- endfor -%}
                 </ul>
 
+                {% if site.title == "CB-Essay" %}
+                <hr class="my-3 opacity-25 text-light bg-white">
+                <a class="nav-link {% if page.url == '/docs.html' %} active{% endif %}" href="{{ '/docs.html' | relative_url }}">CB-Essay Documentation</a>
+                {% endif %}
+
                 {% if site.organization-logo-nav %}
                 <div class="mt-5">
                     <a href="{{ site.organization-link }}" target="_blank" rel="noopener">
