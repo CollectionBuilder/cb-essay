@@ -121,63 +121,25 @@ a {
 
 // ── Scrollytelling sections (scrolly-media / scrolly-step / scrolly-end) ──
 
-// Dev-facing safety net: rendered only when scrolly-media/step/end.html detect a
-// mis-paired block (missing scrolly-end, orphan step, stray end, bad objectid).
-// Colors are intentionally hardcoded, not theme-driven — this must never blend in
-// with the site's own palette or it could be mistaken for real content.
-.scrolly-block-warning {
-    position: relative;
-    z-index: 20;
-    margin: 1rem;
-    padding: 0.75rem 1rem;
-    background: #fff3cd;
-    border: 2px dashed #b45309;
-    color: #7c2d12;
-    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
-    font-size: 0.85rem;
-    line-height: 1.5;
-
-    code {
-        background: rgba(180, 83, 9, 0.12);
-        padding: 0.1em 0.3em;
-    }
-}
-
-.scrolly-missing-image {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    padding: 2rem;
-    text-align: center;
-    background: #fff3cd;
-    border: 2px dashed #b45309;
-    color: #7c2d12;
-    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
-    font-size: 0.9rem;
-
-    code {
-        background: rgba(180, 83, 9, 0.12);
-        padding: 0.1em 0.3em;
-    }
-}
-
-@media print {
-    .scrolly-block-warning,
-    .scrolly-missing-image {
-        display: none !important;
-    }
-}
-
 .scrolly-section {
     position: relative;
+    // Sticky + steps share a single grid cell so steps render in front of the
+    // sticky image. A negative-margin overlap trick was used here previously,
+    // but browsers size the sticky element's scroll range against its
+    // pre-collapse box, so it stayed pinned to the viewport top for a full
+    // extra 100vh after the section visually ended, bleeding into whatever
+    // came next. Grid stacking (already used by .scrolly-sidecar below)
+    // doesn't have that mismatch.
+    display: grid;
+    grid-template-columns: 1fr;
 
     .scrolly-sticky {
+        grid-column: 1;
+        grid-row: 1;
         position: sticky;
         top: 0;
         height: 100vh;
-        margin-bottom: -100vh; // overlap trick: steps render in front of sticky image
+        align-self: start;
         overflow: hidden;
         z-index: 0;
 
@@ -200,6 +162,8 @@ a {
     }
 
     .scrolly-steps {
+        grid-column: 1;
+        grid-row: 1;
         position: relative;
         z-index: 10;
         padding-top: 15vh;

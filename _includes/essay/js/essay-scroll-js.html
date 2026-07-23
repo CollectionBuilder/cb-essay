@@ -52,7 +52,8 @@
                 var targetSrc = section._scrollySrcs[idx];
                 var stepFocus   = response.element.getAttribute('data-focus');   // null if not set
                 var stepAnimate = response.element.getAttribute('data-animate'); // null if not set
-                if (targetSrc && imgEl.getAttribute('src') !== targetSrc) {
+                var isVideoEl = imgEl.tagName === 'VIDEO';
+                if (!isVideoEl && targetSrc && imgEl.getAttribute('src') !== targetSrc) {
                     imgEl.style.opacity = '0';
                     setTimeout(function() {
                         imgEl.src = targetSrc;
@@ -115,16 +116,26 @@
         document.querySelectorAll('.scrolly-section').forEach(function(section) {
             var img = section.querySelector('.scrolly-sticky__img');
             if (!img) return;
+            var isVideo = img.tagName === 'VIDEO';
             var sectionSteps = Array.from(section.querySelectorAll('.scrolly-step'));
-            var lastSrc = img.getAttribute('src');
+            var lastSrc = isVideo ? null : img.getAttribute('src');
             var srcs = sectionSteps.map(function(s) {
                 var stepSrc = s.getAttribute('data-src');
-                if (stepSrc) lastSrc = stepSrc;
+                if (stepSrc && !isVideo) lastSrc = stepSrc;
                 return lastSrc;
             });
             section._scrollySrcs = srcs;
             section._scrollySteps = sectionSteps;
             section._activeScrollyStepIdx = undefined;
+        });
+
+        // Video start-point: enforce minimum currentTime on load and on every loop restart.
+        document.querySelectorAll('.scrolly-sticky__img[data-video-start]').forEach(function(vid) {
+            var t = parseFloat(vid.getAttribute('data-video-start'));
+            if (isNaN(t) || t <= 0) return;
+            function enforceStart() { if (vid.currentTime < t) vid.currentTime = t; }
+            vid.addEventListener('loadedmetadata', enforceStart, { once: true });
+            vid.addEventListener('timeupdate', enforceStart);
         });
 
         scroller

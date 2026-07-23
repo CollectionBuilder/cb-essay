@@ -148,6 +148,39 @@ Sidecar also accepts `animate` parameters — `animate="zoom-in"` on a sidecar s
 
 ---
 
+## Video Background
+
+Video backgrounds work through the same `objectid` and `src` params as images — no separate parameter needed. The include detects video automatically from the collection item's `display_template` or from the file extension (`.mp4`, `.webm`, `.ogg`).
+
+**From the collection** — set `display_template: video` on the item in your metadata CSV:
+
+```liquid
+{% raw %}{% include essay/feature/scrolly-media.html objectid="demo_video_001" %}{% endraw %}
+```
+
+The item's `image_small` is used as the poster frame automatically.
+
+**From a direct file path** — point `src` at any `.mp4`, `.webm`, or `.ogg` file:
+
+```liquid
+{% raw %}{% include essay/feature/scrolly-media.html src="/assets/video/bg.mp4" poster="/assets/img/bg-poster.jpg" %}{% endraw %}
+```
+
+`poster` is optional but recommended for direct paths — it prevents a blank background while the video loads. The video autoplays, loops, and is muted (required for browser autoplay). All layouts, `image-focus`, and scroll-linked animations work exactly as they do for images.
+
+Step-swapping via `objectid` or `src` on `scrolly-step.html` is not available when a video background is active; the video plays continuously through all steps.
+
+ 
+{% include essay/feature/scrolly-media.html objectid="demo_010" video-start="10" %}
+
+This is a video that isn't very exciting but you can see it working here ... 
+
+You might need to wait awhile to let it play. Probably better to use this feature sparingly in only specific cases -- and we don't have sound ... 
+
+{% include essay/feature/scrolly-end.html %}
+
+---
+
 ## Controlling Scroll Speed
 
 `step-height` sets the minimum height of each panel — how far the reader must scroll before the next panel triggers. The CSS default is `300vh`. Shorter values create faster pacing; longer values slow reading down.
@@ -174,10 +207,13 @@ For scroll-linked animations (`zoom-in`, `pan-right`, etc.), longer `step-height
 
 **`scrolly-media.html`** — opens the block:
 
+{:.table .table-striped}
 | Parameter | Default | Description |
 |---|---|---|
-| `objectid` | — | Collection item ID |
-| `src` | — | Direct image path (alternative to `objectid`) |
+| `objectid` | — | Collection item ID; video detected automatically from `display_template` |
+| `src` | — | Direct path to an image or video file (`.mp4`, `.webm`, `.ogg` auto-detected) |
+| `poster` | — | Poster frame for `src`-based videos (collection items use `image_small` automatically) |
+| `video-start` | — | Start time in seconds for video backgrounds; also applied on every loop restart |
 | `alt` | — | Image alt text |
 | `caption` | — | Small credit line at bottom-right of image |
 | `layout` | `immersive` | `immersive` or `sidecar` |
