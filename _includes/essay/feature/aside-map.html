@@ -30,7 +30,7 @@
     <path fill-rule="evenodd" d="M8 1a3 3 0 1 0 0 6 3 3 0 0 0 0-6M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999z"/>
   </svg>{% endcapture %}
 {% assign map-item = site.data[site.metadata] | where: "objectid", include.objectid | first %}
-<span class="aside"><!-- Button trigger modal --><button type="button" class="ms-3 btn btn-outline-{{ include.color | default: 'dark' }} mb-2" data-bs-toggle="modal" data-bs-target="#Modal{{ include.latitude | slugify }}" aria-label="{% if include.location %}Open map of {{ include.location }}{% else %}Open location map{% endif %}">{{ include.button | default: map-pin }}</button><!-- Modal -->
+<sup class="aside-ref"></sup><span class="aside"><!-- Button trigger modal --><button type="button" class="ms-3 btn btn-outline-{{ include.color | default: 'dark' }} mb-2" data-bs-toggle="modal" data-bs-target="#Modal{{ include.latitude | slugify }}" aria-label="{% if include.location %}Open map of {{ include.location }}{% else %}Open location map{% endif %}">{{ include.button | default: map-pin }}</button><!-- Modal -->
 {% if include.location %}<br><small>{{include.location}}</small>{% endif %}</span>
 <div class="modal fade" id="Modal{{ include.latitude | slugify }}" tabindex="-1" role="dialog" aria-labelledby="ModalLabel{{ include.latitude | slugify }}" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
