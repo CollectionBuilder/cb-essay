@@ -270,7 +270,7 @@
     <nav class="print-toc" aria-label="Table of contents">
       <h2>Contents</h2>
       <ol>
-        {% assign sorted_essays = site.essay | sort: "order" %}
+        {% assign sorted_essays = site.essay | where_exp: "essay", "essay.hide_from_print != true" | sort: "order" %}
         {% for essay in sorted_essays %}{% assign url_key = essay.url | split: "/" | last | remove: ".html" %}
         <li><a href="#chapter-{{ url_key }}">{{ essay.title }}</a></li>
         {% endfor %}

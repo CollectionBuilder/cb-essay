@@ -2,6 +2,7 @@
 title: Scrolly Map Gallery
 order: 1001
 hide_from_nav: true
+hide_from_print: true
 ---
 
 Every `scrolly-map.html` transition, basemap switch, and marker option, demonstrated live with the exact code that produced it. Start with [Scroll-Based Features](05-scroll-features.html) if you haven't seen the basic pattern yet.

@@ -132,6 +132,20 @@ hide_from_nav: true
 
 Link to it explicitly from wherever it's relevant (a teaching-sequence essay, or `/docs.html`) instead of relying on it to appear in navigation.
 
+## Excluding an Essay From Print/PDF
+
+Some essays are web-only — a scrolly-media gallery, a maps-heavy chapter, anything that doesn't translate to a printed page. Set `hide_from_print: true` and the essay is dropped from the Print Hub's book builder checklist, table of contents, and individual "Print Essay" cards, and from full-book PDF generation:
+
+```yaml
+---
+title: Interactive Map Tour
+order: 50
+hide_from_print: true
+---
+```
+
+The essay still appears normally on the website; only the `/print/` hub and generated PDFs skip it.
+
 ## Learn More
 
 - Read the demo essays in this folder for examples

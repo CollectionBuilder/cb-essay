@@ -54,6 +54,8 @@ featured-image: /assets/img/chapter-image.jpg
 
 - **`byline`**: Author or attribution line
 - **`featured-image`**: Header image for this specific essay
+- **`hide_from_nav`**: Set to `true` to exclude this essay from the homepage table of contents, off-canvas Contents panel, and prev/next navigation (useful for reference/gallery pages)
+- **`hide_from_print`**: Set to `true` to exclude this essay from the Print Hub (book builder checklist, TOC, individual print card) and from generated PDFs — the essay still appears normally on the website
 
 ## Writing Content
 

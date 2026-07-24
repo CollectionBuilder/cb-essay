@@ -2,6 +2,7 @@
 title: Scrolly Media Gallery
 order: 1000
 hide_from_nav: true
+hide_from_print: true
 ---
 
 Every `scrolly-media.html` animation, layout, and video variant, demonstrated live with the exact code that produced it. Start with [Scroll-Based Features](05-scroll-features.html) if you haven't seen the basic pattern yet.

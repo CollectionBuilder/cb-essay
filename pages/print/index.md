@@ -7,7 +7,8 @@ search_exclude: true
 ---
 
 <div class="print-hub">
-{% assign essay_count = site.essay | size %}
+{% assign sorted_essays = site.essay | where_exp: "essay", "essay.hide_from_print != true" | sort: "order" %}
+{% assign essay_count = sorted_essays | size %}
 
   <div class="print-hub-header">
     <h1>Print &amp; PDF</h1>
@@ -28,7 +29,6 @@ search_exclude: true
   </div>
 
   <!-- Book builder -->
-  {% assign sorted_essays = site.essay | sort: "order" %}
   {% assign show_book = site.data.theme.print.show-book | default: true %}
   {% if show_book != false %}
   <div class="print-hub-section">
@@ -115,7 +115,7 @@ search_exclude: true
   // Splitting on "/" and stripping ".html" matches what section-nav extracts from
   // window.location.pathname — safe even when filenames contain dots.
   var essayTitles = {
-    {% assign sorted_essays = site.essay | sort: "order" %}{% for essay in sorted_essays %}{% assign url_key = essay.url | split: "/" | last | remove: ".html" %}"{{ url_key }}": "{{ essay.title | escape }}"{% unless forloop.last %},{% endunless %}{% endfor %}
+    {% for essay in sorted_essays %}{% assign url_key = essay.url | split: "/" | last | remove: ".html" %}"{{ url_key }}": "{{ essay.title | escape }}"{% unless forloop.last %},{% endunless %}{% endfor %}
   };
 
   // ——— Persistent user preferences ———
