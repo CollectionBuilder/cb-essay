@@ -163,7 +163,7 @@ See [Essay Writing Guide](essay-writing.md) for complete workflow.
    text="Context about this item" %}{% endraw %}
 ```
 
-See [Essay Features Reference](essay-features.md) for all options.
+See [Inline & Margin Features](essay-features-inline.md#aside-margin-note) for all options.
 
 ## Configuration Files
 

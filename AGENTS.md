@@ -81,6 +81,25 @@ Use these inside `_essay/*.md` files. Copy a working example from a demo essay a
 
 The standard CB-CSV feature includes in `_includes/feature/` (image, card, gallery, alert, button, jumbotron, video, audio, accordion, mini-map, etc.) remain available on `about.md` and other content pages. For multi-line params, `capture` the content first and pass the variable; pass `false` (no quotes) to suppress a default.
 
+## Scrollytelling Blocks (Media & Map)
+
+A scrolly block pins a background in the viewport while text panels scroll past it — always a **three-include contract**: an opener, one or more `scrolly-step.html` calls, then `scrolly-end.html` to close. Never leave a block unclosed; it breaks the essay layout below it.
+
+```liquid
+{% include essay/feature/scrolly-media.html objectid="photo_001" layout="sidecar" %}
+Opening panel text.
+{% include essay/feature/scrolly-step.html objectid="photo_002" animate="ken-burns" %}
+Panel text; the pinned image swaps as this step scrolls into view.
+{% include essay/feature/scrolly-end.html %}
+```
+
+Two backgrounds share this same pattern:
+
+- **`scrolly-media.html`** — pinned image/video; steps swap it via `objectid`/`src`, and can add `image-focus`/`animate` (`zoom-in`, `zoom-out`, `pan-left`, `pan-right`, `ken-burns`).
+- **`scrolly-map.html`** — pinned Leaflet map; steps move it via `map-lat`/`map-lng`/`map-zoom`/`map-transition` instead. Passing `tile-path` (plus `image-width`/`image-height`/`max-zoom`) switches the whole block into **image mode**, flying around a libvips-tiled manuscript/illustration by pixel coordinate (`map-x`/`map-y` on steps) instead of a geographic basemap — see `docs/cb-essay/essay-features-scrolly-map.md#image--manuscript-basemap` for the tiling workflow.
+
+Don't mix vocabularies — a `scrolly-media.html` block's steps use `objectid`/`src`/`image-focus`/`animate`; a `scrolly-map.html` block's steps use `map-*` params. Both share `layout` (`immersive` full-bleed vs `sidecar` side-by-side), `position`, `text-background`, and `step-height`. Full parameter tables: `docs/cb-essay/essay-features-scrolly.md` and `docs/cb-essay/essay-features-scrolly-map.md`.
+
 ## Ask Before Doing These
 
 Explain your plan and get confirmation before:
@@ -121,6 +140,7 @@ Explain your plan and get confirmation before:
 8. Recoloring or re-fonting by editing SCSS instead of `_data/theme.yml`'s `color-theme` / font keys
 9. Reordering essays by renaming files instead of setting the `order` front-matter field
 10. Writing raw HTML in essays instead of using `_includes/essay/feature/` includes
+11. Leaving a scrolly block unclosed (no matching `scrolly-end.html`) or mixing `scrolly-media.html`/`scrolly-map.html` step vocabularies (`objectid`/`animate` vs `map-*` params) in one block
 
 ## Reference Documentation
 
@@ -128,7 +148,7 @@ In this repo, consult:
 
 - **`docs/cb-essay/index.md`** — CB-Essay overview
 - **`docs/cb-essay/essay-writing.md`** — Writing essays and front matter
-- **`docs/cb-essay/essay-features.md`** — Essay feature include reference
+- **`docs/cb-essay/essay-features.md`** — Essay feature include reference (index; split by type into `essay-features-inline.md`, `essay-features-scrolly.md`, `essay-features-scrolly-map.md`, `essay-features-more.md`)
 - **`docs/cb-essay/theme-options.md`** — Color themes, fonts, homepage styles
 - **`docs/cb-essay/gutenberg-extraction.md`** — Importing texts into the essay structure
 - **`_essay/README.md`** — Quick start for essay authoring

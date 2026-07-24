@@ -77,6 +77,6 @@ If you want to do more customization, check the [Leaflet docs](https://leafletjs
 
 ## Using Maps in Scrollytelling Essays
 
-Essays can also use a Leaflet map as a scrollytelling background — a pinned map that flies/pans/zooms as the reader scrolls, with optional markers and popups. See [Scrollytelling Map Backgrounds](essay-features.md#scrollytelling-map-backgrounds) in the Essay Features reference for the `scrolly-map.html` / `scrolly-step.html` / `scrolly-end.html` includes and their parameters.
+Essays can also use a Leaflet map as a scrollytelling background — a pinned map that flies/pans/zooms as the reader scrolls, with optional markers and popups. See [Scrollytelling Map Backgrounds](cb-essay/essay-features-scrolly-map.md) in the Essay Features reference for the `scrolly-map.html` / `scrolly-step.html` / `scrolly-end.html` includes and their parameters. The same includes can also fly around a single large tiled image (e.g. a scanned manuscript) instead of a geographic basemap — see [Image / Manuscript Basemap](cb-essay/essay-features-scrolly-map.md#image--manuscript-basemap) in that same reference.
 
 These blocks reuse the same `theme.yml` map defaults (`latitude`, `longitude`, `zoom-level`, `map-base`, `map-cluster`) and the same `_data/config-map.csv` popup field configuration documented above, so basemap and popup customization applies equally to the full collection map and to scrolly map backgrounds in essays.
