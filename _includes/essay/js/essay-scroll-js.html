@@ -78,6 +78,98 @@
             mapEl.outerHTML = '<div class="scrolly-map-error">Map failed to load.</div>';
             return;
         }
+        if (mapEl.getAttribute('data-mode') === 'image') {
+            initScrollyMapImage(section, mapEl);
+        } else {
+            initScrollyMapGeo(section, mapEl);
+        }
+    }
+
+    // Image-mode background: a single large tiled image (e.g. a scanned manuscript) navigated
+    // with pixel coordinates via L.CRS.Simple, instead of a geographic basemap.
+    function initScrollyMapImage(section, mapEl) {
+        var imgW = parseFloat(mapEl.getAttribute('data-image-width'));
+        var imgH = parseFloat(mapEl.getAttribute('data-image-height'));
+        var maxZoom = parseInt(mapEl.getAttribute('data-max-zoom'), 10);
+        var tilePath = mapEl.getAttribute('data-tile-path');
+        if (!tilePath || isNaN(imgW) || isNaN(imgH) || isNaN(maxZoom)) {
+            mapEl.outerHTML = '<div class="scrolly-map-error">Image map unavailable — missing tile-path, image dimensions, or max-zoom.</div>';
+            return;
+        }
+        var minZoom = parseInt(mapEl.getAttribute('data-min-zoom'), 10);
+        if (isNaN(minZoom)) minZoom = 0;
+        var tileSize = parseInt(mapEl.getAttribute('data-tile-size'), 10);
+        if (isNaN(tileSize)) tileSize = 256;
+        var x = parseFloat(mapEl.getAttribute('data-x'));
+        var y = parseFloat(mapEl.getAttribute('data-y'));
+        if (isNaN(x)) x = imgW / 2;
+        if (isNaN(y)) y = imgH / 2;
+        var zoom = parseInt(mapEl.getAttribute('data-zoom'), 10);
+        if (isNaN(zoom)) zoom = minZoom;
+        var flytoDuration = parseFloat(mapEl.getAttribute('data-flyto-duration'));
+        if (isNaN(flytoDuration)) flytoDuration = 2;
+        var isMobile = window.matchMedia('(max-width: 768px)').matches;
+        var interactive = mapEl.getAttribute('data-interactive') === 'true' && !isMobile;
+        var layout = mapEl.getAttribute('data-layout') || 'immersive';
+
+        var map = L.map(mapEl.id, {
+            crs: L.CRS.Simple,
+            minZoom: minZoom,
+            maxZoom: maxZoom,
+            dragging: interactive,
+            scrollWheelZoom: interactive,
+            touchZoom: interactive,
+            doubleClickZoom: interactive,
+            boxZoom: interactive,
+            keyboard: interactive,
+            zoomControl: interactive
+        });
+
+        var bounds = L.latLngBounds(map.unproject([0, imgH], maxZoom), map.unproject([imgW, 0], maxZoom));
+        // libvips' `dzsave --layout google` nests tiles as {z}/{y}/{x} (folder = row, file =
+        // column) — Leaflet substitutes {x}/{y} wherever they appear, so the template just
+        // needs to match that on-disk order, not the more common {z}/{x}/{y} URL convention.
+        L.tileLayer(tilePath + '/{z}/{y}/{x}.jpg', {
+            tileSize: tileSize,
+            minZoom: minZoom,
+            maxZoom: maxZoom,
+            noWrap: true,
+            bounds: bounds
+        }).addTo(map);
+        map.setMaxBounds(bounds);
+        map.setView(map.unproject([x, y], maxZoom), zoom);
+
+        if (interactive) {
+            map.addControl(new L.Control.Fullscreen());
+        }
+
+        section._scrollyMap = map;
+        section._scrollyMapMode = 'image';
+        section._scrollyMapMaxZoom = maxZoom;
+        section._scrollyMapLayout = layout;
+        section._scrollyMapDefaultDuration = flytoDuration;
+        section._scrollyMapSteps = Array.from(section.querySelectorAll('.scrolly-step'));
+        section._scrollyMapMarker = null;
+        section._activeScrollyStepIdx = undefined;
+
+        // Pre-compute the effective x/y/zoom at each step, carrying forward from the previous
+        // step (seeded by the block's own initial view) — same carry-forward principle as the
+        // geo mode below, so scrolling back up restores the correct view.
+        var effX = x, effY = y, effZoom = zoom;
+        section._scrollyMapViews = section._scrollyMapSteps.map(function(s) {
+            var sX = s.getAttribute('data-map-x');
+            var sY = s.getAttribute('data-map-y');
+            var sZoom = s.getAttribute('data-map-zoom');
+            if (sX !== null) { var pX = parseFloat(sX); if (!isNaN(pX)) effX = pX; }
+            if (sY !== null) { var pY = parseFloat(sY); if (!isNaN(pY)) effY = pY; }
+            if (sZoom !== null) { var pZoom = parseInt(sZoom, 10); if (!isNaN(pZoom)) effZoom = pZoom; }
+            return { x: effX, y: effY, zoom: effZoom };
+        });
+
+        setTimeout(function() { map.invalidateSize(); }, 50);
+    }
+
+    function initScrollyMapGeo(section, mapEl) {
         var lat = parseFloat(mapEl.getAttribute('data-lat'));
         var lng = parseFloat(mapEl.getAttribute('data-lng'));
         if (isNaN(lat) || isNaN(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
@@ -179,6 +271,46 @@
         // Scrolly steps: swap sticky image + apply focus/animate using pre-computed src lookup
         if (response.element.classList.contains('scrolly-step')) {
             var section = response.element.closest('.scrolly-section');
+
+            // Image-mode map backgrounds: fly/pan/jump to this step's pixel target on the tiled
+            // image, and (sidecar layout only) show a labeled pin at the landing spot.
+            if (section && section._scrollyMap && section._scrollyMapMode === 'image') {
+                var idx = section._scrollyMapSteps ? section._scrollyMapSteps.indexOf(response.element) : -1;
+                section._activeScrollyStepIdx = idx;
+
+                var map = section._scrollyMap;
+                var view = (idx >= 0 && section._scrollyMapViews) ? section._scrollyMapViews[idx] : null;
+                var mTransition = response.element.getAttribute('data-map-transition') || 'flyTo';
+                var mDuration = parseFloat(response.element.getAttribute('data-map-flyto-duration'));
+                if (isNaN(mDuration)) mDuration = section._scrollyMapDefaultDuration;
+                var mMarkerLabel = response.element.getAttribute('data-map-marker-label');
+
+                if (view) {
+                    var target = map.unproject([view.x, view.y], section._scrollyMapMaxZoom);
+                    if (mTransition === 'setView') {
+                        map.setView(target, view.zoom);
+                    } else if (mTransition === 'pan') {
+                        map.panTo(target);
+                    } else {
+                        map.flyTo(target, view.zoom, { duration: mDuration });
+                    }
+
+                    if (section._scrollyMapLayout === 'sidecar' && mMarkerLabel) {
+                        if (section._scrollyMapMarker) {
+                            section._scrollyMapMarker.setLatLng(target);
+                        } else {
+                            section._scrollyMapMarker = L.marker(target).addTo(map);
+                        }
+                        section._scrollyMapMarker.unbindPopup().bindPopup(mMarkerLabel).openPopup();
+                    } else if (section._scrollyMapMarker) {
+                        map.removeLayer(section._scrollyMapMarker);
+                        section._scrollyMapMarker = null;
+                    }
+                }
+
+                response.element.classList.remove("fade-out");
+                return;
+            }
 
             // Map backgrounds: fly/pan/jump to this step's declared view, swap basemap, open popup.
             if (section && section._scrollyMap) {

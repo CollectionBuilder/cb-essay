@@ -11,15 +11,30 @@
     E.G. --> {% include essay/feature/scrolly-map.html latitude="46.7" longitude="-117.0" show-collection=true %}
     E.G. --> {% include essay/feature/scrolly-map.html latitude="46.7" longitude="-117.0" layout="sidecar" %}
 
-    Options:
+    Options (geographic mode, default):
     - "objectid" = seed center/zoom from a collection item's latitude/longitude; also plots a marker for it (optional, provide this OR latitude/longitude)
     - "latitude" / "longitude" = initial map center (required unless using objectid; falls back to theme.yml site defaults)
     - "zoom" = initial zoom level, default theme.yml zoom-level (5)
     - "basemap" = Esri_WorldStreetMap, Esri_NatGeoWorldMap, Esri_WorldImagery, OpenStreetMap_Mapnik, Stadia_AlidadeSmooth, Stadia_StamenToner. Default theme.yml map-base
-    - "interactive" = true/false, enable reader drag/scroll-zoom/touch-zoom. Default false for layout="immersive", true for layout="sidecar" (always forced off on mobile)
     - "markers" = comma-separated objectids to plot as a curated marker set, each with a popup
     - "show-collection" = true/false, plot every geo-tagged collection item as markers (same selection as the full collection map)
     - "cluster" = true/false, cluster markers when show-collection is used. Default theme.yml map-cluster
+
+    Options (image mode — fly around a single large tiled image, e.g. a scanned manuscript,
+    instead of a geographic basemap. Activated by passing "tile-path"):
+    - "tile-path" = folder of standard XYZ tiles ({z}/{x}/{y}.jpg), e.g. tiles generated with
+      `vips dzsave source.tif assets/tiles/my-manuscript --layout google --suffix .jpg` and placed
+      under assets/. Presence of this option switches the block into image mode.
+    - "image-width" / "image-height" = native full-resolution pixel dimensions of the source image (required)
+    - "max-zoom" = deepest zoom level present in the tile pyramid (required)
+    - "min-zoom" = shallowest zoom level, default 0
+    - "tile-size" = tile pixel size, default 256
+    - "x" / "y" = initial center point in native pixel coordinates, default the image center
+    - "zoom" = initial zoom level, default "min-zoom" so the reader sees the whole image before the first scroll-triggered zoom-in
+    - See docs/maps.md for the full image-mode walkthrough, including the sidecar-only marker option.
+
+    Options (both modes):
+    - "interactive" = true/false, enable reader drag/scroll-zoom/touch-zoom. Default false for layout="immersive", true for layout="sidecar" (always forced off on mobile)
     - "flyto-duration" = default flyTo animation duration in seconds for this block's steps, default 2 (overridable per step)
     - "caption" = small credit/attribution line, same as scrolly-media.html
     - "layout" = immersive (default, full-bleed) or sidecar (text left, map pinned right)
@@ -27,12 +42,22 @@
     - "text-background" = light (default) / dark — first panel style
     - "step-height" = minimum scroll height per panel, default 300vh
 
-    Pair with scrolly-step.html's map-lat / map-lng / map-zoom / map-objectid / map-transition /
-    map-basemap / map-open-popup / map-flyto-duration parameters to move the map as steps scroll
-    into view, then close with scrolly-end.html (shared, unchanged, with image/video blocks).
+    Pair with scrolly-step.html's map-lat / map-lng / map-x / map-y / map-zoom / map-objectid /
+    map-transition / map-basemap / map-open-popup / map-flyto-duration / map-marker-label
+    parameters to move the map as steps scroll into view, then close with scrolly-end.html
+    (shared, unchanged, with image/video blocks).
 
 {% endcomment %}
-{% assign _layout = include.layout | default: 'immersive' %}{% assign _position = include.position | default: 'left' %}{% assign _text_bg = include.text-background | default: 'light' %}{% assign _zoom = include.zoom | default: site.data.theme.zoom-level | default: 5 %}{% assign _basemap = include.basemap | default: site.data.theme.map-base | default: 'Esri_WorldStreetMap' %}{% assign _flyto_duration = include.flyto-duration | default: 2 %}{% assign _interactive = false %}{% if _layout == 'sidecar' %}{% assign _interactive = true %}{% endif %}{% if include.interactive == false or include.interactive == 'false' %}{% assign _interactive = false %}{% elsif include.interactive == true or include.interactive == 'true' %}{% assign _interactive = true %}{% endif %}{% assign _cluster = site.data.theme.map-cluster %}{% if include.cluster == false or include.cluster == 'false' %}{% assign _cluster = false %}{% elsif include.cluster == true or include.cluster == 'true' %}{% assign _cluster = true %}{% endif %}{% if include.objectid %}{% assign _item = site.data[site.metadata] | where: 'objectid', include.objectid | first %}{% assign _lat = include.latitude | default: _item.latitude %}{% assign _lng = include.longitude | default: _item.longitude %}{% else %}{% assign _lat = include.latitude | default: site.data.theme.latitude %}{% assign _lng = include.longitude | default: site.data.theme.longitude %}{% endif %}
+{% assign _layout = include.layout | default: 'immersive' %}{% assign _position = include.position | default: 'left' %}{% assign _text_bg = include.text-background | default: 'light' %}{% assign _flyto_duration = include.flyto-duration | default: 2 %}{% assign _interactive = false %}{% if _layout == 'sidecar' %}{% assign _interactive = true %}{% endif %}{% if include.interactive == false or include.interactive == 'false' %}{% assign _interactive = false %}{% elsif include.interactive == true or include.interactive == 'true' %}{% assign _interactive = true %}{% endif %}
+{%- assign _mode = 'geo' -%}{%- if include.tile-path -%}{%- assign _mode = 'image' -%}{%- endif -%}
+{% if _mode == 'image' %}
+{% assign _img_w = include.image-width %}{% assign _img_h = include.image-height %}{% assign _max_zoom = include.max-zoom %}{% assign _min_zoom = include.min-zoom | default: 0 %}{% assign _tile_size = include.tile-size | default: 256 %}{% assign _zoom = include.zoom | default: _min_zoom %}
+{% if include.x %}{% assign _x = include.x %}{% else %}{% assign _x = _img_w | divided_by: 2 %}{% endif %}
+{% if include.y %}{% assign _y = include.y %}{% else %}{% assign _y = _img_h | divided_by: 2 %}{% endif %}
+{%- capture _uid_raw -%}{{ include.tile-path }}_{{ _x }}_{{ _y }}-{% increment _scrolly_map_uid %}{%- endcapture -%}
+{%- assign _uid = _uid_raw | slugify -%}
+{% else %}
+{% assign _zoom = include.zoom | default: site.data.theme.zoom-level | default: 5 %}{% assign _basemap = include.basemap | default: site.data.theme.map-base | default: 'Esri_WorldStreetMap' %}{% assign _cluster = site.data.theme.map-cluster %}{% if include.cluster == false or include.cluster == 'false' %}{% assign _cluster = false %}{% elsif include.cluster == true or include.cluster == 'true' %}{% assign _cluster = true %}{% endif %}{% if include.objectid %}{% assign _item = site.data[site.metadata] | where: 'objectid', include.objectid | first %}{% assign _lat = include.latitude | default: _item.latitude %}{% assign _lng = include.longitude | default: _item.longitude %}{% else %}{% assign _lat = include.latitude | default: site.data.theme.latitude %}{% assign _lng = include.longitude | default: site.data.theme.longitude %}{% endif %}
 {%- assign _marker_items = "" | split: "" -%}
 {%- if include.objectid and _item -%}{%- assign _marker_items = _marker_items | push: _item -%}{%- endif -%}
 {%- if include.markers -%}
@@ -55,10 +80,26 @@
 {%- assign _map_fields = site.data.config-map -%}
 {%- capture _uid_raw -%}{{ include.objectid | default: _lat }}_{{ _lng }}-{% increment _scrolly_map_uid %}{%- endcapture -%}
 {%- assign _uid = _uid_raw | slugify -%}
+{% endif %}
 {::nomarkdown}
 </div></div>
 <div class="scrolly-section scrolly-{{ _layout }}"{% if include.step-height %} style="--scrolly-step-height: {{ include.step-height }}"{% endif %}>
   <div class="scrolly-sticky scrolly-sticky--map">
+    {% if _mode == 'image' %}
+    {% if _img_w and _img_h and _max_zoom and include.tile-path %}<!-- load leaflet dependencies -->
+    <link rel="stylesheet" href="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/leaflet.css">
+    <link rel="stylesheet" href="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/leaflet.fullscreen.css">
+    <script src="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/leaflet.js"></script>
+    <script src="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/Leaflet.fullscreen.min.js"></script>
+    <div id="scrolly-map_{{ _uid }}" class="scrolly-map"
+         data-mode="image" data-tile-path="{{ include.tile-path | relative_url }}"
+         data-image-width="{{ _img_w }}" data-image-height="{{ _img_h }}"
+         data-max-zoom="{{ _max_zoom }}" data-min-zoom="{{ _min_zoom }}" data-tile-size="{{ _tile_size }}"
+         data-x="{{ _x }}" data-y="{{ _y }}" data-zoom="{{ _zoom }}"
+         data-interactive="{{ _interactive }}" data-flyto-duration="{{ _flyto_duration }}"
+         data-layout="{{ _layout }}"></div>
+    {% else %}<div class="scrolly-map-error">Image map background requires <code>tile-path</code>, <code>image-width</code>, <code>image-height</code>, and <code>max-zoom</code>.</div>{% endif %}
+    {% else %}
     {% if _lat and _lng %}<!-- load leaflet dependencies -->
     <link rel="stylesheet" href="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/leaflet.css">
     <link rel="stylesheet" href="{{ site.lib-assets | default: '/assets/lib' | relative_url }}/leaflet/leaflet.fullscreen.css">
@@ -89,6 +130,7 @@
     } }{% unless forloop.last %}, {% endunless %}{% endfor %}
     ] }
     </script>{% endif %}{% else %}<div class="scrolly-map-error">Map background requires <code>latitude</code>/<code>longitude</code> or an <code>objectid</code> with coordinates.</div>{% endif %}
+    {% endif %}
     {% if include.caption %}<p class="scrolly-caption">{{ include.caption }}</p>{% endif %}
   </div>
   <div class="scrolly-steps">

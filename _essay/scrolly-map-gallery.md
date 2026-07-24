@@ -9,7 +9,7 @@ Every `scrolly-map.html` transition, basemap switch, and marker option, demonstr
 
 A scrolly block can use an interactive Leaflet map as its pinned background instead of an image or video — useful for narrating a journey between locations, or detailing a single site as the reader scrolls. Swap `scrolly-media.html` for `scrolly-map.html`; `scrolly-step.html` and `scrolly-end.html` are shared with the image/video blocks, just called with `map-*` parameters instead of `objectid`/`src`.
 
-The eight examples below each demonstrate one capability in isolation.
+The nine examples below each demonstrate one capability in isolation.
 
 ---
 
@@ -269,6 +269,46 @@ Instead of raw coordinates, `scrolly-map.html` can seed its center and an initia
 
 ---
 
+## 9. Image / manuscript basemap (tiled image instead of a geographic map)
+
+`scrolly-map.html` doesn't require a geographic basemap at all. Pass `tile-path` instead of `latitude`/`longitude` and it flies around a single large tiled image — a scanned manuscript, a hand-drawn map, any large illustration — using pixel coordinates instead of lat/lng. Tiles are a plain XYZ pyramid, generated for free with [libvips](https://www.libvips.org/) (`vips dzsave source.jpg assets/tiles/my-image --layout google --suffix .jpg`) — no extra dependency, same `L.tileLayer` Leaflet already uses for geographic tiles, just addressed in image-pixel space (`L.CRS.Simple`) rather than the globe. `map-marker-label` on a step (sidecar layout only) drops a labeled pin at that step's landing spot.
+
+{% include essay/feature/scrolly-map.html tile-path="/assets/tiles/lotr-map" image-width="3200" image-height="2400" max-zoom="4" layout="sidecar" caption="The Realm of Middle-earth — tiled with libvips, navigated with scrolly-map's image mode" %}
+
+**The whole map, at rest.** No geographic coordinates here — this is a 3200×2400px illustration cut into a `{z}/{y}/{x}` tile pyramid (libvips' `--layout google` folder order) and dropped into `assets/tiles/`.
+
+{% include essay/feature/scrolly-step.html map-x="900" map-y="620" map-zoom="2" map-marker-label="The Shire — where the story begins" %}
+
+**A step's `map-x`/`map-y` fly to a pixel region** the same way `map-lat`/`map-lng` fly to a coordinate on a real map — here, the Shire, with a labeled pin marking the spot (sidecar-only, per `map-marker-label`).
+
+{% include essay/feature/scrolly-step.html map-x="2130" map-y="1740" map-zoom="3" map-marker-label="Mount Doom — the story's end" %}
+
+**Flying across the map to Mordor** — same `flyTo` engine, same carry-forward-between-steps logic as the geographic examples above, just unprojected pixel coordinates instead of lat/lng.
+
+{% include essay/feature/scrolly-end.html %}
+
+**Copy this:**
+```liquid
+{% raw %}{% include essay/feature/scrolly-map.html tile-path="/assets/tiles/lotr-map" image-width="3200" image-height="2400" max-zoom="4" layout="sidecar" caption="The Realm of Middle-earth — tiled with libvips, navigated with scrolly-map's image mode" %}
+
+**The whole map, at rest.** No geographic coordinates here — this is a 3200×2400px illustration cut into a `{z}/{y}/{x}` tile pyramid (libvips' `--layout google` folder order) and dropped into `assets/tiles/`.
+
+{% include essay/feature/scrolly-step.html map-x="900" map-y="620" map-zoom="2" map-marker-label="The Shire — where the story begins" %}
+
+**A step's `map-x`/`map-y` fly to a pixel region** the same way `map-lat`/`map-lng` fly to a coordinate on a real map — here, the Shire, with a labeled pin marking the spot (sidecar-only, per `map-marker-label`).
+
+{% include essay/feature/scrolly-step.html map-x="2130" map-y="1740" map-zoom="3" map-marker-label="Mount Doom — the story's end" %}
+
+**Flying across the map to Mordor** — same `flyTo` engine, same carry-forward-between-steps logic as the geographic examples above, just unprojected pixel coordinates instead of lat/lng.
+
+{% include essay/feature/scrolly-end.html %}{% endraw %}
+```
+{: .copy-code}
+
+See [Image / Manuscript Basemap](https://github.com/CollectionBuilder/cb-essay/blob/main/docs/cb-essay/essay-features-scrolly-map.md#image--manuscript-basemap) for the full parameter reference and libvips tiling walkthrough.
+
+---
+
 ## All Parameters
 
 **`scrolly-map.html`** — opens a map-background block (used instead of `scrolly-media.html`):
@@ -288,17 +328,32 @@ Instead of raw coordinates, `scrolly-map.html` can seed its center and an initia
 | `caption` | — | Small credit/attribution line, same as `scrolly-media.html` |
 | `layout`, `position`, `text-background`, `step-height` | same as `scrolly-media.html` | Panel layout and pacing |
 
+Image mode is activated by passing `tile-path` in place of `latitude`/`longitude`/`objectid` — see [example 9](#9-image--manuscript-basemap-tiled-image-instead-of-a-geographic-map) above:
+
+{:.table .table-striped}
+| Parameter | Default | Description |
+|---|---|---|
+| `tile-path` | — | Folder of `{z}/{y}/{x}.jpg` tiles, as produced by `vips dzsave --layout google`; presence activates image mode |
+| `image-width` / `image-height` | — | Native pixel dimensions of the source image (required) |
+| `max-zoom` | — | Deepest zoom level present in the tile pyramid (required) |
+| `min-zoom` | `0` | Shallowest zoom level |
+| `tile-size` | `256` | Tile pixel size |
+| `x` / `y` | image center | Initial center point, in native pixel coordinates |
+| `zoom` | `min-zoom` | Initial zoom (defaults to the fully zoomed-out view) |
+
 **`scrolly-step.html`** — map-specific parameters (used alongside a `scrolly-map.html` block; a step with none of these leaves the map wherever it was):
 
 {:.table .table-striped}
 | Parameter | Description |
 |---|---|
-| `map-lat` / `map-lng` | Target coordinates for this step |
+| `map-lat` / `map-lng` | Target coordinates for this step (geographic mode) |
+| `map-x` / `map-y` | Target pixel coordinates for this step (image mode) |
 | `map-zoom` | Target zoom (keeps current zoom if omitted) |
-| `map-objectid` | Resolve the target from a collection item instead of raw coordinates |
+| `map-objectid` | Resolve the target from a collection item instead of raw coordinates (geographic mode) |
 | `map-transition` | `flyTo` (default, animated), `setView` (instant), or `pan` (moves center only, no zoom change) |
-| `map-basemap` | Swap the basemap tile layer on this step |
-| `map-open-popup` | objectid of a marker to open (or `true` when paired with `map-objectid`) |
+| `map-basemap` | Swap the basemap tile layer on this step (geographic mode) |
+| `map-open-popup` | objectid of a marker to open (or `true` when paired with `map-objectid`) (geographic mode) |
+| `map-marker-label` | Drop a labeled pin at this step's target (image mode, `layout="sidecar"` only) |
 | `map-flyto-duration` | Per-step override of the block's `flyto-duration` |
 
 ---
