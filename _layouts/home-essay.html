@@ -16,10 +16,47 @@ Essays have both title and order in front matter
   {% include essay/off-canvas-menu.html %}
 {%- endif -%}
 
+{%- comment -%}
+
+    FEATURED IMAGE
+
+    Resolve theme.yml's "featured-image" into a usable image URL, using the same
+    method as "_includes/collection-banner.html" so all three source options
+    documented in theme.yml work here:
+
+        - Relative path in this project, e.g. "/assets/img/cover.jpg"
+        - External URL, e.g. "https://example.com/image.jpg"
+          (both of these contain a "/"; Jekyll's relative_url leaves absolute urls alone)
+        - Collection objectid, e.g. "demo_001" — looked up by objectid in the metadata
+          CSV, preferring the full "object_location" for image items and falling back
+          to "image_small" for everything else (pdf, audio, video, record, etc.)
+
+    "featuredSrc" holds the resolved url. It stays undefined when featured-image is
+    blank, or when the objectid isn't found in the collection / has no image — the
+    header branches below all test "featuredSrc" rather than the raw theme value, so a
+    bad objectid falls back to the no-image layout instead of a broken image.
+
+    "featuredAltText" prefers theme.yml's "featured-image-alt-text", then the collection
+    item's own "image_alt_text", then the site title.
+
+{%- endcomment -%}
+{%- assign featuredRaw = site.data.theme.featured-image -%}
+{%- if featuredRaw contains '/' -%}
+    {%- assign featuredSrc = featuredRaw | relative_url -%}
+{%- elsif featuredRaw -%}
+    {%- assign featuredItem = site.data[site.metadata] | where: "objectid", featuredRaw | first -%}
+    {%- if featuredItem.display_template == 'image' and featuredItem.object_location -%}
+        {%- assign featuredSrc = featuredItem.object_location | relative_url -%}
+    {%- elsif featuredItem.image_small -%}
+        {%- assign featuredSrc = featuredItem.image_small | relative_url -%}
+    {%- endif -%}
+{%- endif -%}
+{%- assign featuredAltText = site.data.theme.featured-image-alt-text | default: featuredItem.image_alt_text | default: site.title -%}
+
 <style>
     /* Full image banner styles */
     #home-banner {
-        {% if site.data.theme.featured-image %}background-image: url('{{ site.data.theme.featured-image | relative_url }}');{% endif %}
+        {% if featuredSrc %}background-image: url('{{ featuredSrc }}');{% endif %}
         background-size: cover;
         background-repeat: no-repeat;
         background-position: {{ site.data.theme.home-banner-image-position | default: "center" }};
@@ -233,10 +270,10 @@ Same logic as before for full-image, half-image, or no-image
 
             <!-- Image column -->
             <div class="col-md-6 order-md-2">
-                {% if site.data.theme.featured-image %}
+                {% if featuredSrc %}
                 <div class="home-header-image position-relative">
-                    <img src="{{ site.data.theme.featured-image | relative_url }}"
-                         alt="{{ site.data.theme.featured-image-alt-text | default: site.title }}"
+                    <img src="{{ featuredSrc }}"
+                         alt="{{ featuredAltText | escape }}"
                          class="img-fluid w-100 py-5">
 
                     <!-- Title box for mobile (matches full-image layout) -->
@@ -322,8 +359,8 @@ Same logic as before for full-image, half-image, or no-image
 </div>
 
 {% else %}
-{%- comment -%} Full-width image banner — falls back to no-image layout when no featured-image is set {%- endcomment -%}
-{%- unless site.data.theme.featured-image -%}
+{%- comment -%} Full-width image banner — falls back to no-image layout when featured-image is unset or unresolvable {%- endcomment -%}
+{%- unless featuredSrc -%}
 <div class="home-header-no-image container-fluid">
     <div class="row justify-content-center align-items-center min-vh-50">
         <div class="col-lg-8 col-md-10 text-center py-5">
