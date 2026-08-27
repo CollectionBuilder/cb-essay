@@ -21,6 +21,14 @@ Options:
     --slug, -s NAME         Custom book slug for book.yml (default: auto-generated)
     --skip-images           Skip downloading images to objects/
     --all-images            Download all inline images in addition to the cover
+    --illustrations MODE    How to handle the book's illustrations:
+                              none     - ignore them (default)
+                              link     - place image-gallery includes pointing at
+                                         Gutenberg's own image URLs (nothing downloaded)
+                              download - fetch into objects/, register as collection
+                                         items in _data/<slug>-metadata.csv, and point
+                                         _config.yml at that CSV
+    --collection-images     Alias for --illustrations download
     --local-html, -l FILE   Use a locally downloaded HTML file instead of fetching from Gutenberg
     --verbose, -v           Enable verbose output
 
@@ -31,6 +39,8 @@ Examples:
     python3 gutenberg-extraction.py 84 --project-root ~/my-site
     python3 gutenberg-extraction.py 84 --output ./staging
     python3 gutenberg-extraction.py 11 --all-images
+    python3 gutenberg-extraction.py 25290 --illustrations link
+    python3 gutenberg-extraction.py 25290 --illustrations download
     python3 gutenberg-extraction.py 84 --local-html pg84.html
 
 If downloads fail (403 errors), download the HTML manually first:
@@ -41,7 +51,10 @@ If downloads fail (403 errors), download the HTML manually first:
 import re
 import os
 import sys
+import csv
 import json
+import gzip
+import zlib
 import argparse
 import time
 from pathlib import Path
@@ -130,6 +143,8 @@ FRONT_MATTER_KEYWORDS = [
     'preface', 'introduction', 'foreword', 'prologue', 'dedication',
     'acknowledgment', 'acknowledgement', 'note to the reader', 'author\'s note',
     'contents', 'table of contents',
+    'list of illustrations', 'list of plates', 'list of figures',
+    'illustrations', 'plates',
 ]
 
 BACK_MATTER_KEYWORDS = [
@@ -250,6 +265,47 @@ def is_chapter_heading(text: str) -> Tuple[bool, str]:
     return False, ''
 
 
+def find_toc_region(html_text: str) -> Tuple[Optional[str], str]:
+    """Return the HTML of the table of contents, or None if there isn't one.
+
+    Precision matters: a region that overshoots picks up page-number and
+    illustration links from the body, which then get mistaken for chapters.
+
+    Returns (region, method) where method is 'container', 'heading' or 'none' —
+    the extraction report leans on it, since a book with no TOC is a book whose
+    chapter splitting deserves a second look.
+    """
+    def has_links(region: str) -> bool:
+        # A "Contents" label with no links (e.g. <p class="toc">CONTENTS</p>) is
+        # a heading for the TOC, not the TOC itself — keep looking.
+        return len(re.findall(r'href=["\']#', region)) >= 2
+
+    # 1) An explicit toc/contents container. Gutenberg uses div/nav/section but
+    #    also p/ul/ol/table (e.g. <p class="toc"> in many illustrated editions).
+    for match in re.finditer(
+            r'<(div|nav|section|p|ul|ol|table)\b[^>]*(?:class|id)=["\']'
+            r'[^"\']*(?:toc|contents)[^"\']*["\'][^>]*>(?:.*?)</\1>',
+            html_text, re.IGNORECASE | re.DOTALL):
+        if has_links(match.group(0)):
+            return match.group(0), 'container'
+
+    # 2) Otherwise the block following a heading that is itself "Contents".
+    #    Match the heading's own text only — an unbounded .*? would run past it.
+    for match in re.finditer(r'<h([1-4])\b[^>]*>(.*?)</h\1>', html_text,
+                             re.IGNORECASE | re.DOTALL):
+        text = re.sub(r'<[^>]+>', ' ', match.group(2))
+        text = ' '.join(text.split()).lower()
+        if 'content' not in text or 'gutenberg' in text:
+            continue
+        rest = html_text[match.end():]
+        next_heading = re.search(r'<h[1-4]\b', rest, re.IGNORECASE)
+        region = rest[:next_heading.start()] if next_heading else rest
+        if has_links(region):
+            return region, 'heading'
+
+    return None, 'none'
+
+
 def extract_toc_anchors(html_text: str) -> List[str]:
     """Extract anchor IDs from table of contents links.
 
@@ -258,40 +314,33 @@ def extract_toc_anchors(html_text: str) -> List[str]:
     """
     anchors = []
 
-    # Find TOC section (typically marked by "contents" class/id or heading)
-    # Look for anchor hrefs that start with #
-    # Pattern: href="#something" within what looks like a TOC
-
-    # First, try to find TOC region by looking for "contents" markers
-    toc_patterns = [
-        r'<(?:div|nav|section)[^>]*(?:class|id)=["\'][^"\']*(?:toc|contents)[^"\']*["\'][^>]*>.*?</(?:div|nav|section)>',
-        r'<h[1-4][^>]*>.*?(?:contents|table of contents).*?</h[1-4]>.*?(?=<h[1-4])',
-    ]
-
-    toc_html = None
-    for pattern in toc_patterns:
-        match = re.search(pattern, html_text, re.IGNORECASE | re.DOTALL)
-        if match:
-            toc_html = match.group(0)
-            break
-
-    # If no TOC section found, scan the whole document for likely TOC links
-    if not toc_html:
+    toc_html, _method = find_toc_region(html_text)
+    whole_document = toc_html is None
+    if whole_document:
+        # No TOC to go on — scan everything, but hold links to a stricter standard
         toc_html = html_text
 
     # Extract all internal anchors (href="#...")
     anchor_pattern = r'<a[^>]+href=["\']#([^"\']+)["\'][^>]*>'
     matches = re.findall(anchor_pattern, toc_html, re.IGNORECASE)
 
+    # Page anchors are chapter starts only when a real TOC points at them
+    page_anchor = re.compile(r'^(?:page|pg)[-_]?[\divxlcdm]+$', re.IGNORECASE)
+
     for anchor in matches:
         anchor_lower = anchor.lower()
         # Skip non-chapter anchors
         if any(skip in anchor_lower for skip in ['note', 'footnote', 'pg-', 'gutenberg']):
             continue
+        if FIGURE_ANCHOR_RE.match(anchor):
+            continue
+        if whole_document and page_anchor.match(anchor):
+            continue
         if anchor not in anchors:
             anchors.append(anchor)
 
     return anchors
+
 
 
 def extract_toc_part_map(html_text: str) -> Dict[str, str]:
@@ -376,7 +425,8 @@ def is_section_id(element_id: str, toc_anchors: List[str] = None) -> Tuple[bool,
     # If this ID is in the TOC anchors, it's definitely a section
     if toc_anchors and element_id in toc_anchors:
         # Determine type from ID
-        if any(kw in id_lower for kw in ['preface', 'introduction', 'foreword', 'prologue', 'dedication']):
+        if any(kw in id_lower for kw in ['preface', 'introduction', 'foreword', 'prologue',
+                                         'dedication', 'illustration', 'plates']):
             return True, 'front_matter'
         if any(kw in id_lower for kw in ['epilogue', 'afterword', 'appendix', 'notes', 'index', 'glossary']):
             return True, 'back_matter'
@@ -402,7 +452,8 @@ def is_section_id(element_id: str, toc_anchors: List[str] = None) -> Tuple[bool,
             return True, 'chapter'
 
     # Check for front/back matter IDs
-    if any(kw in id_lower for kw in ['preface', 'introduction', 'foreword', 'prologue', 'dedication']):
+    if any(kw in id_lower for kw in ['preface', 'introduction', 'foreword', 'prologue',
+                                     'dedication', 'illustration', 'plates']):
         return True, 'front_matter'
     if any(kw in id_lower for kw in ['epilogue', 'afterword', 'appendix', 'index', 'glossary', 'bibliography']):
         return True, 'back_matter'
@@ -416,34 +467,65 @@ def is_section_id(element_id: str, toc_anchors: List[str] = None) -> Tuple[bool,
 # Utility Functions
 # =============================================================================
 
-def make_request(url: str, binary: bool = False, timeout: int = 30) -> Optional[bytes | str]:
-    """Make an HTTP request with retries and error handling."""
+def read_response(response, binary: bool = False) -> bytes | str:
+    """Read a urllib response, decompressing per Content-Encoding.
+
+    HEADERS advertises gzip/deflate, and Gutenberg honors it. urllib does NOT
+    decompress automatically, so the raw body must be inflated here — otherwise
+    the "HTML" is binary garbage and the parsers silently find zero content.
+    """
+    data = response.read()
+    encoding = (response.headers.get('Content-Encoding') or '').lower()
+
+    if 'gzip' in encoding:
+        data = gzip.decompress(data)
+    elif 'deflate' in encoding:
+        try:
+            data = zlib.decompress(data)
+        except zlib.error:
+            data = zlib.decompress(data, -zlib.MAX_WBITS)  # raw deflate
+
+    if binary:
+        return data
+
+    charset = response.headers.get_content_charset() or 'utf-8'
+    return data.decode(charset, errors='replace')
+
+
+def make_request(url: str, binary: bool = False, timeout: int = 30,
+                 max_retries: int = MAX_RETRIES, use_fallbacks: bool = True) -> Optional[bytes | str]:
+    """Make an HTTP request with retries and error handling.
+
+    The defaults suit the one fetch the whole run depends on — the book HTML.
+    Bulk fetches (images) should pass a lighter policy: when Gutenberg throttles,
+    the full retry-plus-wget-plus-curl chain costs ~25s per miss.
+    """
     import subprocess
     import shutil
 
     # First try with urllib
-    for attempt in range(MAX_RETRIES):
+    for attempt in range(max_retries):
         try:
             request = Request(url, headers=HEADERS)
             with urlopen(request, timeout=timeout) as response:
-                content = response.read()
-                if binary:
-                    return content
-                return content.decode('utf-8', errors='replace')
+                return read_response(response, binary)
         except HTTPError as e:
             if e.code == 404:
                 # Try wget/curl as fallback before giving up on 404
                 break
-            if attempt == MAX_RETRIES - 1:
+            if attempt == max_retries - 1:
                 break
         except URLError as e:
-            if attempt == MAX_RETRIES - 1:
+            if attempt == max_retries - 1:
                 break
         except Exception as e:
-            if attempt == MAX_RETRIES - 1:
+            if attempt == max_retries - 1:
                 break
 
         time.sleep(RETRY_DELAY * (attempt + 1))
+
+    if not use_fallbacks:
+        return None
 
     # Fallback: Try wget
     if shutil.which('wget'):
@@ -464,7 +546,7 @@ def make_request(url: str, binary: bool = False, timeout: int = 30) -> Optional[
     if shutil.which('curl'):
         try:
             result = subprocess.run(
-                ['curl', '-s', '-L', '--max-time', str(timeout), url],
+                ['curl', '-sfL', '--max-time', str(timeout), url],
                 capture_output=True,
                 timeout=timeout + 10
             )
@@ -487,9 +569,13 @@ def sanitize_filename(text: str, max_length: int = 50) -> str:
     text = re.sub(r'<[^>]+>', '', text)
     text = html.unescape(text)
 
-    # Remove problematic filename characters
+    # Remove problematic filename characters. The slug built from this ends up
+    # as a CSV filename referenced from _config.yml, so keep it to word
+    # characters and hyphens.
     text = re.sub(r'[<>:"/\\|?*\x00-\x1f]', '', text)
+    text = re.sub(r'[^\w\s-]', ' ', text, flags=re.UNICODE)  # a space, so 'I. Down' keeps its break
     text = re.sub(r'\s+', '-', text)
+    text = re.sub(r'-{2,}', '-', text)
     text = text.lower().strip('-')
 
     # Limit length
@@ -708,6 +794,190 @@ class MetadataExtractor:
 # Image Extraction
 # =============================================================================
 
+# Figure/plate anchors like #f016 or #f005a point at illustrations, not sections
+FIGURE_ANCHOR_RE = re.compile(r'^(?:f|fig|img|illus|plate)[-_]?\d+[a-z]?$', re.IGNORECASE)
+IMAGE_EXT_RE = re.compile(r'\.(?:jpe?g|png|gif|webp|svg)$', re.IGNORECASE)
+
+
+class FigureParser(HTMLParser):
+    """Collect every <img> with the context that makes it a catalogable figure.
+
+    Gutenberg wraps illustrations in a recognizable pattern:
+
+        <a id="f002"></a>                         <- stable anchor, cited by the
+        <a href="images/image002h.png">              list of illustrations
+          <img alt="The Origin of Outline."       <- caption and alt text
+               src="images/image002.png">         <- hi-res variant in the href
+        </a>
+
+    Attributes are read through HTMLParser rather than a regex so alt text
+    survives regardless of attribute order.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.figures = []
+        self.pending_anchor = None
+        self.link_href = None
+        self.caption_parts = []
+        self.in_caption = False
+        self.pending_caption = ''
+
+    def handle_starttag(self, tag, attrs):
+        attrs_dict = dict(attrs)
+
+        if 'caption' in (attrs_dict.get('class') or '').lower():
+            self.in_caption = True
+            self.caption_parts = []
+            return
+
+        if tag == 'a':
+            if 'id' in attrs_dict and 'href' not in attrs_dict:
+                self.pending_anchor = attrs_dict['id']
+            if 'href' in attrs_dict:
+                self.link_href = attrs_dict['href']
+            return
+
+        if tag == 'img':
+            src = attrs_dict.get('src', '')
+            if not src or src.startswith('data:'):
+                return
+
+            hires = self.link_href if self.link_href and IMAGE_EXT_RE.search(self.link_href) else None
+            anchor = self.pending_anchor if self.pending_anchor and FIGURE_ANCHOR_RE.match(self.pending_anchor) else None
+
+            self.figures.append({
+                'src': src,
+                'alt': html.unescape(attrs_dict.get('alt', '') or '').strip(),
+                'title': html.unescape(attrs_dict.get('title', '') or '').strip(),
+                'anchor': anchor,
+                'hires': hires,
+                'caption': self.pending_caption,
+            })
+            self.pending_anchor = None
+            self.pending_caption = ''
+
+    def handle_endtag(self, tag):
+        if self.in_caption and tag in ('span', 'p', 'div'):
+            self.in_caption = False
+            caption = ' '.join(''.join(self.caption_parts).split())
+            self.caption_parts = []
+            if caption:
+                # Captions sit either side of the image they belong to
+                if self.figures and not self.figures[-1]['caption']:
+                    self.figures[-1]['caption'] = caption
+                else:
+                    self.pending_caption = caption
+            return
+
+        if tag == 'a':
+            self.link_href = None
+
+    def handle_data(self, data):
+        if self.in_caption and data:
+            self.caption_parts.append(data)
+
+
+def extract_figure_captions(html_text: str) -> Dict[str, str]:
+    """Map figure anchors to captions using the book's list of illustrations.
+
+    Rows look like: <td>The Origin of Outline</td><td><a href="#f002">f002</a></td>
+    """
+    captions = {}
+
+    for row in re.findall(r'<tr\b.*?</tr>', html_text, re.IGNORECASE | re.DOTALL):
+        link = re.search(r'href=["\']#([^"\']+)["\']', row, re.IGNORECASE)
+        if not link or not FIGURE_ANCHOR_RE.match(link.group(1)):
+            continue
+
+        cells = re.findall(r'<t[dh]\b[^>]*>(.*?)</t[dh]>', row, re.IGNORECASE | re.DOTALL)
+        parts = []
+        for cell in cells:
+            if 'href' in cell.lower():  # the cell holding the figure reference itself
+                continue
+            text = ' '.join(re.sub(r'<[^>]+>', ' ', cell).split())
+            if text:
+                parts.append(html.unescape(text))
+
+        caption = ' '.join(parts).strip()
+        if caption:
+            captions.setdefault(link.group(1), caption)
+
+    return captions
+
+
+def is_decorative(figure: Dict) -> bool:
+    """Drop caps and rules are page furniture, not figures worth cataloging."""
+    if figure.get('anchor') or figure.get('caption'):
+        return False
+    alt = figure.get('alt', '')
+    # alt="M" is an illuminated initial; alt="" is an uncaptioned plate, which
+    # is still worth keeping
+    return 0 < len(alt) <= 2
+
+
+def gutenberg_image_urls(book_id: str, src: str, base_url: str) -> List[str]:
+    """Candidate URLs for an image, most likely first.
+
+    A relative src is resolved against Gutenberg rather than the page it came
+    from, so --local-html extractions can still fetch images.
+    """
+    if src.startswith('http'):
+        return [src]
+
+    candidates = [
+        urljoin(f'https://www.gutenberg.org/cache/epub/{book_id}/', src),
+        urljoin(f'https://www.gutenberg.org/files/{book_id}/{book_id}-h/', src),
+    ]
+    if base_url and base_url.startswith('http'):
+        resolved = urljoin(base_url, src)
+        if resolved not in candidates:
+            candidates.insert(0, resolved)
+    return candidates
+
+
+def build_figures(book_id: str, html_content: str, base_url: str,
+                  stats: Dict = None) -> List[Dict]:
+    """Parse the book into a list of catalogable figures.
+
+    Pass a dict as `stats` to receive counts of what was seen and filtered.
+    """
+    parser = FigureParser()
+    parser.feed(html_content)
+
+    captions = extract_figure_captions(html_content)
+
+    figures = []
+    seen = set()
+    counts = {'seen': len(parser.figures), 'duplicate': 0, 'decorative': 0}
+    for index, figure in enumerate(parser.figures, 1):
+        if figure['src'] in seen:
+            counts['duplicate'] += 1
+            continue
+        seen.add(figure['src'])
+
+        if figure['anchor'] and not figure['caption']:
+            figure['caption'] = captions.get(figure['anchor'], '')
+        if is_decorative(figure):
+            counts['decorative'] += 1
+            continue
+
+        anchor = figure['anchor'] or f'img{index:03d}'
+        figure['objectid'] = f'{book_id}_{anchor.lower()}'
+        figure['urls'] = gutenberg_image_urls(book_id, figure['src'], base_url)
+        figure['extension'] = (Path(urlparse(figure['src']).path).suffix or '.jpg').lower()
+        figure['original_name'] = Path(urlparse(figure['src']).path).name
+        figure['title'] = (figure['caption'] or figure['alt'] or figure['title']
+                           or f'Figure {index}').rstrip('.')
+        figures.append(figure)
+
+    counts['kept'] = len(figures)
+    if stats is not None:
+        stats.update(counts)
+
+    return figures
+
+
 def extract_image_urls(book_id: str, html_content: str, base_url: str) -> Dict:
     """Extract image URLs without downloading them.
 
@@ -766,6 +1036,7 @@ class ImageExtractor:
         self.cover_dir = cover_dir or objects_dir
         self.downloaded_images = []
         self.cover_image = None
+        self.failed_images = []
 
     def download_cover(self) -> Optional[str]:
         """Download the cover image to the cover directory (assets/img/ by default)."""
@@ -801,48 +1072,58 @@ class ImageExtractor:
         print("  Warning: No cover image found")
         return None
 
-    def extract_images_from_html(self, html_content: str, base_url: str) -> List[Dict]:
-        """Extract and download inline images to the objects directory."""
+    def download_figures(self, figures: List[Dict], delay: float = 0.2) -> int:
+        """Download each figure to objects/<objectid><ext>.
+
+        The filename is the objectid so the metadata CSV, the object file, and
+        any Markdown reference all agree. A figure that cannot be fetched is
+        skipped rather than failing the run.
+        """
+        if not figures:
+            return 0
+
         self.objects_dir.mkdir(parents=True, exist_ok=True)
+        downloaded = 0
+        failed = []
 
-        img_pattern = r'<img[^>]+src=["\']([^"\']+)["\'][^>]*>'
-        matches = re.findall(img_pattern, html_content, re.IGNORECASE)
-
-        inline_images = []
-        for idx, src in enumerate(matches, 1):
-            if src.startswith('data:'):
-                continue
-
-            if not src.startswith('http'):
-                src = urljoin(base_url, src)
-
-            vprint(f"  Downloading image {idx}: {src}")
-            content = make_request(src, binary=True)
-            if not content:
-                continue
-
-            parsed = urlparse(src)
-            original_name = Path(parsed.path).name
-            ext = Path(original_name).suffix or '.jpg'
-
-            safe_name = sanitize_filename(Path(original_name).stem, 30)
-            filename = f"img-{idx:03d}-{safe_name}{ext}"
+        for index, figure in enumerate(figures, 1):
+            filename = f"{figure['objectid']}{figure['extension']}"
             filepath = self.objects_dir / filename
+
+            content = None
+            for url in figure['urls']:
+                content = make_request(url, binary=True, max_retries=2, use_fallbacks=False)
+                if content:
+                    figure['source_url'] = url
+                    break
+
+            if not content:
+                failed.append(figure['objectid'])
+                continue
 
             with open(filepath, 'wb') as f:
                 f.write(content)
 
-            image_info = {
+            figure['downloaded'] = filename
+            downloaded += 1
+            self.downloaded_images.append({
                 'filename': filename,
-                'source_url': src,
-                'original_name': original_name,
-                'type': 'inline'
-            }
-            inline_images.append(image_info)
-            self.downloaded_images.append(image_info)
-            vprint(f"  ✓ Downloaded: {filename}")
+                'source_url': figure.get('source_url', ''),
+                'original_name': figure.get('original_name', ''),
+                'type': 'figure',
+            })
 
-        return inline_images
+            if index % 25 == 0 or index == len(figures):
+                print(f"  … {index}/{len(figures)} images")
+            if delay:
+                time.sleep(delay)
+
+        self.failed_images = failed
+        print(f"  ✓ Downloaded {downloaded} image(s) to objects/")
+        if failed:
+            print(f"  Warning: {len(failed)} image(s) could not be fetched: "
+                  f"{', '.join(failed[:5])}{' …' if len(failed) > 5 else ''}")
+        return downloaded
 
     def get_results(self) -> Dict:
         """Get summary of downloaded images."""
@@ -855,6 +1136,107 @@ class ImageExtractor:
 # =============================================================================
 # HTML to Markdown Conversion
 # =============================================================================
+
+def render_markdown_table(rows: List[List[str]], has_header: bool = False) -> str:
+    """Render collected table rows as Markdown.
+
+    Kramdown accepts a table with no header row, which suits Gutenberg — its
+    tables almost never use <th>.
+    """
+    rows = [row for row in rows if any(cell.strip() for cell in row)]
+    if not rows:
+        return ''
+
+    width = max(len(row) for row in rows)
+    if width == 1:
+        # A single-column table is layout, not data — emit plain paragraphs
+        return ''.join(f'{row[0].strip()}\n\n' for row in rows if row[0].strip())
+
+    rows = [row + [''] * (width - len(row)) for row in rows]
+
+    lines = []
+    body_start = 0
+    if has_header:
+        lines.append('| ' + ' | '.join(rows[0]) + ' |')
+        lines.append('|' + '|'.join([' --- '] * width) + '|')
+        body_start = 1
+    for row in rows[body_start:]:
+        lines.append('| ' + ' | '.join(row) + ' |')
+
+    return '\n'.join(lines) + '\n\n'
+
+
+class TableCollector:
+    """Accumulates <table> markup so a parser can emit it as Markdown.
+
+    Kept separate from the parsers because both GutenbergHTMLParser and
+    WholeBookParser need it, and because tables nest.
+    """
+
+    def __init__(self):
+        self.stack = []
+
+    @property
+    def active(self) -> bool:
+        return bool(self.stack)
+
+    def start_table(self) -> None:
+        self.stack.append({'rows': [], 'row': None, 'has_header': False})
+
+    def start_row(self) -> None:
+        if self.stack:
+            self.stack[-1]['row'] = []
+
+    def add_cell(self, text: str, is_header: bool = False, colspan: int = 1) -> None:
+        if not self.stack:
+            return
+        table = self.stack[-1]
+        if table['row'] is None:
+            table['row'] = []
+
+        text = text.replace('\xa0', ' ')
+        text = ' '.join(text.split())  # a Markdown cell must stay on one line
+        # Collapsing newlines can strand emphasis markers ("* Greek*" renders as
+        # a literal asterisk), so pull them back against their text.
+        text = re.sub(r'(\*{1,2})\s+(.+?)\s*\1', r'\1\2\1', text)
+        text = re.sub(r'(\*{1,2})(.+?)\s+\1', r'\1\2\1', text)
+        text = text.replace('|', '\\|')
+
+        table['row'].append(text)
+        table['row'].extend([''] * max(0, colspan - 1))
+        if is_header and not table['rows']:
+            table['has_header'] = True
+
+    def end_row(self) -> None:
+        if not self.stack:
+            return
+        table = self.stack[-1]
+        if table['row'] is not None:
+            table['rows'].append(table['row'])
+            table['row'] = None
+
+    def end_table(self) -> str:
+        if not self.stack:
+            return ''
+        table = self.stack.pop()
+        if table['row']:
+            table['rows'].append(table['row'])
+        return render_markdown_table(table['rows'], table['has_header'])
+
+
+def has_body_text(content: str) -> bool:
+    """True if a section has real content, not just a heading and rules.
+
+    Anchors that turn out to mark a figure or a bare divider otherwise become
+    empty essay files in the reading order.
+    """
+    for line in content.split('\n'):
+        line = line.strip()
+        if not line or line.startswith('#') or set(line) <= {'-', '*', '_'}:
+            continue
+        return True
+    return False
+
 
 class GutenbergHTMLParser(HTMLParser):
     """Parse Project Gutenberg HTML to extract chapters and content.
@@ -876,7 +1258,17 @@ class GutenbergHTMLParser(HTMLParser):
         self.boilerplate_depth = 0
         self.in_toc = False
         self.in_pagenum = False
+        self.in_caption = False
         self.skip_content = False
+        self.tables = TableCollector()
+        self.in_cell = False
+        self.cell_is_header = False
+        self.cell_colspan = 1
+        self.in_text_block = False
+        self.figure_refs = {}
+        self.figures_placed = set()
+        self.tables_rendered = 0
+        self.sections_dropped = []
         self.images_found = []
         self.pending_heading_text = []
         self.in_heading = False
@@ -904,10 +1296,14 @@ class GutenbergHTMLParser(HTMLParser):
             self.boilerplate_depth += 1
             return
 
-        # Skip page numbers
+        # Skip page numbers and illustration captions
         if tag == 'span' and 'class' in attrs_dict:
-            if 'pagenum' in attrs_dict['class'].lower():
+            span_class = attrs_dict['class'].lower()
+            if 'pagenum' in span_class:
                 self.in_pagenum = True
+                return
+            if 'caption' in span_class:
+                self.in_caption = True
                 return
 
         if self.skip_content or self.in_boilerplate:
@@ -962,12 +1358,9 @@ class GutenbergHTMLParser(HTMLParser):
                 if self.current_section:
                     self._save_section()
 
-                # Determine section type based on ID patterns
-                section_type = 'chapter'  # Default for poems/sections
-                if 'pref' in anchor_id.lower() or 'intro' in anchor_id.lower():
-                    section_type = 'front_matter'
-                elif any(kw in anchor_id.lower() for kw in ['append', 'index', 'glossary', 'notes']):
-                    section_type = 'back_matter'
+                # Classify with the shared ID rules rather than a second set
+                _, section_type = self._check_element_id(anchor_id)
+                section_type = section_type or 'chapter'  # default for poems/sections
 
                 self.in_toc = False
                 self.current_section = {
@@ -978,17 +1371,56 @@ class GutenbergHTMLParser(HTMLParser):
                 }
                 return
 
+        # Tables: collect cell by cell, emitted as Markdown on </table>
+        if self.current_section and not self.in_toc:
+            if tag == 'table':
+                self.tables.start_table()
+                return
+            if self.tables.active:
+                if tag == 'tr':
+                    self.tables.start_row()
+                    return
+                if tag in ('td', 'th'):
+                    self.in_cell = True
+                    self.cell_is_header = tag == 'th'
+                    try:
+                        self.cell_colspan = max(1, int(attrs_dict.get('colspan', 1)))
+                    except (TypeError, ValueError):
+                        self.cell_colspan = 1
+                    self.current_content = []
+                    return
+
         # Track images
         if tag == 'img' and 'src' in attrs_dict:
-            self.images_found.append(attrs_dict['src'])
+            src = attrs_dict['src']
+            self.images_found.append(src)
             if self.current_section:
-                alt = attrs_dict.get('alt', '')
-                self.current_content.append(f'\n![{alt}]({attrs_dict["src"]})\n')
+                reference = self.figure_refs.get(src)
+                if reference:
+                    kind, value = reference
+                    if kind == 'include':
+                        # Blank lines keep the include a block of its own even
+                        # when the figure sits inside a paragraph
+                        image_markdown = f'\n{value}\n'
+                    else:
+                        alt = attrs_dict.get('alt', '')
+                        image_markdown = f'![{alt}]({value})'
+                    self.figures_placed.add(src)
+                    if self.in_text_block or self.in_cell:
+                        self.current_content.append(f'\n{image_markdown}\n')
+                    else:
+                        # Most Gutenberg figures sit in a bare <div>, where
+                        # current_content is never flushed — write them straight
+                        # into the section instead of losing them.
+                        self.current_section['content'].append(f'{image_markdown}\n\n')
 
         # Format tags (only when we have a current section)
         if self.current_section and not self.in_boilerplate:
+            if tag in ('p', 'pre', 'blockquote', 'li'):
+                self.in_text_block = True
             if tag == 'p':
-                self.current_content = []
+                if not self.in_cell:
+                    self.current_content = []
             elif tag == 'pre':
                 self.current_content = []
                 self.in_pre = True
@@ -1019,6 +1451,10 @@ class GutenbergHTMLParser(HTMLParser):
 
         if tag == 'span' and self.in_pagenum:
             self.in_pagenum = False
+            return
+
+        if tag == 'span' and self.in_caption:
+            self.in_caption = False
             return
 
         # Heading tag closing: determine if this starts a new section
@@ -1091,6 +1527,34 @@ class GutenbergHTMLParser(HTMLParser):
         if self.skip_content or self.in_boilerplate or self.in_toc or self.in_pagenum:
             return
 
+        if self.tables.active:
+            if tag in ('td', 'th'):
+                self.tables.add_cell(''.join(self.current_content),
+                                     self.cell_is_header, self.cell_colspan)
+                self.current_content = []
+                self.in_cell = False
+                self.cell_is_header = False
+                self.cell_colspan = 1
+                return
+            if tag == 'tr':
+                self.tables.end_row()
+                return
+            if tag == 'table':
+                table_markdown = self.tables.end_table()
+                if table_markdown:
+                    self.tables_rendered += 1
+                    if self.tables.active:  # nested table: fold into the open cell
+                        self.current_content.append(table_markdown)
+                    elif self.current_section:
+                        self.current_section['content'].append(table_markdown)
+                return
+            if tag == 'p' and self.in_cell:
+                self.current_content.append(' ')  # keep paragraphs in one cell
+                return
+
+        if tag in ('p', 'pre', 'blockquote', 'li'):
+            self.in_text_block = False
+
         if self.current_section:
             # For <pre> tags, preserve all whitespace; for others, strip it
             if tag == 'pre':
@@ -1130,7 +1594,9 @@ class GutenbergHTMLParser(HTMLParser):
 
     def handle_data(self, data):
         # Always collect heading text for chapter detection (even before we have a section)
-        if self.in_heading and data:
+        # Page numbers and illustration captions sit inside headings in illustrated
+        # editions, but they are not part of the title.
+        if self.in_heading and data and not self.in_pagenum and not self.in_caption:
             self.pending_heading_text.append(data)
 
         if self.skip_content or self.in_boilerplate or self.in_toc or self.in_pagenum:
@@ -1150,7 +1616,10 @@ class GutenbergHTMLParser(HTMLParser):
             return
 
         content = ''.join(self.current_section['content']).strip()
-        if content:
+        if content and not has_body_text(content):
+            self.sections_dropped.append(self.current_section.get('title')
+                                         or self.current_section['id'])
+        if content and has_body_text(content):
             self.sections.append({
                 'id': self.current_section['id'],
                 'title': self.current_section.get('title') or self.current_section['id'],
@@ -1181,6 +1650,10 @@ class WholeBookParser(HTMLParser):
         self.in_boilerplate = False
         self.boilerplate_depth = 0
         self.in_pre = False
+        self.tables = TableCollector()
+        self.in_cell = False
+        self.cell_is_header = False
+        self.cell_colspan = 1
 
     def handle_starttag(self, tag, attrs):
         attrs_dict = dict(attrs)
@@ -1197,8 +1670,26 @@ class WholeBookParser(HTMLParser):
         if self.in_boilerplate:
             return
 
+        if tag == 'table':
+            self.tables.start_table()
+            return
+        if self.tables.active:
+            if tag == 'tr':
+                self.tables.start_row()
+                return
+            if tag in ('td', 'th'):
+                self.in_cell = True
+                self.cell_is_header = tag == 'th'
+                try:
+                    self.cell_colspan = max(1, int(attrs_dict.get('colspan', 1)))
+                except (TypeError, ValueError):
+                    self.cell_colspan = 1
+                self.current_text = []
+                return
+
         if tag == 'p':
-            self.current_text = []
+            if not self.in_cell:
+                self.current_text = []
         elif tag == 'pre':
             self.current_text = []
             self.in_pre = True
@@ -1222,6 +1713,30 @@ class WholeBookParser(HTMLParser):
 
         if self.in_boilerplate:
             return
+
+        if self.tables.active:
+            if tag in ('td', 'th'):
+                self.tables.add_cell(''.join(self.current_text),
+                                     self.cell_is_header, self.cell_colspan)
+                self.current_text = []
+                self.in_cell = False
+                self.cell_is_header = False
+                self.cell_colspan = 1
+                return
+            if tag == 'tr':
+                self.tables.end_row()
+                return
+            if tag == 'table':
+                table_markdown = self.tables.end_table()
+                if table_markdown:
+                    if self.tables.active:  # nested table: fold into the open cell
+                        self.current_text.append(table_markdown)
+                    else:
+                        self.content.append(table_markdown)
+                return
+            if tag == 'p' and self.in_cell:
+                self.current_text.append(' ')  # keep paragraphs in one cell
+                return
 
         # For <pre> tags, preserve all whitespace; for others, strip it
         if tag == 'pre':
@@ -1267,6 +1782,94 @@ class WholeBookParser(HTMLParser):
 # =============================================================================
 # Output Generation
 # =============================================================================
+
+MIME_TYPES = {
+    '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
+    '.gif': 'image/gif', '.webp': 'image/webp', '.svg': 'image/svg+xml',
+}
+
+COLLECTION_CSV_FIELDS = [
+    'objectid', 'title', 'creator', 'date', 'description', 'subject',
+    'source', 'identifier', 'type', 'format', 'language', 'rights',
+    'rightsstatement', 'display_template', 'object_location', 'image_small',
+    'image_thumb', 'image_alt_text',
+]
+
+
+def write_collection_csv(figures: List[Dict], metadata: Dict, data_dir: Path,
+                         slug: str) -> Optional[str]:
+    """Write one metadata row per downloaded figure.
+
+    Returns the CSV stem for the _config.yml `metadata:` pointer, which takes a
+    filename with no extension.
+    """
+    rows = [f for f in figures if f.get('downloaded')]
+    if not rows:
+        return None
+
+    data_dir.mkdir(parents=True, exist_ok=True)
+    csv_stem = f'{slug}-metadata'
+    csv_path = data_dir / f'{csv_stem}.csv'
+
+    book_title = metadata.get('title', '')
+    gutenberg_url = metadata.get('gutenberg_url', '')
+
+    with open(csv_path, 'w', encoding='utf-8', newline='') as handle:
+        writer = csv.DictWriter(handle, fieldnames=COLLECTION_CSV_FIELDS)
+        writer.writeheader()
+        for figure in rows:
+            extension = Path(figure['downloaded']).suffix.lower()
+            object_path = f'/objects/{figure["downloaded"]}'
+            description = figure.get('caption') or figure.get('alt') or ''
+            writer.writerow({
+                'objectid': figure['objectid'],
+                'title': normalize_text(figure['title']),
+                'creator': metadata.get('author', ''),
+                'date': metadata.get('publication_date', ''),
+                'description': normalize_text(description),
+                'subject': 'illustrations',
+                'source': f'{book_title} (Project Gutenberg) {gutenberg_url}'.strip(),
+                'identifier': figure.get('original_name', ''),
+                'type': 'Image;StillImage',
+                'format': MIME_TYPES.get(extension, 'image/jpeg'),
+                'language': metadata.get('language', ''),
+                'rights': metadata.get('rights', 'Public Domain'),
+                'rightsstatement': 'https://creativecommons.org/publicdomain/mark/1.0/',
+                'display_template': 'image',
+                'object_location': object_path,
+                # Gutenberg illustrations are small enough to serve as their own
+                # derivatives; `rake generate_derivatives` can replace these with
+                # real thumbnails later.
+                'image_small': object_path,
+                'image_thumb': object_path,
+                'image_alt_text': normalize_text(figure.get('alt') or figure['title']),
+            })
+
+    print(f"  ✓ Wrote {len(rows)} collection items to _data/{csv_stem}.csv")
+    return csv_stem
+
+
+def update_config_metadata(root_path: Path, csv_stem: str) -> bool:
+    """Point _config.yml's `metadata:` key at the generated CSV.
+
+    Rewrites the single line rather than round-tripping the YAML, so comments
+    and formatting elsewhere in the file are untouched.
+    """
+    config_path = root_path / '_config.yml'
+    if not config_path.exists():
+        print(f"  Warning: {config_path} not found; skipping metadata pointer update")
+        return False
+
+    text = config_path.read_text(encoding='utf-8')
+    updated, count = re.subn(r'(?m)^metadata:.*$', f'metadata: {csv_stem}', text, count=1)
+    if not count:
+        print("  Warning: no `metadata:` key in _config.yml; skipping pointer update")
+        return False
+
+    config_path.write_text(updated, encoding='utf-8')
+    print(f"  ✓ Set _config.yml metadata: {csv_stem}")
+    return True
+
 
 def create_cb_essay_book_yml(metadata: Dict, image_urls: Dict, sections_info: Dict,
                              downloaded_cover: str = None) -> str:
@@ -1354,6 +1957,50 @@ def create_cb_essay_book_yml(metadata: Dict, image_urls: Dict, sections_info: Di
     return '\n'.join(lines) + '\n'
 
 
+def liquid_param(text: str) -> str:
+    """Make text safe to pass as a double-quoted Liquid include parameter."""
+    text = ' '.join((text or '').split())
+    return text.replace('"', "'")
+
+
+def build_figure_references(figures: List[Dict], illustrations: str) -> Dict[str, Tuple[str, str]]:
+    """Decide how each figure should appear in the essay Markdown.
+
+    'download' mode cites the collection item by objectid, so caption, alt text
+    and the full-screen viewer all come from the metadata CSV. 'link' mode points
+    the same include at Gutenberg's own copy of the image, which the include
+    accepts as long as alt text is supplied.
+    """
+    references = {}
+
+    for figure in figures:
+        if illustrations == 'download':
+            if not figure.get('downloaded'):
+                continue
+            params = f'objectid="{figure["objectid"]}"'
+        elif illustrations == 'link':
+            alt = liquid_param(figure.get('alt') or figure['title'])
+            params = f'objectid="{figure["urls"][0]}" alt="{alt}"'
+            caption = liquid_param(figure.get('caption') or figure.get('title'))
+            if caption:
+                params += f' caption="{caption}"'
+        elif illustrations == 'path':
+            # --all-images without collection integration: plain Markdown image
+            if not figure.get('downloaded'):
+                continue
+            references[figure['src']] = ('image', f'/objects/{figure["downloaded"]}')
+            continue
+        else:
+            continue
+
+        references[figure['src']] = (
+            'include',
+            '{% include essay/feature/image-gallery.html ' + params + ' %}',
+        )
+
+    return references
+
+
 def create_cb_essay_markdown(section: Dict, order: int, part: str = None, is_divider: bool = False) -> str:
     """Create markdown file for CB-Essay _essay folder (simplified front matter)."""
     title = normalize_text(section['title'], for_yaml=True)
@@ -1430,6 +2077,20 @@ def save_cb_essay_files(front_matter: List[Dict], chapters: List[Dict],
 # Main Extraction Process
 # =============================================================================
 
+def looks_like_html(content: str) -> bool:
+    """Sanity-check a downloaded page before handing it to the parsers.
+
+    Guards against compressed/binary or error-page responses, which otherwise
+    parse to zero sections and fail much later with a confusing message.
+    """
+    if not content or len(content) < 2000:
+        # Real Gutenberg books run to tens of KB; anything this small is an
+        # error or gateway-timeout page, even though it parses as valid HTML.
+        return False
+    head = content[:5000].lower()
+    return '<html' in head or '<body' in head or '<p' in head or '<div' in head
+
+
 def download_html(book_id: str) -> Tuple[Optional[str], Optional[str]]:
     """Download HTML content from Project Gutenberg."""
     urls = [
@@ -1441,9 +2102,11 @@ def download_html(book_id: str) -> Tuple[Optional[str], Optional[str]]:
     for url in urls:
         print(f"  Trying: {url}")
         content = make_request(url)
-        if content:
+        if content and looks_like_html(content):
             print(f"  ✓ Downloaded HTML from {url}")
             return content, url
+        if content:
+            print(f"  ✗ Response was not readable HTML ({len(content)} chars) — trying next source")
 
     return None, None
 
@@ -1547,11 +2210,182 @@ def update_theme_print_author(root_path: Path, author: Optional[str]) -> bool:
     return True
 
 
+def count_prose_words(text: str) -> int:
+    """Word count of Markdown body text, ignoring markup we generated ourselves.
+
+    Liquid includes and image references would otherwise inflate the count —
+    167 image-gallery includes are well over a thousand words of tags.
+    """
+    text = re.sub(r'\{%.*?%\}', ' ', text, flags=re.DOTALL)
+    text = re.sub(r'!\[[^\]]*\]\([^)]*\)', ' ', text)
+    text = re.sub(r'<[^>]+>', ' ', text)
+    return len(text.split())
+
+
+def count_source_words(html_text: str) -> int:
+    """Word count of the de-boilerplated source, for a retention comparison."""
+    body = re.sub(r'<(script|style)[^>]*>.*?</\1>', ' ', html_text,
+                  flags=re.DOTALL | re.IGNORECASE)
+    return len(re.sub(r'<[^>]+>', ' ', body).split())
+
+
+TOC_METHOD_LABELS = {
+    'container': 'a contents container in the markup',
+    'heading': 'the block following a "Contents" heading',
+    'none': 'NOT FOUND — fell back to scanning the whole document',
+}
+
+
+def write_extraction_report(root_path: Path, report: Dict) -> None:
+    """Write extraction-results.md: what the run produced and what needs a human.
+
+    Written on failure too — a run that produced nothing is exactly when the
+    numbers are worth reading.
+    """
+    lines = []
+    title = report.get('title') or f"Book {report.get('book_id', '?')}"
+    lines.append(f'# Extraction Results — {title}')
+    lines.append('')
+    meta = [f"Book {report.get('book_id', '?')}"]
+    if report.get('slug'):
+        meta.append(report['slug'])
+    meta.append(report.get('timestamp', ''))
+    meta.append(f"illustrations: {report.get('illustrations', 'none')}")
+    lines.append(' · '.join(m for m in meta if m))
+    lines.append('')
+
+    if report.get('failed'):
+        lines.append('## ⚠ Extraction failed')
+        lines.append('')
+        lines.append(report['failed'])
+        lines.append('')
+
+    # ---- Summary ----
+    lines.append('## Summary')
+    lines.append('')
+    lines.append('| | |')
+    lines.append('|---|---|')
+
+    sections = report.get('sections', {})
+    total = sections.get('front_matter', 0) + sections.get('chapters', 0)
+    lines.append(f"| Sections | {total} "
+                 f"({sections.get('front_matter', 0)} front matter, "
+                 f"{sections.get('chapters', 0)} chapters) |")
+
+    source_words = report.get('source_words', 0)
+    output_words = report.get('output_words', 0)
+    if source_words:
+        retention = 100.0 * output_words / source_words
+        lines.append(f'| Text kept | {retention:.1f}% of {source_words:,} source words |')
+
+    tables = report.get('tables', {})
+    if tables.get('found'):
+        lines.append(f"| Tables | {tables['found']} found, {tables.get('rendered', 0)} rendered |")
+
+    figures = report.get('figures', {})
+    if figures.get('kept'):
+        lines.append(f"| Figures | {figures['kept']} catalogued, "
+                     f"{figures.get('placed', 0)} placed in essays |")
+        if figures.get('downloaded') is not None:
+            lines.append(f"| Images downloaded | {figures['downloaded']} to objects/ |")
+
+    lines.append(f"| Cover | {report['cover'] if report.get('cover') else 'not found'} |")
+    if report.get('collection_csv'):
+        lines.append(f"| Collection CSV | _data/{report['collection_csv']}.csv |")
+    lines.append('')
+
+    # ---- Needs a human ----
+    todo = report.get('todo', [])
+    lines.append('## Needs a human')
+    lines.append('')
+    if todo:
+        lines.extend(f'- {item}' for item in todo)
+    else:
+        lines.append('Nothing flagged — the numbers above are all in normal range.')
+    lines.append('')
+
+    # ---- How structure was detected ----
+    lines.append('## How structure was detected')
+    lines.append('')
+    method = report.get('toc_method', 'none')
+    lines.append(f'- Table of contents: {TOC_METHOD_LABELS.get(method, method)}')
+    lines.append(f"- TOC anchors found: {report.get('toc_anchors', 0)}")
+    lines.append(f"- Source: {report.get('source_url', 'unknown')}")
+    if report.get('dropped_sections'):
+        dropped = ', '.join(report['dropped_sections'][:8])
+        more = ' …' if len(report['dropped_sections']) > 8 else ''
+        lines.append(f'- Sections dropped as empty: {dropped}{more}')
+    lines.append('')
+
+    lines.append('---')
+    lines.append('')
+    lines.append('Regenerated on every extraction run. See `EXTRACTION-NOTES.md` for how '
+                 'the script works and what the known limitations are.')
+    lines.append('')
+
+    path = root_path / 'extraction-results.md'
+    path.write_text('\n'.join(lines), encoding='utf-8')
+    print(f"  ✓ Wrote extraction-results.md")
+
+
+def build_report_todos(report: Dict) -> List[str]:
+    """Turn the run's numbers into an actionable list, or nothing if all is well."""
+    todo = []
+
+    if report.get('toc_method') == 'none':
+        todo.append('**No table of contents was found**, so chapter boundaries came from '
+                    'heading text alone — check that the chapter split looks right.')
+
+    source_words = report.get('source_words', 0)
+    output_words = report.get('output_words', 0)
+    if source_words and 100.0 * output_words / source_words < 95.0:
+        missing = source_words - output_words
+        todo.append(f'**{missing:,} source words ({100.0 * missing / source_words:.0f}%) '
+                    'did not carry over.** Some of that is always apparatus — page numbers, '
+                    'the contents list, transcriber\'s notes — but a gap this size is worth '
+                    'a look.')
+
+    tables = report.get('tables', {})
+    dropped_tables = tables.get('found', 0) - tables.get('rendered', 0)
+    if dropped_tables > 0:
+        todo.append(f'{dropped_tables} table(s) were not rendered. Tables that sit before '
+                    'the first section (a contents table, for instance) are dropped by '
+                    'design; any others are worth checking.')
+
+    figures = report.get('figures', {})
+    unplaced = figures.get('kept', 0) - figures.get('placed', 0)
+    if unplaced > 0 and figures.get('kept'):
+        names = ', '.join(f'`{o}`' for o in report.get('unplaced_figures', [])[:5])
+        more = ' …' if len(report.get('unplaced_figures', [])) > 5 else ''
+        todo.append(f'{unplaced} figure(s) catalogued but not placed in any essay: {names}{more} '
+                    '— usually cover or title-page plates that appear before the first section.')
+
+    if report.get('failed_images'):
+        names = ', '.join(f'`{o}`' for o in report['failed_images'][:5])
+        more = ' …' if len(report['failed_images']) > 5 else ''
+        todo.append(f"{len(report['failed_images'])} image(s) could not be downloaded: "
+                    f'{names}{more} — rerun to retry, or Gutenberg may have been throttling.')
+
+    if report.get('dropped_sections'):
+        todo.append(f"{len(report['dropped_sections'])} section(s) had a heading but no body "
+                    'text and were dropped.')
+
+    if not report.get('cover') and not report.get('images_skipped'):
+        todo.append('No cover image was found — set `featured-image` in `_data/theme.yml` '
+                    'by hand, or pick `image-style: no-image`.')
+
+    if report.get('collection_csv'):
+        todo.append('Collection images are serving as their own thumbnails. Run '
+                    '`bundle exec rake generate_derivatives` for real ones.')
+
+    return todo
+
+
 def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
                  slug: str = None, skip_images: bool = False,
                  download_all_images: bool = False, local_html: str = None,
                  clear: bool = False, about_page: bool = False,
-                 verbose: bool = False) -> bool:
+                 illustrations: str = 'none', verbose: bool = False) -> bool:
     """
     Main extraction function. Writes essay files to _essay/, metadata to _data/book.yml,
     and images to objects/ within the project root.
@@ -1566,6 +2400,9 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
         local_html: Path to local HTML file (skips download)
         clear: Delete existing .md files from essay output dir before writing
         about_page: Generate pages/about.md with catalog card include and placeholder sections
+        illustrations: How to handle the book's illustrations —
+            'none' (skip), 'link' (cite Gutenberg's copies in image-gallery includes),
+            or 'download' (fetch into objects/ and register as collection items)
         verbose: Enable verbose output
 
     Returns:
@@ -1637,12 +2474,24 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
     image_extractor = ImageExtractor(book_id, objects_dir, cover_dir=assets_img_dir)
     downloaded_cover = None
 
-    if not skip_images:
-        downloaded_cover = image_extractor.download_cover()
-        if download_all_images:
-            image_extractor.extract_images_from_html(html_content, html_url or '')
+    figures = []
+    figure_stats = {}
+    if illustrations != 'none' or download_all_images:
+        # Cataloguing the figures needs no network — only fetching them does
+        figures = build_figures(book_id, html_content, html_url or '', stats=figure_stats)
+        print(f"  Found {len(figures)} illustration(s) in the book")
+
+    if skip_images:
+        print("  Skipping image downloads (--skip-images)")
+        if illustrations == 'download':
+            print("  Note: --skip-images means no files to catalogue; "
+                  "use --illustrations link to cite Gutenberg's copies instead")
     else:
-        print("  Skipping images (--skip-images)")
+        downloaded_cover = image_extractor.download_cover()
+        if illustrations == 'download' or download_all_images:
+            image_extractor.download_figures(figures)
+        elif illustrations == 'link':
+            print("  Linking to Gutenberg's copies — no image files downloaded")
 
     # Always collect image URLs for book.yml regardless of download choice
     image_urls = extract_image_urls(book_id, html_content, html_url or '')
@@ -1655,6 +2504,7 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
     vprint(f"  Removed boilerplate: {len(html_content)} -> {len(clean_html)} chars")
 
     toc_anchors = extract_toc_anchors(html_content)
+    _toc_region, toc_method = find_toc_region(html_content)
     if toc_anchors:
         vprint(f"  Found {len(toc_anchors)} TOC anchor links")
 
@@ -1665,10 +2515,35 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
         vprint(f"  Detected {len(part_labels)} TOC parts: {part_labels}")
 
     parser = GutenbergHTMLParser(toc_anchors=toc_anchors)
+    reference_mode = illustrations
+    if reference_mode == 'none' and download_all_images:
+        reference_mode = 'path'
+    parser.figure_refs = build_figure_references(figures, reference_mode)
     parser.feed(clean_html)
     front_matter, chapters, _ = parser.get_results()
 
     print(f"  Found {len(front_matter)} front matter + {len(chapters)} chapters")
+
+    report = {
+        'book_id': book_id,
+        'title': metadata.get('title'),
+        'slug': slug,
+        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M'),
+        'illustrations': illustrations,
+        'source_url': html_url or local_html or 'unknown',
+        'toc_method': toc_method,
+        'toc_anchors': len(toc_anchors),
+        'source_words': count_source_words(clean_html),
+        'tables': {
+            'found': len(re.findall(r'<table\b', clean_html, re.IGNORECASE)),
+            'rendered': parser.tables_rendered,
+        },
+        'dropped_sections': parser.sections_dropped,
+        'cover': (f'assets/img/{downloaded_cover}' if downloaded_cover
+                  else ('skipped (--skip-images)' if skip_images else None)),
+        'failed_images': image_extractor.failed_images,
+        'images_skipped': skip_images,
+    }
 
     if not chapters and not front_matter:
         print("  No chapters detected — extracting as single document...")
@@ -1685,6 +2560,13 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
             }]
         else:
             print("ERROR: Could not extract any content")
+            report['failed'] = ('No sections and no document-level content could be parsed '
+                                'from the source HTML. If the source looks fine in a browser, '
+                                'the fetch itself is the first thing to check.')
+            report['sections'] = {'front_matter': 0, 'chapters': 0}
+            report['output_words'] = 0
+            report['todo'] = build_report_todos(report)
+            write_extraction_report(root_path, report)
             return False
 
     # Step 5: Save files
@@ -1708,7 +2590,34 @@ def extract_book(book_id: str, project_root: str = None, essay_dir: str = None,
         part_divider_ids=part_divider_ids,
     )
 
+    csv_stem = None
+    if illustrations == 'download':
+        csv_stem = write_collection_csv(figures, metadata, data_dir, slug)
+        if csv_stem:
+            update_config_metadata(root_path, csv_stem)
+        else:
+            print("  No illustrations downloaded; collection CSV not written")
+
     update_theme_print_author(root_path, metadata.get('author'))
+
+    # ---- Extraction report ----
+    placed = len(parser.figures_placed)
+    report['sections'] = {'front_matter': len(front_matter), 'chapters': len(chapters)}
+    report['output_words'] = sum(count_prose_words(s['content'])
+                                 for s in front_matter + chapters)
+    report['figures'] = {
+        'seen': figure_stats.get('seen', 0),
+        'decorative': figure_stats.get('decorative', 0),
+        'kept': len(figures),
+        'placed': placed,
+    }
+    if illustrations == 'download' or download_all_images:
+        report['figures']['downloaded'] = sum(1 for f in figures if f.get('downloaded'))
+    report['unplaced_figures'] = [f['objectid'] for f in figures
+                                  if f['src'] not in parser.figures_placed]
+    report['collection_csv'] = csv_stem if illustrations == 'download' else None
+    report['todo'] = build_report_todos(report)
+    write_extraction_report(root_path, report)
 
     total = len(front_matter) + len(chapters)
     print("\n" + "=" * 60)
@@ -1740,6 +2649,8 @@ Examples:
   %(prog)s 84 --project-root ~/my-site    # Extract into a different project directory
   %(prog)s 84 --output ./staging          # Write markdown to ./staging/ instead of _essay/
   %(prog)s 11 --all-images                # Download all inline images to objects/
+  %(prog)s 25290 --illustrations link     # Cite Gutenberg's images, download nothing
+  %(prog)s 25290 --illustrations download # Illustrations as collection items + metadata CSV
   %(prog)s 84 --skip-images               # Skip image downloading entirely
   %(prog)s 84 --local-html pg84.html      # Use a locally downloaded HTML file
   %(prog)s 84 --slug frankenstein         # Set a custom book slug in book.yml
@@ -1766,6 +2677,14 @@ If downloads fail (403 errors), download the HTML manually first:
                         help='Download all inline images in addition to the cover')
     parser.add_argument('--local-html', '-l', metavar='FILE',
                         help='Path to a locally downloaded HTML file (skips fetching from Gutenberg)')
+    parser.add_argument('--illustrations', choices=['none', 'link', 'download'],
+                        default='none',
+                        help="How to handle the book's illustrations: 'none' (default), "
+                             "'link' to cite Gutenberg's copies in image-gallery includes, "
+                             "or 'download' to fetch them into objects/ and register them "
+                             'as collection items in _data/<slug>-metadata.csv')
+    parser.add_argument('--collection-images', action='store_true',
+                        help='Alias for --illustrations download')
     parser.add_argument('--about-page', action='store_true',
                         help='Generate pages/about.md with a catalog card include and placeholder editorial sections')
     parser.add_argument('--verbose', '-v', action='store_true',
@@ -1783,6 +2702,7 @@ If downloads fail (403 errors), download the HTML manually first:
         download_all_images=args.all_images,
         local_html=args.local_html,
         about_page=args.about_page,
+        illustrations='download' if args.collection_images else args.illustrations,
         verbose=args.verbose,
     )
 
