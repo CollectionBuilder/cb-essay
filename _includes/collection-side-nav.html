@@ -30,21 +30,21 @@
             <div class="offcanvas-body">
                 <p class="h5 mb-3">{{ site.tagline }}</p>
                 <p><small>{{ site.description }}</small></p>
-                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                <ul class="navbar-nav">
                     {%- assign navItems = site.data.config-nav | where_exp: 'item', 'item.dropdown_parent == nil' -%} 
                     {% for nav in navItems %}
                     {% if nav.stub %}
                     <li class="nav-item">
-                        <a class="nav-link{% if page.url == nav.stub %} active{% endif %}" {% if page.url == nav.stub %}aria-current="page" {% endif %}href="{{ nav.stub | relative_url }}">{{ nav.display_name }}</a>
+                        <a class="nav-link text-wrap{% if page.url == nav.stub %} active{% endif %}" {% if page.url == nav.stub %}aria-current="page" {% endif %}href="{{ nav.stub | relative_url }}">{{ nav.display_name }}</a>
                     </li>
                     {%- else -%}
                     <li class="nav-item dropdown">
                         {% assign navChildren = site.data.config-nav | where_exp: 'item', 'item.dropdown_parent == nav.display_name' %}
                         {%- assign childStubs = navChildren | map: 'stub' -%}
-                        <a class="nav-link  dropdown-toggle{% if childStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ nav.display_name }}</a>
+                        <a class="nav-link text-wrap dropdown-toggle{% if childStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ nav.display_name }}</a>
                         <div class="dropdown-menu">
                             {% for c in navChildren %}
-                            <a class="dropdown-item {% if page.url == c.stub %}active{% endif %}" {% if page.url == c.stub %}aria-current="page" {% endif %}href="{{ c.stub | relative_url }}">{{ c.display_name }}</a>
+                            <a class="dropdown-item text-wrap {% if page.url == c.stub %}active{% endif %}" {% if page.url == c.stub %}aria-current="page" {% endif %}href="{{ c.stub | relative_url }}">{{ c.display_name }}</a>
                             {% endfor %}
                         </div>
                     </li>
