@@ -688,14 +688,26 @@ video::cue {
 /* Monograph navbar: CSS grid for geometric centering */
 .essay-navbar-3col {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+        "center center"
+        "left   right";
     align-items: center;
     width: 100%;
     padding: 0.25rem 0;
 }
-.essay-navbar-left  { display: flex; justify-content: flex-start; }
-.essay-navbar-center { min-width: 0; padding: 0 1rem; text-align: center; }
-.essay-navbar-right { display: flex; justify-content: flex-end; }
+.essay-navbar-left  { grid-area: left;  display: flex; justify-content: flex-start; }
+.essay-navbar-center { grid-area: center; min-width: 0; padding: 0.5rem 0; text-align: center; }
+.essay-navbar-right { grid-area: right; display: flex; justify-content: flex-end; }
+
+/* Desktop: Contents | Title | Menu on one row */
+@media (min-width: 992px) {
+    .essay-navbar-3col {
+        grid-template-columns: 1fr auto 1fr;
+        grid-template-areas: "left center right";
+    }
+    .essay-navbar-center { padding: 0 1rem; }
+}
 
 /* Home page fluid titles — replace Bootstrap display-* classes */
 .home-title {
