@@ -1,70 +1,68 @@
-{% unless site.data.theme.show-contents-nav %}
 <button class="essay-nav-btn essay-nav-btn--menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Open navigation menu">
     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
         <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
     </svg>
 </button>
-{% endunless %}
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-            <div class="offcanvas-header">
-                <h2 class="offcanvas-title text-wrap" id="offcanvasNavbarLabel">{{ site.title }}</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                {% if site.tagline %}<p><small>{{ site.tagline }}</small></p>{% endif %}
-                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 side-nav">
-                    <li class="nav-item">
-                        <a class="nav-link{% if page.url == '/' %} active{% endif %}" href="{{ '/' | relative_url }}">Home</a>
-                    </li>
-                    {%- assign actual_essays = site.essay | where_exp: "item", "item.title and item.order" -%}
-                    {%- assign essay_count = actual_essays.size -%}
-                    {% unless site.data.theme.show-contents-nav or essay_count == 1 %}
-                    <li class="nav-item">
-                        <a class="nav-link{% if page.url == actual_essays[0].url %} active{% endif %}" href="{{ actual_essays[0].url | relative_url }}">Read</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        {%- assign essayStubs = site.essay | map: 'url' -%}
-                        <a class="nav-link dropdown-toggle{% if essayStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Contents</a>
-                        <div class="dropdown-menu">
-                            {% for e in site.essay %}
-                            <a class="dropdown-item {% if page.url == e.url %}active{% endif %}" href="{{ e.url | relative_url }}">{% if e.chapter %}{{ e.chapter }}. {% endif %}{{ e.title }}</a>
-                            {% endfor %}
-                        </div>
-                    </li>
-                    {% endunless %}
-                    {%- assign navItems = site.data.config-nav | where_exp: 'item', 'item.dropdown_parent == nil' -%}
-                    {% for nav in navItems %}
-                    {% if nav.stub %}
-                    <li class="nav-item">
-                        <a class="nav-link{% if page.url == nav.stub %} active{% endif %}" href="{{ nav.stub | relative_url }}">{{ nav.display_name }}</a>
-                    </li>
-                    {%- else -%}
-                    <li class="nav-item dropdown">
-                        {% assign navChildren = site.data.config-nav | where_exp: 'item', 'item.dropdown_parent == nav.display_name' %}
-                        {%- assign childStubs = navChildren | map: 'stub' -%}
-                        <a class="nav-link dropdown-toggle{% if childStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ nav.display_name }}</a>
-                        <div class="dropdown-menu">
-                            {% for c in navChildren %}
-                            <a class="dropdown-item {% if page.url == c.stub %}active{% endif %}" href="{{ c.stub | relative_url }}">{{ c.display_name }}</a>
-                            {% endfor %}
-                        </div>
-                    </li>
-                    {% endif %}
-                    {%- endfor -%}
-                </ul>
-
-                {% if site.title == "CB-Essay" %}
-                <hr class="my-3 opacity-25 text-light bg-white">
-                <a class="nav-link {% if page.url == '/docs.html' %} active{% endif %}" href="{{ '/docs.html' | relative_url }}">CB-Essay Documentation</a>
-                {% endif %}
-
-                {% if site.organization-logo-nav %}
-                <div class="mt-5">
-                    <a href="{{ site.organization-link }}" target="_blank" rel="noopener">
-                        <img id="footer-logo" class="img-fluid sidebar-nav-image" src="{{ site.organization-logo-nav | relative_url }}" alt="{{ site.organization-name | escape }} home">
-                    </a>
+    <div class="offcanvas-header">
+        <h2 class="offcanvas-title text-wrap" id="offcanvasNavbarLabel">{{ site.title }}</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        {% if site.tagline %}<p><small>{{ site.tagline }}</small></p>{% endif %}
+        <ul class="navbar-nav side-nav">
+            <li class="nav-item">
+                <a class="nav-link{% if page.url == '/' %} active{% endif %}" href="{{ '/' | relative_url }}">Home</a>
+            </li>
+            {%- assign actual_essays = site.essay | where_exp: "item", "item.title and item.order" -%}
+            {%- assign essay_count = actual_essays.size -%}
+            {% unless site.data.theme.show-contents-nav or essay_count == 1 %}
+            <li class="nav-item">
+                <a class="nav-link{% if page.url == actual_essays[0].url %} active{% endif %}" href="{{ actual_essays[0].url | relative_url }}">Read</a>
+            </li>
+            <li class="nav-item dropdown">
+                {%- assign essayStubs = site.essay | map: 'url' -%}
+                <a class="nav-link dropdown-toggle{% if essayStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Contents</a>
+                <div class="dropdown-menu">
+                    {% for e in site.essay %}
+                    <a class="dropdown-item text-wrap{% if page.url == e.url %} active{% endif %}" href="{{ e.url | relative_url }}">{% if e.chapter %}{{ e.chapter }}. {% endif %}{{ e.title }}</a>
+                    {% endfor %}
                 </div>
-                {% endif %}
-                
-            </div>
+            </li>
+            {% endunless %}
+            {%- assign navItems = site.data.config-nav | where_exp: 'item', 'item.dropdown_parent == nil' -%}
+            {% for nav in navItems %}
+            {% if nav.stub %}
+            <li class="nav-item">
+                <a class="nav-link  text-wrap{% if page.url == nav.stub %} active{% endif %}" href="{{ nav.stub | relative_url }}">{{ nav.display_name }}</a>
+            </li>
+            {%- else -%}
+            <li class="nav-item dropdown">
+                {% assign navChildren = site.data.config-nav | where_exp: 'item', 'item.dropdown_parent == nav.display_name' %}
+                {%- assign childStubs = navChildren | map: 'stub' -%}
+                <a class="nav-link text-wrap dropdown-toggle{% if childStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ nav.display_name }}</a>
+                <div class="dropdown-menu">
+                    {% for c in navChildren %}
+                    <a class="dropdown-item text-wrap{% if page.url == c.stub %} active{% endif %}" href="{{ c.stub | relative_url }}">{{ c.display_name }}</a>
+                    {% endfor %}
+                </div>
+            </li>
+            {% endif %}
+            {%- endfor -%}
+        </ul>
+
+        {% if site.title == "CB-Essay" %}
+        <hr class="my-3 opacity-25 text-light bg-white">
+        <a class="nav-link {% if page.url == '/docs.html' %} active{% endif %}" href="{{ '/docs.html' | relative_url }}">CB-Essay Documentation</a>
+        {% endif %}
+
+        {% if site.organization-logo-nav %}
+        <div class="mt-5 p-2">
+            <a href="{{ site.organization-link }}">
+                <img class="img-fluid sidebar-nav-image" src="{{ site.organization-logo-nav | relative_url }}" alt="{{ site.organization-name | escape }} home">
+            </a>
         </div>
+        {% endif %}
+        
+    </div>
+</div>

@@ -1,15 +1,13 @@
-<nav class="essay-navbar" role="navigation" aria-label="Site navigation">
+<nav class="navbar essay-navbar" role="navigation" aria-label="Site navigation">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col essay-navbar__title-wrap">
-                <a class="navbar-brand essay-navbar__fluid-title"
-                   href="{{ '/' | relative_url }}">
-                    {{ site.title }}
-                </a>
-            </div>
-            <div class="col-auto">
-                {% include essay/off-canvas-menu.html %}
-            </div>
+        <div class="essay-navbar__title-wrap">
+            <a class="navbar-brand essay-navbar__fluid-title"
+                href="{{ '/' | relative_url }}">
+                {{ site.title }}
+            </a>
         </div>
+        
+        {% include essay/off-canvas-menu.html %}
+
     </div>
 </nav>
