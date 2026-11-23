@@ -1,0 +1,24 @@
+{%- comment -%}
+  Secondary homepage actions shown beneath the primary "Read" button, as one row of
+  equal-weight buttons: "Contents" (scrolls to the homepage table of contents) and
+  "Menu" (opens the right-hand menu panel).
+
+  Params:
+    btn_class   - Bootstrap/utility classes for each button (styling varies by header style)
+    row_class   - extra classes for the row (alignment, margin)
+    essay_count - number of essays (Contents is multi-essay only; Menu is always on for single-essay)
+{%- endcomment -%}
+{%- assign show_toc = false -%}
+{%- if include.essay_count > 1 and site.data.theme.show-homepage-toc -%}{%- assign show_toc = true -%}{%- endif -%}
+{%- assign show_menu = false -%}
+{%- if include.essay_count == 1 or site.data.theme.show-homepage-menu-button -%}{%- assign show_menu = true -%}{%- endif -%}
+{%- if show_toc or show_menu -%}
+<div class="home-secondary-actions d-flex flex-wrap gap-2 {{ include.row_class }}">
+    {%- if show_toc -%}
+    <a class="{{ include.btn_class }} text-decoration-none" href="#table-of-contents">Contents</a>
+    {%- endif -%}
+    {%- if show_menu -%}
+    <button class="{{ include.btn_class }}" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">Menu</button>
+    {%- endif -%}
+</div>
+{%- endif -%}

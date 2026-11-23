@@ -34,6 +34,16 @@ Controls whether a table of contents appears on the homepage beneath the banner.
 
 ---
 
+## `show-homepage-menu-button`
+
+Adds a "Menu" button to the homepage banner. It opens the same right-hand menu panel as the navbar's menu toggle.
+
+**`true`** — A "Menu" button appears in every homepage image style, in a row of small outline buttons beneath "Read" (beside "Contents" when `show-homepage-toc` is on). Single-essay sites always show this button.
+
+**`false`** — No button on multi-essay homepages (default).
+
+---
+
 ## `show-section-nav`
 
 Controls a floating sidebar on essay pages that is auto-built from the H2 headings within the essay.
